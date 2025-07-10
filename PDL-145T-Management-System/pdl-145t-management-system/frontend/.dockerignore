@@ -1,0 +1,33 @@
+# Dependencies
+node_modules/
+yarn.lock
+
+# Logs
+logs
+*.log
+
+# Build output
+dist/
+
+# Development files
+.env
+.env.local
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+._*
+
+# Custom cache
+.cache/
+
+# Other
+README.md
+Dockerfile
+.dockerignore

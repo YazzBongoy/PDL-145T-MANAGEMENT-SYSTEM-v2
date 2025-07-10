@@ -1,0 +1,176 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Projects Table - Manages the overall projects
+model Project {
+  ProjectID      Int      @id @default(autoincrement())
+  Name           String
+  StartDate      DateTime
+  EndDate        DateTime?
+  TotalBudget    Decimal
+  CreatedAt      DateTime @default(now())
+  UpdatedAt      DateTime @updatedAt
+
+  // Relationships
+  ProjectResources ProjectResource[]
+  Tasks           Task[]
+  Reports         Report[]
+}
+
+// Tasks Table - Manages individual tasks within a project
+model Task {
+  TaskID         Int      @id @default(autoincrement())
+  ProjectID      Int
+  Description    String?
+  Duration       Int?
+  AssignedTo     String?
+  CompletionStatus TaskCompletionStatus @default(NotStarted)
+  CreatedAt      DateTime @default(now())
+  UpdatedAt      DateTime @updatedAt
+
+  // Relationships
+  Project       Project   @relation(fields: [ProjectID], references: [ProjectID])
+  Expenses      Expense[]
+  TaskResources TaskResource[]
+  Measurements  Measurement[]
+  Validations   Validation[]
+}
+
+// Expenses Table - Tracks expenses associated with tasks or projects
+model Expense {
+  ExpenseID    Int      @id @default(autoincrement())
+  TaskID       Int
+  Description  String?
+  Cost         Decimal
+  Date         DateTime
+  CreatedAt    DateTime @default(now())
+  UpdatedAt    DateTime @updatedAt
+
+  // Relationships
+  Task Task @relation(fields: [TaskID], references: [TaskID])
+}
+
+// Resources Table - Stores information about available resources
+model Resource {
+  ResourceID   Int      @id @default(autoincrement())
+  Type         String
+  Quantity     Decimal
+  CreatedAt    DateTime @default(now())
+  UpdatedAt    DateTime @updatedAt
+
+  // Relationships
+  ProjectResources ProjectResource[]
+  TaskResources TaskResource[]
+}
+
+// Project Resources - Many-to-Many relationship between Projects and Resources
+model ProjectResource {
+  ProjectID  Int
+  ResourceID Int
+
+  // Relationships
+  Project  Project  @relation(fields: [ProjectID], references: [ProjectID])
+  Resource Resource @relation(fields: [ResourceID], references: [ResourceID])
+
+  @@id([ProjectID, ResourceID])
+}
+
+// Task Resources - Many-to-Many relationship between Tasks and Resources
+model TaskResource {
+  TaskID     Int
+  ResourceID Int
+
+  // Relationships
+  Task     Task     @relation(fields: [TaskID], references: [TaskID])
+  Resource Resource @relation(fields: [ResourceID], references: [ResourceID])
+
+  @@id([TaskID, ResourceID])
+}
+
+// Measurements Table - Records site measurements performed by the Construction Execution Agent
+model Measurement {
+  MeasurementID Int      @id @default(autoincrement())
+  TaskID      Int
+  SiteID      String
+  MeasurementType String
+  Value       Decimal
+  Date        DateTime
+  CreatedAt   DateTime @default(now())
+  UpdatedAt   DateTime @updatedAt
+
+  // Relationships
+  Task Task @relation(fields: [TaskID], references: [TaskID])
+}
+
+// Validations Table - Tracks validations of construction sites
+model Validation {
+  ValidationID Int      @id @default(autoincrement())
+  TaskID       Int
+  SiteID       String
+  Status       ValidationStatus @default(Pending)
+  Notes        String?
+  GeneratedBy  String
+  Timestamp    DateTime @default(now())
+  UpdatedAt    DateTime @updatedAt
+
+  // Relationships
+  Task Task @relation(fields: [TaskID], references: [TaskID])
+  Reports Report[]
+}
+
+// Reports Table - Holds reports generated for billing validation
+model Report {
+  ReportID    Int      @id @default(autoincrement())
+  ValidationID Int
+  ProjectID   Int
+  GeneratedBy String
+  Timestamp   DateTime @default(now())
+  UpdatedAt   DateTime @updatedAt
+
+  // Relationships
+  Validation Validation @relation(fields: [ValidationID], references: [ValidationID])
+  Project    Project    @relation(fields: [ProjectID], references: [ProjectID])
+}
+
+// User Table - Stores user authentication and profile information
+model User {
+  id           Int      @id @default(autoincrement())
+  name         String
+  email        String   @unique
+  passwordHash String
+  role         UserRole @default(USER)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+enum TaskCompletionStatus {
+  NotStarted
+  InProgress
+  Completed
+}
+
+enum ValidationStatus {
+  Pending
+  Approved
+  Rejected
+}
+
+enum UserRole {
+  USER
+  ADMIN
+  SUPERVISOR
+  FINANCE
+  CONSTRUCTION
+}

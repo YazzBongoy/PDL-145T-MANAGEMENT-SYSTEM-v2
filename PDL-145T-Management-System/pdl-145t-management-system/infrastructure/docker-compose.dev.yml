@@ -1,0 +1,93 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgis/postgis:15-3.3
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
+      POSTGRES_DB: ${POSTGRES_DB:-pdl_management}
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./sql:/docker-entrypoint-initdb.d
+      - postgres_data_dev:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-pdl_management}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    restart: unless-stopped
+    networks:
+      - pdl-network
+
+  backend:
+    build: 
+      context: ../backend
+      dockerfile: Dockerfile.dev
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "3010:3010"
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-password}@db:5432/${POSTGRES_DB:-pdl_management}
+      NODE_ENV: development
+      JWT_SECRET: ${JWT_SECRET:-dev_secret_key}
+      PORT: 3010
+    volumes:
+      # Hot reload for development
+      - ../backend/src:/app/src:ro
+      - ../backend/package.json:/app/package.json:ro
+      - ../backend/tsconfig.json:/app/tsconfig.json:ro
+      - backend_node_modules:/app/node_modules
+    restart: unless-stopped
+    networks:
+      - pdl-network
+
+  frontend:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile.dev
+    depends_on:
+      - backend
+    ports:
+      - "5173:5173"
+    environment:
+      VITE_API_URL: http://localhost:3010
+      NODE_ENV: development
+    volumes:
+      # Hot reload for development
+      - ../frontend/src:/app/src:ro
+      - ../frontend/public:/app/public:ro
+      - ../frontend/package.json:/app/package.json:ro
+      - ../frontend/vite.config.ts:/app/vite.config.ts:ro
+      - frontend_node_modules:/app/node_modules
+    restart: unless-stopped
+    networks:
+      - pdl-network
+
+  # Development tools
+  adminer:
+    image: adminer:4.8.1
+    depends_on:
+      - db
+    ports:
+      - "8080:8080"
+    environment:
+      ADMINER_DEFAULT_SERVER: db
+    networks:
+      - pdl-network
+
+volumes:
+  postgres_data_dev:
+    driver: local
+  backend_node_modules:
+    driver: local
+  frontend_node_modules:
+    driver: local
+
+networks:
+  pdl-network:
+    driver: bridge

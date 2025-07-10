@@ -1,0 +1,25 @@
+{
+  "name": "pdl-145t-management-system",
+  "version": "1.0.0",
+  "description": "PDL-145T Management System - A monorepo for managing PDL-145T operations",
+  "private": true,
+  "workspaces": [
+    "backend",
+    "frontend"
+  ],
+  "scripts": {
+    "dev": "docker compose -f infrastructure/docker-compose.yml up --build",
+    "db:migrate": "node scripts/db-migrate.js",
+    "db:seed": "node scripts/db-seed.js",
+    "clean": "npm run clean --workspaces",
+    "build": "npm run build --workspaces",
+    "test": "npm run test --workspaces",
+    "lint": "npm run lint --workspaces",
+    "format": "npm run format --workspaces"
+  },
+  "devDependencies": {},
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=7.0.0"
+  }
+}
