@@ -1,46 +1,85 @@
+# Default Docker Compose configuration (Development)
+# Use docker-compose.dev.yml for full development setup with hot reload
+# Use docker-compose.prod.yml for production deployment
+
 version: '3.8'
 
 services:
+  # Database Layer - PostgreSQL with PostGIS
+  # Base image: postgis/postgis:15-3.3
+  # Purpose: Geospatial database for PDL-145T management
   db:
     image: postgis/postgis:15-3.3
+    container_name: pdl-db
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
       POSTGRES_DB: ${POSTGRES_DB:-pdl_management}
     ports:
-      - "5432:5432"
+      - '5432:5432'
     volumes:
       - ./sql:/docker-entrypoint-initdb.d
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-pdl_management}"]
+      test:
+        [
+          'CMD-SHELL',
+          'pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-pdl_management}',
+        ]
       interval: 10s
       timeout: 5s
       retries: 5
       start_period: 30s
     restart: unless-stopped
+    networks:
+      - pdl-network
 
+  # Backend API Layer - Node.js/Express with TypeScript
+  # Multi-stage build: builder -> production
+  # Purpose: REST API server with Prisma ORM
   backend:
-    build: ../backend
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
+      target: production
+    container_name: pdl-backend
     depends_on:
       db:
         condition: service_healthy
     ports:
-      - "3010:3010"
+      - '3010:3010'
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-password}@db:5432/${POSTGRES_DB:-pdl_management}
       NODE_ENV: development
+      JWT_SECRET: ${JWT_SECRET:-dev_secret_key}
+      PORT: 3010
     restart: unless-stopped
+    networks:
+      - pdl-network
 
+  # Frontend Layer - React with Vite
+  # Multi-stage build: builder -> nginx production
+  # Purpose: Static web application served via Nginx
   frontend:
-    build: ../frontend
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+      target: production
+    container_name: pdl-frontend
     depends_on:
       - backend
     ports:
-      - "5173:80"
+      - '5173:80'
     environment:
       VITE_API_URL: http://localhost:3010
     restart: unless-stopped
+    networks:
+      - pdl-network
 
 volumes:
   postgres_data:
+    driver: local
+
+networks:
+  pdl-network:
+    driver: bridge
