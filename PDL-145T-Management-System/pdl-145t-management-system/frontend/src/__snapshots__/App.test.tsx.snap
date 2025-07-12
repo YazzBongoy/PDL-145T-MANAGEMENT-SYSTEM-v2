@@ -1,0 +1,65 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`App > matches snapshot 1`] = `
+<div
+  class="app"
+>
+  <header
+    class="app-header"
+  >
+    <h1>
+      PDL-145T Management System
+    </h1>
+    <p>
+      Welcome to the PDL-145T Management System frontend
+    </p>
+  </header>
+  <main
+    class="app-main"
+  >
+    <section
+      class="auth-section"
+    >
+      <form
+        class="login-form"
+      >
+        <h2>
+          Login
+        </h2>
+        <input
+          placeholder="Email"
+          required=""
+          type="email"
+          value=""
+        />
+        <input
+          placeholder="Password"
+          required=""
+          type="password"
+          value=""
+        />
+        <button
+          type="submit"
+        >
+          Login
+        </button>
+        <button
+          type="button"
+        >
+          Register
+        </button>
+      </form>
+    </section>
+    <section
+      class="health-check"
+    >
+      <h2>
+        Backend Health Status
+      </h2>
+      <p>
+        Loading health status...
+      </p>
+    </section>
+  </main>
+</div>
+`;

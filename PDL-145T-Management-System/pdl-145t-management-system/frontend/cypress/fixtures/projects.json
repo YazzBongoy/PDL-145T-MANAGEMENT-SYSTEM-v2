@@ -1,0 +1,23 @@
+[
+  {
+    "ProjectID": 1,
+    "Name": "Test Project 1",
+    "StartDate": "2024-01-01T00:00:00Z",
+    "EndDate": "2024-12-31T00:00:00Z",
+    "TotalBudget": 50000
+  },
+  {
+    "ProjectID": 2,
+    "Name": "Test Project 2",
+    "StartDate": "2024-02-01T00:00:00Z",
+    "EndDate": "2024-11-30T00:00:00Z",
+    "TotalBudget": 75000
+  },
+  {
+    "ProjectID": 3,
+    "Name": "Test Project 3",
+    "StartDate": "2024-03-01T00:00:00Z",
+    "EndDate": "2024-10-31T00:00:00Z",
+    "TotalBudget": 100000
+  }
+]

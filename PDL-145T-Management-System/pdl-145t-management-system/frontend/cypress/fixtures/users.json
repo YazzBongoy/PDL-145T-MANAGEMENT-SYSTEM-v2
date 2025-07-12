@@ -1,0 +1,32 @@
+{
+  "admin": {
+    "id": 1,
+    "name": "Admin User",
+    "email": "admin@example.com",
+    "role": "ADMIN"
+  },
+  "supervisor": {
+    "id": 2,
+    "name": "Supervisor User",
+    "email": "supervisor@example.com",
+    "role": "SUPERVISOR"
+  },
+  "user": {
+    "id": 3,
+    "name": "Regular User",
+    "email": "user@example.com",
+    "role": "USER"
+  },
+  "finance": {
+    "id": 4,
+    "name": "Finance User",
+    "email": "finance@example.com",
+    "role": "FINANCE"
+  },
+  "construction": {
+    "id": 5,
+    "name": "Construction User",
+    "email": "construction@example.com",
+    "role": "CONSTRUCTION"
+  }
+}

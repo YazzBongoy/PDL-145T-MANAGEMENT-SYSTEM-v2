@@ -6,13 +6,17 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
 // Import routes
+import measurementRoutes from './routes/measurementRoutes.js';
+import validationRoutes from './routes/validationRoutes.js';
 // import projectRoutes from './routes/projectRoutes.js';
 // import taskRoutes from './routes/taskRoutes.js';
 // import expenseRoutes from './routes/expenseRoutes.js';
 // import resourceRoutes from './routes/resourceRoutes.js';
-// import measurementRoutes from './routes/measurementRoutes.js';
-// import validationRoutes from './routes/validationRoutes.js';
 // import reportRoutes from './routes/reportRoutes.js';
+
+// Import middleware and types
+import { authenticateJWT, requireAdminOrSupervisor, errorHandler } from './middleware/index.js';
+import { AuthenticatedRequest } from './types/express.js';
 
 // Initialize environment variables
 dotenv.config();
@@ -45,13 +49,12 @@ app.get('/api/health', (req, res) => {
 });
 
 // API routes
-// Comment out route usages for missing modules
+app.use('/api/measurements', measurementRoutes);
+app.use('/api/validations', validationRoutes);
 // app.use('/api/projects', projectRoutes);
 // app.use('/api/tasks', taskRoutes);
 // app.use('/api/expenses', expenseRoutes);
 // app.use('/api/resources', resourceRoutes);
-// app.use('/api/measurements', measurementRoutes);
-// app.use('/api/validations', validationRoutes);
 // app.use('/api/reports', reportRoutes);
 
 // User registration
@@ -94,47 +97,12 @@ app.post('/auth/login', async (req, res) => {
   res.json({ token, user: { id: user.id, name: user.name, email: user.email, role: user.role } });
 });
 
-// Auth middleware
-function authenticateJWT(req: Request, res: Response, next: NextFunction) {
-  const authHeader = req.headers.authorization;
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    res.status(401).json({ error: 'Missing or invalid token.' });
-    return;
-  }
-  try {
-    const token = authHeader.split(' ')[1];
-    const payload = jwt.verify(token, JWT_SECRET);
-    req.user = payload;
-    next();
-  } catch (err) {
-    res.status(401).json({ error: 'Invalid or expired token.' });
-    return;
-  }
-}
-
-// RBAC middleware (example usage)
-function requireRole(role: string) {
-  return (req: Request, res: Response, next: NextFunction) => {
-    if (!req.user || req.user.role !== role) {
-      res.status(403).json({ error: 'Forbidden' });
-      return;
-    }
-    next();
-  };
-}
-
-// RBAC middleware for ADMIN or SUPERVISOR
-function requireAdminOrSupervisor(req: Request, res: Response, next: NextFunction) {
-  if (!req.user || (req.user.role !== 'ADMIN' && req.user.role !== 'SUPERVISOR')) {
-    res.status(403).json({ error: 'Forbidden' });
-    return;
-  }
-  next();
-}
+// Middleware functions are now imported from ./middleware/index.js
 
 // Example protected route
-app.get('/me', authenticateJWT, async (req, res) => {
-  const user = await prisma.user.findUnique({ where: { id: req.user.userId } });
+app.get('/me', authenticateJWT, async (req: Request, res: Response) => {
+  const authReq = req as AuthenticatedRequest;
+  const user = await prisma.user.findUnique({ where: { id: authReq.user.userId } });
   if (!user) {
     res.status(404).json({ error: 'User not found' });
     return;
@@ -393,10 +361,7 @@ app.delete('/api/expenses/:id', authenticateJWT, requireAdminOrSupervisor, async
 });
 
 // Error handling middleware
-app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-  console.error(err.stack);
-  res.status(500).json({ error: 'An unexpected error occurred' });
-});
+app.use(errorHandler);
 
 // Start server
 async function startServer() {
@@ -420,11 +385,4 @@ startServer();
 
 export { app, prisma };
 
-// Add Express.Request user extension
-declare global {
-  namespace Express {
-    interface Request {
-      user?: any;
-    }
-  }
-}
+// Global type declarations are now in ./types/express.ts

@@ -1,0 +1,98 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`LoginForm > matches snapshot 1`] = `
+<form
+  class="login-form"
+>
+  <h2>
+    Login
+  </h2>
+  <input
+    placeholder="Email"
+    required=""
+    type="email"
+    value=""
+  />
+  <input
+    placeholder="Password"
+    required=""
+    type="password"
+    value=""
+  />
+  <button
+    type="submit"
+  >
+    Login
+  </button>
+  <button
+    type="button"
+  >
+    Register
+  </button>
+</form>
+`;
+
+exports[`RegisterForm > matches snapshot 1`] = `
+<form
+  class="register-form"
+>
+  <h2>
+    Register
+  </h2>
+  <input
+    placeholder="Name"
+    required=""
+    type="text"
+    value=""
+  />
+  <input
+    placeholder="Email"
+    required=""
+    type="email"
+    value=""
+  />
+  <input
+    placeholder="Password"
+    required=""
+    type="password"
+    value=""
+  />
+  <select>
+    <option
+      value="USER"
+    >
+      User
+    </option>
+    <option
+      value="ADMIN"
+    >
+      Admin
+    </option>
+    <option
+      value="SUPERVISOR"
+    >
+      Supervisor
+    </option>
+    <option
+      value="FINANCE"
+    >
+      Finance
+    </option>
+    <option
+      value="CONSTRUCTION"
+    >
+      Construction
+    </option>
+  </select>
+  <button
+    type="submit"
+  >
+    Register
+  </button>
+  <button
+    type="button"
+  >
+    Back to Login
+  </button>
+</form>
+`;

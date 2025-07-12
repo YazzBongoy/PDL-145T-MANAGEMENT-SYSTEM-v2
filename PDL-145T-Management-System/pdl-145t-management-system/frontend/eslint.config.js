@@ -30,4 +30,24 @@ export default tseslint.config([
       '@typescript-eslint/explicit-function-return-type': 'warn',
     },
   },
+  {
+    files: ['cypress/**/*.{ts,tsx}', '**/*.cy.{ts,tsx}'],
+    languageOptions: {
+      globals: {
+        ...globals.browser,
+        cy: 'readonly',
+        Cypress: 'readonly',
+        describe: 'readonly',
+        it: 'readonly',
+        beforeEach: 'readonly',
+        afterEach: 'readonly',
+        before: 'readonly',
+        after: 'readonly',
+        expect: 'readonly',
+      },
+    },
+    rules: {
+      '@typescript-eslint/explicit-function-return-type': 'off',
+    },
+  },
 ]);

@@ -1,0 +1,164 @@
+import React, { useState, useEffect, useCallback } from 'react';
+import { TaskStatus, UserRole } from '../../types';
+import type { Task, TaskForm, User } from '../../types';
+import { ExpenseList } from '../Expenses/ExpenseList';
+
+interface TaskListProps {
+  projectId: number;
+  user: User;
+  token: string;
+}
+
+export function TaskList({ projectId, user, token }: TaskListProps): React.ReactElement {
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [showForm, setShowForm] = useState(false);
+  const [form, setForm] = useState<TaskForm>({ 
+    Description: '', 
+    Duration: '', 
+    AssignedTo: '', 
+    CompletionStatus: TaskStatus.NOT_STARTED 
+  });
+  const [editId, setEditId] = useState<number | null>(null);
+
+  const fetchTasks = useCallback(async (): Promise<void> => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch(`/api/projects/${projectId}/tasks`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) throw new Error('Failed to fetch tasks');
+      const data = await res.json();
+      setTasks(data);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to fetch tasks');
+    } finally {
+      setLoading(false);
+    }
+  }, [projectId, token]);
+
+  useEffect(() => {
+    fetchTasks();
+  }, [fetchTasks]);
+
+  const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>): void => {
+    setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
+  }, []);
+
+  const handleSubmit = useCallback(async (e: React.FormEvent): Promise<void> => {
+    e.preventDefault();
+    try {
+      const method = editId ? 'PUT' : 'POST';
+      const url = editId ? `/api/tasks/${editId}` : `/api/projects/${projectId}/tasks`;
+      const res = await fetch(url, {
+        method,
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(form),
+      });
+      if (!res.ok) throw new Error('Failed to save task');
+      setShowForm(false);
+      setForm({ Description: '', Duration: '', AssignedTo: '', CompletionStatus: TaskStatus.NOT_STARTED });
+      setEditId(null);
+      await fetchTasks();
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Failed to save task');
+    }
+  }, [editId, form, projectId, token, fetchTasks]);
+
+  const handleEdit = useCallback((task: Task): void => {
+    setForm({
+      Description: task.Description,
+      Duration: task.Duration?.toString() || '',
+      AssignedTo: task.AssignedTo || '',
+      CompletionStatus: task.CompletionStatus || TaskStatus.NOT_STARTED,
+    });
+    setEditId(task.TaskID);
+    setShowForm(true);
+  }, []);
+
+  const handleDelete = useCallback(async (id: number): Promise<void> => {
+    if (!window.confirm('Delete this task?')) return;
+    try {
+      const res = await fetch(`/api/tasks/${id}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) throw new Error('Failed to delete task');
+      await fetchTasks();
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Failed to delete task');
+    }
+  }, [token, fetchTasks]);
+
+  const canEdit = user.role === UserRole.ADMIN || user.role === UserRole.SUPERVISOR;
+
+  return (
+    <div style={{ marginLeft: 20 }}>
+      <h4>Tasks</h4>
+      {loading && <p>Loading...</p>}
+      {error && <p className="error">{error}</p>}
+      <button 
+        onClick={() => { setShowForm(true); setEditId(null); }} 
+        disabled={!canEdit}
+      >
+        + New Task
+      </button>
+      {showForm && (
+        <form onSubmit={handleSubmit} className="task-form">
+          <input 
+            name="Description" 
+            placeholder="Description" 
+            value={form.Description} 
+            onChange={handleChange} 
+            required 
+          />
+          <input 
+            name="Duration" 
+            type="number" 
+            placeholder="Duration (days)" 
+            value={form.Duration} 
+            onChange={handleChange} 
+          />
+          <input 
+            name="AssignedTo" 
+            placeholder="Assigned To" 
+            value={form.AssignedTo} 
+            onChange={handleChange} 
+          />
+          <select 
+            name="CompletionStatus" 
+            value={form.CompletionStatus} 
+            onChange={handleChange}
+          >
+            <option value={TaskStatus.NOT_STARTED}>Not Started</option>
+            <option value={TaskStatus.IN_PROGRESS}>In Progress</option>
+            <option value={TaskStatus.COMPLETED}>Completed</option>
+          </select>
+          <button type="submit">{editId ? 'Update' : 'Create'}</button>
+          <button type="button" onClick={() => { setShowForm(false); setEditId(null); }}>
+            Cancel
+          </button>
+        </form>
+      )}
+      <ul>
+        {tasks.map((t) => (
+          <li key={t.TaskID}>
+            <b>{t.Description}</b> (Status: {t.CompletionStatus}) Assigned: {t.AssignedTo || 'Unassigned'}
+            {canEdit && (
+              <>
+                <button onClick={() => handleEdit(t)}>Edit</button>
+                <button onClick={() => handleDelete(t.TaskID)}>Delete</button>
+              </>
+            )}
+            <ExpenseList taskId={t.TaskID} user={user} token={token} />
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
