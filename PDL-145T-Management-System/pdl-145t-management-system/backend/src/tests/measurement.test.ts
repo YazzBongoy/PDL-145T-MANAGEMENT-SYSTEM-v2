@@ -288,7 +288,7 @@ describe('Measurement Endpoints', () => {
       ];
 
       for (const endpoint of endpoints) {
-        const res = await (request(app) as any)[endpoint.method](endpoint.path);
+        const res = await (request(app) as { [key: string]: (path: string) => request.Test })[endpoint.method](endpoint.path);
         expect(res.status).toBe(401);
       }
     });

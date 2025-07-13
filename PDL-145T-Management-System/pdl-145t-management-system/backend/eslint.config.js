@@ -9,6 +9,7 @@ export default [
       'dist/**',
       'node_modules/**',
       'src/generated/**',
+      'public/**',
       '*.cjs',
     ],
   },

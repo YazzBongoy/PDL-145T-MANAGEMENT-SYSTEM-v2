@@ -171,7 +171,7 @@ export function TaskList({ projectId, user, token }: TaskListProps): React.React
       )}
       <div className="list">
         {tasks.map((t, index) => (
-          <div key={t.TaskID} className={`list__item ${index % 2 === 0 ? "zebra-row" : ""}`}>
+          <div key={t.TaskID} className={`list__item ${index % 2 === 0 ? 'zebra-row' : ''}`}>
             <b>{t.Description}</b> (Status: {t.CompletionStatus}) Assigned: {t.AssignedTo || 'Unassigned'}
             {canEdit && (
               <>

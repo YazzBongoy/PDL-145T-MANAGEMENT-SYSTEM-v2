@@ -4,14 +4,15 @@ import { PrismaClient } from '@prisma/client';
 import * as bcrypt from 'bcryptjs';
 import * as jwt from 'jsonwebtoken';
 declare global {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace Express {
     interface Request {
-      user?: any;
+      user?: { userId: number; role: string };
     }
   }
 }
 
-const app = (express as any).default ? (express as any).default() : (express as any)();
+const app = (express as { default?: () => express.Express }).default ? (express as { default?: () => express.Express }).default() : express();
 const prisma = new PrismaClient();
 app.use(express.json());
 const JWT_SECRET = process.env.JWT_SECRET || 'dev_secret';

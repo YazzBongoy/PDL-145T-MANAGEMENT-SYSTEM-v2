@@ -47,37 +47,38 @@ export const createMockExpense = (overrides: Partial<Expense> = {}): Expense => 
 });
 
 // Mock API responses
-export const mockApiResponse = (data: any, options?: { ok?: boolean; status?: number }) => {
+export const mockApiResponse = (data: unknown, options?: { ok?: boolean; status?: number }): Response => {
   const response = {
     ok: options?.ok ?? true,
     status: options?.status ?? 200,
-    json: () => Promise.resolve(data),
+    json: (): Promise<unknown> => Promise.resolve(data),
   };
   
-  (global.fetch as any).mockResolvedValueOnce(response);
+  (global.fetch as jest.Mock).mockResolvedValueOnce(response);
   return response;
 };
 
-export const mockApiError = (message: string, status: number = 400) => {
+export const mockApiError = (message: string, status: number = 400): Response => {
   const response = {
     ok: false,
     status,
-    json: () => Promise.resolve({ error: message }),
+    json: (): Promise<{ error: string }> => Promise.resolve({ error: message }),
   };
   
-  (global.fetch as any).mockRejectedValueOnce(new Error(message));
+  (global.fetch as jest.Mock).mockRejectedValueOnce(new Error(message));
   return response;
 };
 
 // Custom render function with default props
 interface CustomRenderOptions extends Omit<RenderOptions, 'wrapper'> {
   // Add any custom wrapper props here if needed
+  placeholder?: never; // Temporary property to avoid empty interface
 }
 
 export const customRender = (
   ui: React.ReactElement,
   options?: CustomRenderOptions
-) => {
+): ReturnType<typeof render> => {
   return render(ui, options);
 };
 

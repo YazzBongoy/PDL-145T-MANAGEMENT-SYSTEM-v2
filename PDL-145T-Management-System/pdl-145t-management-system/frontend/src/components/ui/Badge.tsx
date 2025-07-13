@@ -21,7 +21,7 @@ export interface BadgeProps {
   /** ARIA label for accessibility */
   'aria-label'?: string;
   /** Additional HTML attributes */
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export const Badge: React.FC<BadgeProps> = ({
@@ -51,13 +51,13 @@ export const Badge: React.FC<BadgeProps> = ({
     className
   ].filter(Boolean).join(' ');
 
-  const handleClick = () => {
+  const handleClick = (): void => {
     if (interactive && onClick && !loading) {
       onClick();
     }
   };
 
-  const handleKeyDown = (event: React.KeyboardEvent) => {
+  const handleKeyDown = (event: React.KeyboardEvent): void => {
     if (interactive && onClick && !loading && (event.key === 'Enter' || event.key === ' ')) {
       event.preventDefault();
       onClick();

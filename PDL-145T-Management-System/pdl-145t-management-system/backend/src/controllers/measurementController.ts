@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 import { MeasurementService } from '../services/measurementService.js';
 import { asyncHandler } from '../middleware/index.js';
 import {

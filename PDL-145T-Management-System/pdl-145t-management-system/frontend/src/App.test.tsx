@@ -89,9 +89,9 @@ describe('App', () => {
     const errorResponse = {
       ok: false,
       status: 401,
-      json: () => Promise.resolve({ error: 'Invalid credentials' })
+      json: (): Promise<{ error: string }> => Promise.resolve({ error: 'Invalid credentials' })
     };
-    (global.fetch as any).mockResolvedValueOnce(errorResponse);
+    (global.fetch as jest.Mock).mockResolvedValueOnce(errorResponse);
     
     const user = userEvent.setup();
     render(<App />);
@@ -147,9 +147,9 @@ describe('App', () => {
     const errorResponse = {
       ok: false,
       status: 400,
-      json: () => Promise.resolve({ error: 'Email already exists' })
+      json: (): Promise<{ error: string }> => Promise.resolve({ error: 'Email already exists' })
     };
-    (global.fetch as any).mockResolvedValueOnce(errorResponse);
+    (global.fetch as jest.Mock).mockResolvedValueOnce(errorResponse);
     
     const user = userEvent.setup();
     render(<App />);
@@ -168,7 +168,7 @@ describe('App', () => {
 
   it('renders dashboard when user is logged in', () => {
     const mockUser = createMockUser({ role: UserRole.ADMIN });
-    mockLocalStorage.getItem.mockImplementation((key) => {
+    mockLocalStorage.getItem.mockImplementation((key: string): string | null => {
       if (key === 'token') return 'test-token';
       if (key === 'user') return JSON.stringify(mockUser);
       return null;
@@ -234,7 +234,7 @@ describe('App', () => {
 
   it('handles logout correctly', async () => {
     const mockUser = createMockUser({ role: UserRole.ADMIN });
-    mockLocalStorage.getItem.mockImplementation((key) => {
+    mockLocalStorage.getItem.mockImplementation((key: string): string | null => {
       if (key === 'token') return 'test-token';
       if (key === 'user') return JSON.stringify(mockUser);
       return null;

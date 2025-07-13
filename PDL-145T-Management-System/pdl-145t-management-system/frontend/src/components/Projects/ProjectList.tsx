@@ -170,7 +170,7 @@ export function ProjectList({ user, token }: ProjectListProps): React.ReactEleme
       )}
       <div className="list">
         {projects.map((p, index) => (
-          <div key={p.ProjectID} className={`list__item ${index % 2 === 0 ? "zebra-row" : ""}`}>
+          <div key={p.ProjectID} className={`list__item ${index % 2 === 0 ? 'zebra-row' : ''}`}>
             <b>{p.Name}</b> (Start: {p.StartDate?.slice(0, 10)}) Budget: {p.TotalBudget}
             {canEdit && (
               <>

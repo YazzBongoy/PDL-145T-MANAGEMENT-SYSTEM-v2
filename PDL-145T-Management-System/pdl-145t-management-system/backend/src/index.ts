@@ -1,4 +1,4 @@
-import express, { Request, Response, NextFunction } from 'express';
+import express, { Request, Response } from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import { PrismaClient } from '@prisma/client';
@@ -364,7 +364,7 @@ app.delete('/api/expenses/:id', authenticateJWT, requireAdminOrSupervisor, async
 app.use(errorHandler);
 
 // Start server
-async function startServer() {
+async function startServer(): Promise<void> {
   try {
     // Test database connection
     await prisma.$connect();

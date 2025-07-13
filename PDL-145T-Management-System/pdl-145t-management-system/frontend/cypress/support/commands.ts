@@ -27,7 +27,7 @@ Cypress.Commands.add('mockHealthCheck', () => {
   }).as('healthCheck');
 });
 
-Cypress.Commands.add('mockLogin', (user: any) => {
+Cypress.Commands.add('mockLogin', (user: unknown) => {
   cy.intercept('POST', '/auth/login', {
     statusCode: 200,
     body: {
@@ -37,21 +37,21 @@ Cypress.Commands.add('mockLogin', (user: any) => {
   }).as('login');
 });
 
-Cypress.Commands.add('mockProjects', (projects: any[]) => {
+Cypress.Commands.add('mockProjects', (projects: unknown[]) => {
   cy.intercept('GET', '/api/projects', {
     statusCode: 200,
     body: projects,
   }).as('getProjects');
 });
 
-Cypress.Commands.add('mockCreateProject', (project: any) => {
+Cypress.Commands.add('mockCreateProject', (project: unknown) => {
   cy.intercept('POST', '/api/projects', {
     statusCode: 201,
     body: project,
   }).as('createProject');
 });
 
-Cypress.Commands.add('mockUpdateProject', (project: any) => {
+Cypress.Commands.add('mockUpdateProject', (project: unknown) => {
   cy.intercept('PUT', `/api/projects/${project.ProjectID}`, {
     statusCode: 200,
     body: project,
@@ -65,13 +65,14 @@ Cypress.Commands.add('mockDeleteProject', (projectId: number) => {
 });
 
 declare global {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace Cypress {
     interface Chainable {
       mockHealthCheck(): Chainable<void>
-      mockLogin(user: any): Chainable<void>
-      mockProjects(projects: any[]): Chainable<void>
-      mockCreateProject(project: any): Chainable<void>
-      mockUpdateProject(project: any): Chainable<void>
+      mockLogin(user: unknown): Chainable<void>
+      mockProjects(projects: unknown[]): Chainable<void>
+      mockCreateProject(project: unknown): Chainable<void>
+      mockUpdateProject(project: unknown): Chainable<void>
       mockDeleteProject(projectId: number): Chainable<void>
     }
   }

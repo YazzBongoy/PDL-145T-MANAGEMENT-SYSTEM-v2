@@ -8,15 +8,16 @@ import * as jwt from 'jsonwebtoken';
 // If your app is exported from index.ts, use: import app from './index';
 // For this example, we'll define a minimal version inline
 
-const app = (express as any).default ? (express as any).default() : (express as any)();
+const app = (express as { default?: () => express.Express }).default ? (express as { default?: () => express.Express }).default() : express();
 const prisma = new PrismaClient();
 app.use(express.json());
 const JWT_SECRET = process.env.JWT_SECRET || 'dev_secret';
 
 declare global {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace Express {
     interface Request {
-      user?: any;
+      user?: { userId: number; role: string };
     }
   }
 }
@@ -67,7 +68,7 @@ function authenticateJWT(req: express.Request, res: express.Response, next: expr
     const payload = jwt.verify(token, JWT_SECRET);
     req.user = payload;
     next();
-  } catch (err) {
+  } catch {
     return res.status(401).json({ error: 'Invalid or expired token.' });
   }
 }

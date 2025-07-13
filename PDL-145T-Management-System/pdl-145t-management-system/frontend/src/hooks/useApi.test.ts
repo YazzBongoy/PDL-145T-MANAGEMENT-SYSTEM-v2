@@ -60,9 +60,9 @@ describe('useApi', () => {
     const response = {
       ok: false,
       status: 404,
-      json: () => Promise.resolve({ error: 'Not found' }),
+      json: (): Promise<{ error: string }> => Promise.resolve({ error: 'Not found' }),
     };
-    (global.fetch as any).mockResolvedValueOnce(response);
+    (global.fetch as jest.Mock).mockResolvedValueOnce(response);
 
     const { result } = renderHook(() => useApi('/api/test'));
 
@@ -211,9 +211,9 @@ describe('useMutation', () => {
     const response = {
       ok: false,
       status: 400,
-      json: () => Promise.resolve({ error: 'Bad request' }),
+      json: (): Promise<{ error: string }> => Promise.resolve({ error: 'Bad request' }),
     };
-    (global.fetch as any).mockResolvedValueOnce(response);
+    (global.fetch as jest.Mock).mockResolvedValueOnce(response);
 
     const { result } = renderHook(() => 
       useMutation('/api/test', 'POST')

@@ -145,7 +145,7 @@ export function ExpenseList({ taskId, user, token }: ExpenseListProps): React.Re
       )}
       <div className="list">
         {expenses.map((e, index) => (
-          <div key={e.ExpenseID} className={`list__item ${index % 2 === 0 ? "zebra-row" : ""}`}>
+          <div key={e.ExpenseID} className={`list__item ${index % 2 === 0 ? 'zebra-row' : ''}`}>
             <b>{e.Description || 'Expense'}</b> - {e.Cost} on {e.Date?.slice(0, 10)}
             {canEdit && (
               <>

@@ -138,7 +138,7 @@ export function ResourceList({ user, token }: ResourceListProps): React.ReactEle
       )}
       <div className="list">
         {resources.map((r, index) => (
-          <div key={r.ResourceID} className={`list__item ${index % 2 === 0 ? "zebra-row" : ""}`}>
+          <div key={r.ResourceID} className={`list__item ${index % 2 === 0 ? 'zebra-row' : ''}`}>
             <b>{r.Type}</b> (Qty: {r.Quantity})
             {canEdit && (
               <>

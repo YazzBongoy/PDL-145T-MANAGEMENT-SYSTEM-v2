@@ -17,7 +17,7 @@ export function LoginForm({ onLogin, onShowRegister, error }: LoginFormProps): R
     await onLogin({ email, password });
   };
 
-return (
+  return (
     <div className="container">
       <div className="card">
         <form onSubmit={handleSubmit} className="login-form">
@@ -74,7 +74,7 @@ export function RegisterForm({ onRegister, onShowLogin, error }: RegisterFormPro
     await onRegister({ name, email, password, role });
   };
 
-return (
+  return (
     <div className="container">
       <div className="card">
         <form onSubmit={handleSubmit} className="register-form">

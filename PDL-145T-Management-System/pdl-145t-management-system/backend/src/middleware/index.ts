@@ -10,20 +10,20 @@ export function validateSchema<T extends ZodSchema>(
   schema: T,
   target: 'body' | 'params' | 'query' = 'body'
 ) {
-  return (req: Request, res: Response, next: NextFunction) => {
+  return (req: Request, res: Response, next: NextFunction): void => {
     try {
       const dataToValidate = req[target];
       const validatedData = schema.parse(dataToValidate);
       
       // Replace the original data with validated data
-      (req as any)[target] = validatedData;
+      (req as Record<string, unknown>)[target] = validatedData;
       
       next();
     } catch (error) {
       if (error instanceof ZodError) {
         return res.status(400).json({
           error: 'Validation error',
-          details: error.issues.map((err: any) => ({
+          details: error.issues.map((err) => ({
             field: err.path.join('.'),
             message: err.message,
           })),
@@ -35,7 +35,7 @@ export function validateSchema<T extends ZodSchema>(
 }
 
 // Authentication middleware
-export function authenticateJWT(req: Request, res: Response, next: NextFunction) {
+export function authenticateJWT(req: Request, res: Response, next: NextFunction): void {
   const authHeader = req.headers.authorization;
   
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -48,14 +48,14 @@ export function authenticateJWT(req: Request, res: Response, next: NextFunction)
     
     (req as AuthenticatedRequest).user = payload;
     next();
-  } catch (err) {
+  } catch {
     return res.status(401).json({ error: 'Invalid or expired token.' });
   }
 }
 
 // Role-based access control middleware
 export function requireRole(allowedRoles: string[]) {
-  return (req: Request, res: Response, next: NextFunction) => {
+  return (req: Request, res: Response, next: NextFunction): void => {
     const authReq = req as AuthenticatedRequest;
     
     if (!authReq.user) {
@@ -77,7 +77,7 @@ export const requireFinance = requireRole(['ADMIN', 'FINANCE']);
 export const requireConstruction = requireRole(['ADMIN', 'CONSTRUCTION']);
 
 // Error handling middleware
-export function errorHandler(err: Error, req: Request, res: Response, next: NextFunction) {
+export function errorHandler(err: Error, _req: Request, res: Response, next: NextFunction): void {
   console.error('Error:', err);
   
   // Handle Prisma errors
@@ -99,12 +99,13 @@ export function errorHandler(err: Error, req: Request, res: Response, next: Next
   }
   
   // Default error response
-  return res.status(500).json({ error: 'Internal server error' });
+  res.status(500).json({ error: 'Internal server error' });
+  next(); // Required for Express error handler signature
 }
 
 // Async error wrapper
-export function asyncHandler(fn: Function) {
-  return (req: Request, res: Response, next: NextFunction) => {
+export function asyncHandler(fn: (req: Request, res: Response, next: NextFunction) => Promise<void>) {
+  return (req: Request, res: Response, next: NextFunction): void => {
     Promise.resolve(fn(req, res, next)).catch(next);
   };
 }
@@ -113,7 +114,7 @@ export function asyncHandler(fn: Function) {
 const requestCounts: { [key: string]: { count: number; resetTime: number } } = {};
 
 export function rateLimit(windowMs: number = 15 * 60 * 1000, max: number = 100) {
-  return (req: Request, res: Response, next: NextFunction) => {
+  return (req: Request, res: Response, next: NextFunction): void => {
     const clientId = req.ip || 'unknown';
     const now = Date.now();
     

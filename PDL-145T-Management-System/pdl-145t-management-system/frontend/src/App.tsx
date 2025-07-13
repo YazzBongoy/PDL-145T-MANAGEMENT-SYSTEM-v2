@@ -94,12 +94,12 @@ function App(): React.ReactElement {
         <section className="health-check">
           <h2>Backend Health Status</h2>
           {loading && <p>Loading health status...</p>}
-        {error && (
-          <div className="error" role="alert" aria-live="polite">
-            <p>Error: {error}</p>
-            <button onClick={refreshHealth} className="btn btn--primary">Retry</button>
-          </div>
-        )}
+          {error && (
+            <div className="error" role="alert" aria-live="polite">
+              <p>Error: {error}</p>
+              <button onClick={refreshHealth} className="btn btn--primary">Retry</button>
+            </div>
+          )}
           {healthStatus && (
             <div className="health-status" aria-live="polite">
               <div className={`status-indicator ${healthStatus.status.toLowerCase()}`}>

@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { Request } from 'express';
 import { ParamsDictionary } from 'express-serve-static-core';
 
 // User payload from JWT token
@@ -12,15 +12,15 @@ export interface JWTPayload {
 // Extend Express Request to include user
 export interface AuthenticatedRequest<
   P = ParamsDictionary,
-  ResBody = any,
-  ReqBody = any,
-  ReqQuery = any
+  ResBody = unknown,
+  ReqBody = unknown,
+  ReqQuery = unknown
 > extends Request<P, ResBody, ReqBody, ReqQuery> {
   user: JWTPayload;
 }
 
 // Common response types
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T = unknown> {
   data?: T;
   message?: string;
   error?: string;
