@@ -1,0 +1,238 @@
+/* Dashboard Layout Styles - Inspired by medusmo */
+
+.dashboard-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.dashboard-header {
+  text-align: center;
+  margin-bottom: var(--space-4);
+  padding: var(--space-4);
+}
+
+.dashboard-header h2 {
+  margin: 0;
+  font-size: var(--font-size-6);
+  font-weight: var(--font-weight-extrabold);
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Dashboard Grid - Responsive Layout */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-4);
+  width: 100%;
+}
+
+.dashboard-card {
+  background-color: var(--color-bg-surface);
+  border-radius: var(--radius-md);
+  padding: var(--space-5);
+  box-shadow: var(--shadow-lg);
+  border: none;
+  width: 100%;
+  box-sizing: border-box;
+  text-align: center;
+}
+
+.dashboard-card:hover {
+  box-shadow: var(--shadow-xl);
+  transform: translateY(-2px);
+  transition: box-shadow var(--transition-fast), transform var(--transition-fast);
+}
+
+.dashboard-actions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--space-4);
+  margin-top: var(--space-5);
+  padding: var(--space-3);
+  background: var(--color-bg-secondary);
+  border-radius: var(--radius-base);
+}
+
+/* Responsive breakpoints */
+
+/* Large screens (≥ 1024px) - Two columns */
+@media (min-width: 1024px) {
+  .dashboard-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-5);
+  }
+  
+  .dashboard-container {
+    padding: var(--space-5) var(--space-6);
+  }
+  
+  .dashboard-card {
+    padding: var(--space-6);
+  }
+}
+
+/* Medium screens (769px - 1023px) - Two columns with reduced spacing */
+@media (min-width: 769px) and (max-width: 1023px) {
+  .dashboard-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-4);
+  }
+  
+  .dashboard-container {
+    padding: var(--space-4) var(--space-5);
+  }
+  
+  .dashboard-card {
+    padding: var(--space-4);
+  }
+}
+
+/* Small screens (≤ 768px) - Single column */
+@media (max-width: 768px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-3);
+  }
+  
+  .dashboard-container {
+    padding: var(--space-3) var(--space-4);
+    gap: var(--space-4);
+  }
+  
+  .dashboard-card {
+    width: 100%;
+    padding: var(--space-4);
+    margin: 0;
+  }
+  
+  .dashboard-header {
+    padding: var(--space-3);
+  }
+  
+  .dashboard-header h2 {
+    font-size: var(--font-size-5);
+  }
+  
+  /* Stack buttons vertically on very small screens */
+  .dashboard-actions {
+    flex-direction: column;
+    gap: var(--space-2);
+    margin-top: var(--space-4);
+  }
+  
+  .dashboard-actions .btn {
+    width: 100%;
+    max-width: 280px;
+  }
+}
+
+/* Extra small screens (≤ 480px) - Further reduced padding */
+@media (max-width: 480px) {
+  .dashboard-container {
+    padding: var(--space-2) var(--space-3);
+  }
+  
+  .dashboard-card {
+    padding: var(--space-3);
+  }
+  
+  .dashboard-grid {
+    gap: var(--space-2);
+  }
+  
+  .dashboard-header h2 {
+    font-size: var(--font-size-4);
+  }
+}
+
+/* Dark theme support */
+@media (prefers-color-scheme: dark) {
+  .dashboard-card {
+    border-color: var(--color-gray-700);
+  }
+}
+
+[data-theme="dark"] .dashboard-card {
+  border-color: var(--color-gray-700);
+}
+
+/* Accessibility improvements */
+.dashboard-card:focus-within {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Animation for smooth transitions */
+@media (prefers-reduced-motion: no-preference) {
+  .dashboard-grid {
+    transition: grid-template-columns var(--transition-base);
+  }
+  
+  .dashboard-card {
+    transition: all var(--transition-base);
+  }
+}
+
+/* Ensure content doesn't overflow */
+.dashboard-card * {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Special handling for nested components */
+.dashboard-card > * {
+  margin-bottom: var(--space-3);
+}
+
+.dashboard-card > *:last-child {
+  margin-bottom: 0;
+}
+
+/* Card content styling */
+.dashboard-card h3 {
+  font-size: var(--font-size-5);
+  font-weight: var(--font-weight-bold);
+  margin-bottom: var(--space-3);
+  color: var(--color-text-primary);
+}
+
+.dashboard-card p {
+  font-size: var(--font-size-3);
+  color: var(--color-text-secondary);
+  line-height: var(--line-height-relaxed);
+  margin-bottom: var(--space-3);
+}
+
+/* Card icons or status indicators */
+.dashboard-card .status-badge {
+  display: inline-block;
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-2);
+  font-weight: var(--font-weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: var(--space-2);
+}
+
+.dashboard-card .status-badge--success {
+  background-color: var(--color-success-bg);
+  color: var(--color-success);
+}
+
+.dashboard-card .status-badge--warning {
+  background-color: var(--color-warning-bg);
+  color: var(--color-warning);
+}
+
+.dashboard-card .status-badge--info {
+  background-color: var(--color-info-bg);
+  color: var(--color-info);
+}

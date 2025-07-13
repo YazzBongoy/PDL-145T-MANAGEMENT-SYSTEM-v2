@@ -1,6 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { UserRole } from '../../types';
 import type { Expense, ExpenseForm, User } from '../../types';
+import { Card } from '../ui/Card';
+import { CardHeader } from '../ui/CardHeader';
+import '../ui/List.css';
 
 interface ExpenseListProps {
   taskId: number;
@@ -91,16 +94,22 @@ export function ExpenseList({ taskId, user, token }: ExpenseListProps): React.Re
   const canEdit = user.role === UserRole.ADMIN || user.role === UserRole.SUPERVISOR;
 
   return (
-    <div style={{ marginLeft: 20 }}>
-      <h5>Expenses</h5>
+    <Card variant="outlined" className="deeply-nested-card">
+      <CardHeader 
+        title="Expenses" 
+        level="h5"
+        actions={
+          <button 
+            onClick={() => { setShowForm(true); setEditId(null); }} 
+            disabled={!canEdit}
+            className="btn btn--primary"
+          >
+            + New Expense
+          </button>
+        }
+      />
       {loading && <p>Loading...</p>}
       {error && <p className="error">{error}</p>}
-      <button 
-        onClick={() => { setShowForm(true); setEditId(null); }} 
-        disabled={!canEdit}
-      >
-        + New Expense
-      </button>
       {showForm && (
         <form onSubmit={handleSubmit} className="expense-form">
           <input 
@@ -108,6 +117,7 @@ export function ExpenseList({ taskId, user, token }: ExpenseListProps): React.Re
             placeholder="Description" 
             value={form.Description} 
             onChange={handleChange} 
+            className="input"
           />
           <input 
             name="Cost" 
@@ -116,6 +126,7 @@ export function ExpenseList({ taskId, user, token }: ExpenseListProps): React.Re
             value={form.Cost} 
             onChange={handleChange} 
             required 
+            className="input"
           />
           <input 
             name="Date" 
@@ -124,26 +135,27 @@ export function ExpenseList({ taskId, user, token }: ExpenseListProps): React.Re
             value={form.Date} 
             onChange={handleChange} 
             required 
+            className="input"
           />
-          <button type="submit">{editId ? 'Update' : 'Create'}</button>
-          <button type="button" onClick={() => { setShowForm(false); setEditId(null); }}>
+          <button type="submit" className="btn btn--primary">{editId ? 'Update' : 'Create'}</button>
+          <button type="button" onClick={() => { setShowForm(false); setEditId(null); }} className="btn btn--secondary">
             Cancel
           </button>
         </form>
       )}
-      <ul>
-        {expenses.map((e) => (
-          <li key={e.ExpenseID}>
+      <div className="list">
+        {expenses.map((e, index) => (
+          <div key={e.ExpenseID} className={`list__item ${index % 2 === 0 ? "zebra-row" : ""}`}>
             <b>{e.Description || 'Expense'}</b> - {e.Cost} on {e.Date?.slice(0, 10)}
             {canEdit && (
               <>
-                <button onClick={() => handleEdit(e)}>Edit</button>
-                <button onClick={() => handleDelete(e.ExpenseID)}>Delete</button>
+                <button onClick={() => handleEdit(e)} className="btn btn--secondary">Edit</button>
+                <button onClick={() => handleDelete(e.ExpenseID)} className="btn btn--danger">Delete</button>
               </>
             )}
-          </li>
+          </div>
         ))}
-      </ul>
-    </div>
+      </div>
+    </Card>
   );
 }

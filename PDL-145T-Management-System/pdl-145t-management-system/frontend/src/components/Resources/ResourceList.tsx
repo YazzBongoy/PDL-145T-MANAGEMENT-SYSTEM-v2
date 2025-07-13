@@ -1,6 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { UserRole } from '../../types';
 import type { Resource, ResourceForm, User } from '../../types';
+import { Card } from '../ui/Card';
+import { CardHeader } from '../ui/CardHeader';
+import '../ui/List.css';
 
 interface ResourceListProps {
   user: User;
@@ -86,52 +89,66 @@ export function ResourceList({ user, token }: ResourceListProps): React.ReactEle
   const canEdit = user.role === UserRole.ADMIN || user.role === UserRole.SUPERVISOR;
 
   return (
-    <div>
-      <h3>Resources</h3>
+    <Card variant="outlined">
+      <CardHeader 
+        title="Resources" 
+        actions={
+          <button 
+            onClick={() => { setShowForm(true); setEditId(null); }} 
+            disabled={!canEdit}
+            className="btn btn--primary"
+            aria-expanded={showForm}
+            aria-label="Add new resource"
+            aria-controls="resource-form"
+          >
+            + New Resource
+          </button>
+        }
+      />
       {loading && <p>Loading...</p>}
-      {error && <p className="error">{error}</p>}
-      <button 
-        onClick={() => { setShowForm(true); setEditId(null); }} 
-        disabled={!canEdit}
-      >
-        + New Resource
-      </button>
+      {error && <p className="error" role="alert" aria-live="polite">{error}</p>}
       {showForm && (
-        <form onSubmit={handleSubmit} className="resource-form">
+        <form onSubmit={handleSubmit} className="resource-form" id="resource-form" aria-labelledby="resource-form-title">
+          <label htmlFor="resource-type">Resource Type</label>
           <input 
+            id="resource-type"
             name="Type" 
             placeholder="Type" 
             value={form.Type} 
             onChange={handleChange} 
             required 
+            className="input"
           />
+          <label htmlFor="resource-quantity">Quantity</label>
           <input 
+            id="resource-quantity"
             name="Quantity" 
             type="number" 
             placeholder="Quantity" 
             value={form.Quantity} 
             onChange={handleChange} 
             required 
+            className="input"
           />
-          <button type="submit">{editId ? 'Update' : 'Create'}</button>
-          <button type="button" onClick={() => { setShowForm(false); setEditId(null); }}>
+          <button type="submit" className="btn btn--primary">{editId ? 'Update' : 'Create'}</button>
+          <button type="button" onClick={() => { setShowForm(false); setEditId(null); }} className="btn btn--secondary">
             Cancel
           </button>
         </form>
       )}
-      <ul>
-        {resources.map((r) => (
-          <li key={r.ResourceID}>
+      <div className="list">
+        {resources.map((r, index) => (
+          <div key={r.ResourceID} className={`list__item ${index % 2 === 0 ? "zebra-row" : ""}`}>
             <b>{r.Type}</b> (Qty: {r.Quantity})
             {canEdit && (
               <>
-                <button onClick={() => handleEdit(r)}>Edit</button>
-                <button onClick={() => handleDelete(r.ResourceID)}>Delete</button>
+                <button onClick={() => handleEdit(r)} className="btn btn--secondary">Edit</button>
+                <button onClick={() => handleDelete(r.ResourceID)} className="btn btn--danger">Delete</button>
               </>
             )}
-          </li>
+          </div>
         ))}
-      </ul>
-    </div>
+      </div>
+    </Card>
   );
 }

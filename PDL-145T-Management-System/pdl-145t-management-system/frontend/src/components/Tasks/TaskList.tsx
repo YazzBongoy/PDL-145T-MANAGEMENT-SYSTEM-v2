@@ -2,6 +2,9 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { TaskStatus, UserRole } from '../../types';
 import type { Task, TaskForm, User } from '../../types';
 import { ExpenseList } from '../Expenses/ExpenseList';
+import { Card } from '../ui/Card';
+import { CardHeader } from '../ui/CardHeader';
+import '../ui/List.css';
 
 interface TaskListProps {
   projectId: number;
@@ -98,67 +101,88 @@ export function TaskList({ projectId, user, token }: TaskListProps): React.React
   const canEdit = user.role === UserRole.ADMIN || user.role === UserRole.SUPERVISOR;
 
   return (
-    <div style={{ marginLeft: 20 }}>
-      <h4>Tasks</h4>
+    <Card variant="outlined" className="nested-card">
+      <CardHeader 
+        title="Tasks" 
+        level="h4"
+        actions={
+          <button 
+            onClick={() => { setShowForm(true); setEditId(null); }} 
+            disabled={!canEdit}
+            className="btn btn--primary"
+            aria-expanded={showForm}
+            aria-label="Add new task"
+            aria-controls="task-form"
+          >
+            + New Task
+          </button>
+        }
+      />
       {loading && <p>Loading...</p>}
-      {error && <p className="error">{error}</p>}
-      <button 
-        onClick={() => { setShowForm(true); setEditId(null); }} 
-        disabled={!canEdit}
-      >
-        + New Task
-      </button>
+      {error && <p className="error" role="alert" aria-live="polite">{error}</p>}
       {showForm && (
-        <form onSubmit={handleSubmit} className="task-form">
+        <form onSubmit={handleSubmit} className="task-form" id="task-form" aria-labelledby="task-form-title">
+          <label htmlFor="task-description">Description</label>
           <input 
+            id="task-description"
             name="Description" 
             placeholder="Description" 
             value={form.Description} 
             onChange={handleChange} 
             required 
+            className="input"
           />
+          <label htmlFor="task-duration">Duration (days)</label>
           <input 
+            id="task-duration"
             name="Duration" 
             type="number" 
             placeholder="Duration (days)" 
             value={form.Duration} 
             onChange={handleChange} 
+            className="input"
           />
+          <label htmlFor="task-assigned-to">Assigned To</label>
           <input 
+            id="task-assigned-to"
             name="AssignedTo" 
             placeholder="Assigned To" 
             value={form.AssignedTo} 
             onChange={handleChange} 
+            className="input"
           />
+          <label htmlFor="task-status">Completion Status</label>
           <select 
+            id="task-status"
             name="CompletionStatus" 
             value={form.CompletionStatus} 
             onChange={handleChange}
+            className="select"
           >
             <option value={TaskStatus.NOT_STARTED}>Not Started</option>
             <option value={TaskStatus.IN_PROGRESS}>In Progress</option>
             <option value={TaskStatus.COMPLETED}>Completed</option>
           </select>
-          <button type="submit">{editId ? 'Update' : 'Create'}</button>
-          <button type="button" onClick={() => { setShowForm(false); setEditId(null); }}>
+          <button type="submit" className="btn btn--primary">{editId ? 'Update' : 'Create'}</button>
+          <button type="button" onClick={() => { setShowForm(false); setEditId(null); }} className="btn btn--secondary">
             Cancel
           </button>
         </form>
       )}
-      <ul>
-        {tasks.map((t) => (
-          <li key={t.TaskID}>
+      <div className="list">
+        {tasks.map((t, index) => (
+          <div key={t.TaskID} className={`list__item ${index % 2 === 0 ? "zebra-row" : ""}`}>
             <b>{t.Description}</b> (Status: {t.CompletionStatus}) Assigned: {t.AssignedTo || 'Unassigned'}
             {canEdit && (
               <>
-                <button onClick={() => handleEdit(t)}>Edit</button>
-                <button onClick={() => handleDelete(t.TaskID)}>Delete</button>
+                <button onClick={() => handleEdit(t)} className="btn btn--secondary">Edit</button>
+                <button onClick={() => handleDelete(t.TaskID)} className="btn btn--danger">Delete</button>
               </>
             )}
             <ExpenseList taskId={t.TaskID} user={user} token={token} />
-          </li>
+          </div>
         ))}
-      </ul>
-    </div>
+      </div>
+    </Card>
   );
 }

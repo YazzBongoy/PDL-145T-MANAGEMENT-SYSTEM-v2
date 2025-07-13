@@ -65,3 +65,191 @@
   margin-top: var(--space-3);
 }
 
+/* Button Components */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-3) var(--space-5);
+  border: none;
+  border-radius: var(--radius-lg);
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  font-family: inherit;
+  font-size: var(--font-size-3);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-tight);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  text-decoration: none;
+  min-height: 48px;
+  box-shadow: var(--shadow-sm);
+}
+
+.btn:hover {
+  background-color: var(--color-gray-50);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.btn:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 3px rgba(74, 85, 104, 0.3);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn:disabled:hover {
+  background-color: var(--color-bg-primary);
+  border-color: var(--color-gray-300);
+}
+
+.btn--primary {
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+  color: var(--color-white);
+  border: none;
+}
+
+.btn--primary:hover {
+  background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 100%);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-lg);
+}
+
+.btn--primary:disabled:hover {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.btn--secondary {
+  background: linear-gradient(135deg, var(--color-gray-600) 0%, var(--color-gray-700) 100%);
+  color: var(--color-white);
+  border: none;
+}
+
+.btn--secondary:hover {
+  background: linear-gradient(135deg, var(--color-gray-700) 0%, var(--color-gray-800) 100%);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-lg);
+}
+
+.btn--secondary:disabled:hover {
+  background-color: var(--color-gray-600);
+  border-color: var(--color-gray-600);
+}
+
+.btn--danger {
+  background-color: var(--color-error);
+  color: var(--color-white);
+  border-color: var(--color-error);
+}
+
+.btn--danger:hover {
+  background-color: var(--color-error-dark);
+  border-color: var(--color-error-dark);
+}
+
+.btn--danger:disabled:hover {
+  background-color: var(--color-error);
+  border-color: var(--color-error);
+}
+
+/* Responsive button utilities */
+.btn--mobile-full {
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .btn--mobile-full {
+    width: 100%;
+    max-width: 100%;
+  }
+}
+
+/* Button group for responsive stacking */
+.btn-group {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.btn-group--vertical {
+  flex-direction: column;
+}
+
+@media (max-width: 768px) {
+  .btn-group {
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+  
+  .btn-group .btn {
+    width: 100%;
+  }
+}
+
+/* Input Components */
+.input {
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-gray-300);
+  border-radius: var(--radius-base);
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  font-family: inherit;
+  font-size: var(--font-size-3);
+  line-height: var(--line-height-normal);
+  transition: var(--transition-colors);
+  min-height: 40px;
+  box-sizing: border-box;
+}
+
+.input:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(74, 85, 104, 0.3);
+}
+
+.input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-color: var(--color-gray-100);
+}
+
+.input::placeholder {
+  color: var(--color-text-muted);
+}
+
+.select {
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-gray-300);
+  border-radius: var(--radius-base);
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  font-family: inherit;
+  font-size: var(--font-size-3);
+  line-height: var(--line-height-normal);
+  cursor: pointer;
+  transition: var(--transition-colors);
+  min-height: 40px;
+  box-sizing: border-box;
+}
+
+.select:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(74, 85, 104, 0.3);
+}
+
+.select:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-color: var(--color-gray-100);
+}
+

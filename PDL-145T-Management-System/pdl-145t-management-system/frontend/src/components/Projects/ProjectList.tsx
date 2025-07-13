@@ -2,6 +2,9 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { UserRole } from '../../types';
 import type { Project, ProjectForm, User } from '../../types';
 import { TaskList } from '../Tasks/TaskList';
+import { Card } from '../ui/Card';
+import { CardHeader } from '../ui/CardHeader';
+import '../ui/List.css';
 
 interface ProjectListProps {
   user: User;
@@ -97,68 +100,88 @@ export function ProjectList({ user, token }: ProjectListProps): React.ReactEleme
   const canEdit = user.role === UserRole.ADMIN || user.role === UserRole.SUPERVISOR;
 
   return (
-    <div>
-      <h3>Projects</h3>
+    <Card variant="outlined">
+      <CardHeader 
+        title="Projects" 
+        actions={
+          <button 
+            onClick={() => { setShowForm(true); setEditId(null); }} 
+            disabled={!canEdit}
+            className="btn btn--primary"
+            aria-expanded={showForm}
+            aria-label="Add new project"
+            aria-controls="project-form"
+          >
+            + New Project
+          </button>
+        }
+      />
       {loading && <p>Loading...</p>}
-      {error && <p className="error">{error}</p>}
-      <button 
-        onClick={() => { setShowForm(true); setEditId(null); }} 
-        disabled={!canEdit}
-      >
-        + New Project
-      </button>
+      {error && <p className="error" role="alert" aria-live="polite">{error}</p>}
       {showForm && (
-        <form onSubmit={handleSubmit} className="project-form">
+        <form onSubmit={handleSubmit} className="project-form" id="project-form" aria-labelledby="project-form-title">
+          <label htmlFor="project-name">Project Name</label>
           <input 
+            id="project-name"
             name="Name" 
             placeholder="Name" 
             value={form.Name} 
             onChange={handleChange} 
             required 
+            className="input"
           />
+          <label htmlFor="project-start-date">Start Date</label>
           <input 
+            id="project-start-date"
             name="StartDate" 
             type="date" 
             placeholder="Start Date" 
             value={form.StartDate} 
             onChange={handleChange} 
             required 
+            className="input"
           />
+          <label htmlFor="project-end-date">End Date</label>
           <input 
+            id="project-end-date"
             name="EndDate" 
             type="date" 
             placeholder="End Date" 
             value={form.EndDate} 
             onChange={handleChange} 
+            className="input"
           />
+          <label htmlFor="project-budget">Total Budget</label>
           <input 
+            id="project-budget"
             name="TotalBudget" 
             type="number" 
             placeholder="Total Budget" 
             value={form.TotalBudget} 
             onChange={handleChange} 
             required 
+            className="input"
           />
-          <button type="submit">{editId ? 'Update' : 'Create'}</button>
-          <button type="button" onClick={() => { setShowForm(false); setEditId(null); }}>
+          <button type="submit" className="btn btn--primary">{editId ? 'Update' : 'Create'}</button>
+          <button type="button" onClick={() => { setShowForm(false); setEditId(null); }} className="btn btn--secondary">
             Cancel
           </button>
         </form>
       )}
-      <ul>
-        {projects.map((p) => (
-          <li key={p.ProjectID}>
+      <div className="list">
+        {projects.map((p, index) => (
+          <div key={p.ProjectID} className={`list__item ${index % 2 === 0 ? "zebra-row" : ""}`}>
             <b>{p.Name}</b> (Start: {p.StartDate?.slice(0, 10)}) Budget: {p.TotalBudget}
             {canEdit && (
               <>
-                <button onClick={() => handleEdit(p)}>Edit</button>
-                <button onClick={() => handleDelete(p.ProjectID)}>Delete</button>
+                <button onClick={() => handleEdit(p)} className="btn btn--secondary">Edit</button>
+                <button onClick={() => handleDelete(p.ProjectID)} className="btn btn--danger">Delete</button>
               </>
             )}
             <TaskList projectId={p.ProjectID} user={user} token={token} />
-          </li>
+          </div>
         ))}
-      </ul>
-    </div>
+      </div>
+    </Card>
   );
 }

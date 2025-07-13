@@ -12,7 +12,9 @@ exports[`AdminDashboard > matches snapshot 1`] = `
     <p>
       Loading...
     </p>
-    <button>
+    <button
+      class="btn btn--primary"
+    >
       + New Project
     </button>
     <ul />
@@ -24,12 +26,16 @@ exports[`AdminDashboard > matches snapshot 1`] = `
     <p>
       Loading...
     </p>
-    <button>
+    <button
+      class="btn btn--primary"
+    >
       + New Resource
     </button>
     <ul />
   </div>
-  <button>
+  <button
+    class="btn btn--secondary"
+  >
     Logout
   </button>
 </div>
@@ -45,7 +51,9 @@ exports[`ConstructionDashboard > matches snapshot 1`] = `
     Construction User
     !
   </p>
-  <button>
+  <button
+    class="btn btn--secondary"
+  >
     Logout
   </button>
 </div>
@@ -61,7 +69,9 @@ exports[`DashboardSwitcher > matches snapshot 1`] = `
     Test User
     !
   </p>
-  <button>
+  <button
+    class="btn btn--secondary"
+  >
     Logout
   </button>
 </div>
@@ -77,7 +87,9 @@ exports[`FinanceDashboard > matches snapshot 1`] = `
     Finance User
     !
   </p>
-  <button>
+  <button
+    class="btn btn--secondary"
+  >
     Logout
   </button>
 </div>
@@ -95,7 +107,9 @@ exports[`SupervisorDashboard > matches snapshot 1`] = `
     <p>
       Loading...
     </p>
-    <button>
+    <button
+      class="btn btn--primary"
+    >
       + New Project
     </button>
     <ul />
@@ -107,12 +121,16 @@ exports[`SupervisorDashboard > matches snapshot 1`] = `
     <p>
       Loading...
     </p>
-    <button>
+    <button
+      class="btn btn--primary"
+    >
       + New Resource
     </button>
     <ul />
   </div>
-  <button>
+  <button
+    class="btn btn--secondary"
+  >
     Logout
   </button>
 </div>
@@ -128,7 +146,9 @@ exports[`UserDashboard > matches snapshot 1`] = `
     Test User
     !
   </p>
-  <button>
+  <button
+    class="btn btn--secondary"
+  >
     Logout
   </button>
 </div>

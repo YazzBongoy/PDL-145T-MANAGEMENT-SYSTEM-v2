@@ -1,62 +1,23 @@
+/* App-specific styles - minimal as design system handles most patterns */
+
 /* App container */
 .app {
   max-width: var(--container-xl);
   margin: 0 auto;
-  padding: var(--space-5);
+  padding: var(--space-6);
   font-family: var(--font-sans);
+  background-color: var(--color-bg);
+  min-height: 100vh;
 }
 
-/* App header */
-.app__header {
-  text-align: center;
-  margin-bottom: var(--space-6);
-  padding: var(--space-5);
-  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
-  color: var(--color-white);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-md);
-}
-
-.app__header-title {
-  margin: 0 0 var(--space-3) 0;
-  font-size: var(--font-size-5);
-  font-weight: var(--font-weight-bold);
-}
-
-.app__header-subtitle {
-  margin: 0;
-  font-size: var(--font-size-4);
-  opacity: 0.9;
-}
-
+/* App main content */
 .app__main {
   display: flex;
   flex-direction: column;
-  gap: var(--space-5);
+  gap: var(--space-6);
 }
 
-/* Health check section */
-.health-check {
-  background: var(--color-bg-secondary);
-  border-radius: var(--radius-md);
-  padding: var(--space-5);
-  box-shadow: var(--shadow-sm);
-}
-
-.health-check__title {
-  margin: 0 0 var(--space-4) 0;
-  color: var(--color-text-primary);
-  font-size: var(--font-size-5);
-  font-weight: var(--font-weight-semibold);
-}
-
-.health-check__status {
-  text-align: left;
-  max-width: 400px;
-  margin: 0 auto;
-}
-
-/* Status indicator component */
+/* Status indicator component - app-specific component */
 .status-indicator {
   padding: var(--space-3);
   border-radius: var(--radius-base);
@@ -66,12 +27,7 @@
   text-align: center;
 }
 
-.status-indicator--healthy {
-  background-color: var(--color-success-bg);
-  color: var(--color-success);
-  border: 1px solid var(--color-success-border);
-}
-
+.status-indicator--healthy,
 .status-indicator--ok {
   background-color: var(--color-success-bg);
   color: var(--color-success);
@@ -84,57 +40,9 @@
   border: 1px solid var(--color-error-border);
 }
 
-.health-check__status-text {
-  margin: var(--space-2) 0;
-  color: var(--color-text-secondary);
-}
-
-/* Error component */
-.error {
-  background-color: var(--color-error-bg);
-  color: var(--color-error);
-  padding: var(--space-3);
-  border-radius: var(--radius-base);
-  border: 1px solid var(--color-error-border);
-  text-align: center;
-}
-
-.error__message {
-  margin: 0 0 var(--space-3) 0;
-}
-
-/* Primary button component */
-.button--primary {
-  background-color: var(--color-button-primary);
-  color: var(--color-white);
-  border: none;
-  padding: var(--space-2) var(--space-4);
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-  font-size: var(--font-size-3);
-  font-weight: var(--font-weight-medium);
-  transition: var(--transition-base);
-}
-
-.button--primary:hover {
-  background-color: var(--color-button-primary-hover);
-}
-
-.button--primary:active {
-  background-color: var(--color-button-primary-active);
-}
-
 /* Responsive design */
 @media (max-width: 768px) {
   .app {
-    padding: var(--space-base);
-  }
-
-  .app__header-title {
-    font-size: var(--font-size-3xl);
-  }
-
-  .app__header-subtitle {
-    font-size: var(--font-size-base);
+    padding: var(--space-4);
   }
 }

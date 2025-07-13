@@ -3,6 +3,7 @@ import { UserRole } from '../../types';
 import type { User } from '../../types';
 import { ProjectList } from '../Projects/ProjectList';
 import { ResourceList } from '../Resources/ResourceList';
+import './Dashboard.css';
 
 interface DashboardProps {
   user: User;
@@ -12,22 +13,42 @@ interface DashboardProps {
 
 export function AdminDashboard({ user, onLogout, token }: DashboardProps): React.ReactElement {
   return (
-    <div>
-      <h2>Admin Dashboard</h2>
-      <ProjectList user={user} token={token} />
-      <ResourceList user={user} token={token} />
-      <button onClick={onLogout}>Logout</button>
+    <div className="dashboard-container">
+      <div className="dashboard-header">
+        <h2>Admin Dashboard</h2>
+      </div>
+      <div className="dashboard-grid">
+        <div className="dashboard-card">
+          <ProjectList user={user} token={token} />
+        </div>
+        <div className="dashboard-card">
+          <ResourceList user={user} token={token} />
+        </div>
+      </div>
+      <div className="dashboard-actions">
+        <button onClick={onLogout} className="btn btn--secondary">Logout</button>
+      </div>
     </div>
   );
 }
 
 export function SupervisorDashboard({ user, onLogout, token }: DashboardProps): React.ReactElement {
   return (
-    <div>
-      <h2>Supervisor Dashboard</h2>
-      <ProjectList user={user} token={token} />
-      <ResourceList user={user} token={token} />
-      <button onClick={onLogout}>Logout</button>
+    <div className="dashboard-container">
+      <div className="dashboard-header">
+        <h2>Supervisor Dashboard</h2>
+      </div>
+      <div className="dashboard-grid">
+        <div className="dashboard-card">
+          <ProjectList user={user} token={token} />
+        </div>
+        <div className="dashboard-card">
+          <ResourceList user={user} token={token} />
+        </div>
+      </div>
+      <div className="dashboard-actions">
+        <button onClick={onLogout} className="btn btn--secondary">Logout</button>
+      </div>
     </div>
   );
 }
@@ -39,30 +60,54 @@ interface SimpleDashboardProps {
 
 export function FinanceDashboard({ user, onLogout }: SimpleDashboardProps): React.ReactElement {
   return (
-    <div>
-      <h2>Finance Dashboard</h2>
-      <p>Welcome, {user.name}!</p>
-      <button onClick={onLogout}>Logout</button>
+    <div className="dashboard-container">
+      <div className="dashboard-header">
+        <h2>Finance Dashboard</h2>
+      </div>
+      <div className="dashboard-grid">
+        <div className="dashboard-card">
+          <p>Welcome, {user.name}!</p>
+        </div>
+      </div>
+      <div className="dashboard-actions">
+        <button onClick={onLogout} className="btn btn--secondary">Logout</button>
+      </div>
     </div>
   );
 }
 
 export function ConstructionDashboard({ user, onLogout }: SimpleDashboardProps): React.ReactElement {
   return (
-    <div>
-      <h2>Construction Dashboard</h2>
-      <p>Welcome, {user.name}!</p>
-      <button onClick={onLogout}>Logout</button>
+    <div className="dashboard-container">
+      <div className="dashboard-header">
+        <h2>Construction Dashboard</h2>
+      </div>
+      <div className="dashboard-grid">
+        <div className="dashboard-card">
+          <p>Welcome, {user.name}!</p>
+        </div>
+      </div>
+      <div className="dashboard-actions">
+        <button onClick={onLogout} className="btn btn--secondary">Logout</button>
+      </div>
     </div>
   );
 }
 
 export function UserDashboard({ user, onLogout }: SimpleDashboardProps): React.ReactElement {
   return (
-    <div>
-      <h2>User Dashboard</h2>
-      <p>Welcome, {user.name}!</p>
-      <button onClick={onLogout}>Logout</button>
+    <div className="dashboard-container">
+      <div className="dashboard-header">
+        <h2>User Dashboard</h2>
+      </div>
+      <div className="dashboard-grid">
+        <div className="dashboard-card">
+          <p>Welcome, {user.name}!</p>
+        </div>
+      </div>
+      <div className="dashboard-actions">
+        <button onClick={onLogout} className="btn btn--secondary">Logout</button>
+      </div>
     </div>
   );
 }

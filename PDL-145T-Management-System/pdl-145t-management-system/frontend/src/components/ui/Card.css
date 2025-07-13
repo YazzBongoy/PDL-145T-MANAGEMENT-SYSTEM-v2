@@ -1,0 +1,74 @@
+/* Card component styles */
+.card {
+  background-color: var(--color-bg-primary);
+  border-radius: var(--radius-lg);
+  transition: var(--transition-base);
+}
+
+/* Zebra rows style */
+.zebra-row {
+  background-color: var(--color-bg-secondary);
+}
+
+/* Nested and deeply nested card styles */
+.nested-card {
+  margin: var(--space-4);
+  border-left: 4px solid var(--color-gray-200);
+}
+
+.deeply-nested-card {
+  margin: var(--space-4) var(--space-6);
+  border-left: 4px solid var(--color-gray-300);
+}
+
+/* Card variants */
+.card--default {
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--color-gray-200);
+}
+
+.card--outlined {
+  border: 1px solid var(--color-gray-300);
+  box-shadow: none;
+}
+
+.card--elevated {
+  box-shadow: var(--shadow-md);
+  border: none;
+}
+
+.card--elevated:hover {
+  box-shadow: var(--shadow-lg);
+}
+
+/* Padding variants */
+.card--padding-sm {
+  padding: var(--space-3);
+}
+
+.card--padding-md {
+  padding: var(--space-4);
+}
+
+.card--padding-lg {
+  padding: var(--space-5);
+}
+
+/* Dark theme support */
+@media (prefers-color-scheme: dark) {
+  .card--default {
+    border-color: var(--color-gray-700);
+  }
+  
+  .card--outlined {
+    border-color: var(--color-gray-600);
+  }
+}
+
+[data-theme="dark"] .card--default {
+  border-color: var(--color-gray-700);
+}
+
+[data-theme="dark"] .card--outlined {
+  border-color: var(--color-gray-600);
+}

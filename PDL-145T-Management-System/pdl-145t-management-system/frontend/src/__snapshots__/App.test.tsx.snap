@@ -27,23 +27,27 @@ exports[`App > matches snapshot 1`] = `
           Login
         </h2>
         <input
+          class="input"
           placeholder="Email"
           required=""
           type="email"
           value=""
         />
         <input
+          class="input"
           placeholder="Password"
           required=""
           type="password"
           value=""
         />
         <button
+          class="btn btn--primary"
           type="submit"
         >
           Login
         </button>
         <button
+          class="btn btn--secondary"
           type="button"
         >
           Register

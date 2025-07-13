@@ -112,7 +112,18 @@ frontend/
 │   ├── App.css          # Application styles
 │   ├── index.css        # Global styles
 │   ├── vite-env.d.ts    # Vite type definitions
-│   └── assets/          # Static assets
+│   ├── assets/          # Static assets
+│   ├── components/      # Organized UI components
+│   │   ├── ui/          # Reusable UI components (Card, Badge, etc.)
+│   │   ├── Dashboard/   # Dashboard related components
+│   │   ├── Auth/        # Authentication components
+│   │   ├── Projects/    # Project management components
+│   │   ├── Resources/   # Resource components
+│   │   └── Tasks/       # Task management components
+│   ├── hooks/           # Custom React hooks
+│   ├── styles/          # Design system and utility styles
+│   ├── test/            # Testing utilities
+│   └── types/           # TypeScript type definitions
 └── dist/                # Built static files for production
 ```
 
@@ -123,6 +134,13 @@ frontend/
 - User experience and accessibility
 - Client-side routing and navigation
 
+**Enhanced Features:**
+- Comprehensive component organization with feature-based folders
+- Cypress for E2E testing and Vitest for unit testing
+- ESLint and Prettier configurations for code quality
+- Design system implementation with `theme.css` and utility styles
+- Responsive and accessible design principles
+
 **Boundaries:**
 - ✅ UI components and styling
 - ✅ Client-side state management
@@ -130,14 +148,90 @@ frontend/
 - ❌ Database operations (backend concern)
 - ❌ Server configuration (infrastructure concern)
 
+#### **Enhanced Development Features**
+
+**Testing Infrastructure:**
+```
+cypress/
+├── e2e/
+│   ├── auth.cy.ts       # Authentication E2E tests
+│   ├── health.cy.ts     # Health check E2E tests
+│   └── projects.cy.ts   # Project management E2E tests
+├── fixtures/
+│   ├── projects.json    # Test data for projects
+│   └── users.json       # Test data for users
+├── support/
+│   ├── commands.ts      # Custom Cypress commands
+│   └── e2e.ts          # E2E test configuration
+├── cypress.config.ts    # Cypress configuration
+└── tsconfig.json       # TypeScript config for Cypress
+```
+
+**Development Tools:**
+- **Vitest:** Unit testing with coverage reporting and UI
+- **Cypress:** End-to-end testing with real browser automation
+- **ESLint:** Code linting with React-specific rules
+- **Prettier:** Consistent code formatting
+- **TypeScript:** Static type checking with strict configuration
+
+**Multi-Environment Docker Configuration:**
+```
+Dockerfile           # Production Nginx-based container
+Dockerfile.dev       # Development container with hot reload
+Dockerfile.vite      # Vite-optimized development container
+```
+
+**Enhanced NPM Scripts:**
+```json
+{
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "vitest",
+    "test:watch": "vitest --watch",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest --coverage",
+    "test:run": "vitest run",
+    "cypress:open": "cypress open",
+    "cypress:run": "cypress run",
+    "preview": "vite preview"
+  }
+}
+```
+
+**Design System Files:**
+```
+src/
+├── theme.css           # CSS variables (colors, spacing, typography)
+├── styles/
+│   └── utilities.css   # Utility classes and responsive helpers
+├── components/ui/
+│   ├── Card.tsx        # Reusable card component
+│   ├── Badge.tsx       # Status and category badges
+│   ├── Container.tsx   # Layout container component
+│   ├── SectionHeader.tsx # Consistent section headers
+│   └── index.ts        # UI component exports
+└── STYLE_GUIDE.md      # Design system documentation
+```
+
 ### 📁 `/infrastructure/` - DevOps & Deployment
 **Purpose:** Container orchestration, database setup, environment configuration
 
 ```
 infrastructure/
-├── docker-compose.yml    # Multi-service orchestration
-├── .env                  # Infrastructure environment variables
-├── .env.example         # Environment template
+├── docker-compose.yml       # Multi-service orchestration
+├── docker-compose.dev.yml   # Development environment
+├── docker-compose.prod.yml  # Production environment
+├── .env                     # Infrastructure environment variables
+├── .env.example            # Environment template
+├── .env.dev                # Development environment variables
+├── .env.prod               # Production environment variables
+├── nginx/
+│   └── nginx.conf          # Nginx configuration for production
 └── sql/
     └── 01-init-postgis.sql # Database initialization script
 ```

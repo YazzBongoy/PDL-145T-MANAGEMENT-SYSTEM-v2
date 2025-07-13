@@ -18,21 +18,6 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Link styles */
-.link {
-  font-weight: var(--font-weight-medium);
-  color: var(--color-secondary);
-  text-decoration: inherit;
-}
-
-.link:hover {
-  color: var(--color-secondary-hover);
-}
-
-.link--light {
-  color: var(--color-secondary-light);
-}
-
 /* Body styles */
 body {
   margin: 0;
@@ -40,47 +25,4 @@ body {
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
-}
-
-/* Typography */
-.heading {
-  font-size: var(--font-size-6);
-  line-height: var(--line-height-tight);
-  font-weight: var(--font-weight-bold);
-  color: var(--color-text-primary);
-}
-
-.heading--large {
-  font-size: var(--font-size-6);
-}
-
-.heading--medium {
-  font-size: var(--font-size-5);
-}
-
-.heading--small {
-  font-size: var(--font-size-4);
-}
-
-/* Button base styles */
-.button {
-  border-radius: var(--radius-md);
-  border: 1px solid transparent;
-  padding: var(--space-2) var(--space-4);
-  font-size: var(--font-size-3);
-  font-weight: var(--font-weight-medium);
-  font-family: inherit;
-  background-color: var(--color-bg-secondary);
-  color: var(--color-text-primary);
-  cursor: pointer;
-  transition: var(--transition-colors);
-}
-
-.button:hover {
-  border-color: var(--color-secondary);
-}
-
-.button:focus,
-.button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
 }

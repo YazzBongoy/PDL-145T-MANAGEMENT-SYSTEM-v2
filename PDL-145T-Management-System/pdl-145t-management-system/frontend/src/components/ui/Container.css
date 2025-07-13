@@ -1,0 +1,33 @@
+/* Container component styles */
+.container {
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 var(--space-3);
+}
+
+.container--sm {
+  max-width: var(--container-sm);
+}
+
+.container--md {
+  max-width: var(--container-md);
+}
+
+.container--lg {
+  max-width: var(--container-lg);
+}
+
+.container--xl {
+  max-width: var(--container-xl);
+}
+
+.container--2xl {
+  max-width: var(--container-2xl);
+}
+
+/* Responsive padding */
+@media (max-width: 640px) {
+  .container {
+    padding: 0 var(--space-2);
+  }
+}

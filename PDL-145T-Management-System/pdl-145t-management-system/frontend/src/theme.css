@@ -1,11 +1,13 @@
 :root {
-  /* Color Palette */
-  --color-primary: #00796b; /* Teal */
-  --color-primary-dark: #004d40;
-  --color-primary-light: #48a999;
-  --color-bg: #f0f4f8; /* Light neutral gray */
-  --color-surface: #eceff1; /* Slightly darker */
-  --color-error: #d32f2f; /* Error red */
+  /* Professional Color Palette - Soft whites and greys */
+  --color-primary: #4a5568; /* Professional dark grey */
+  --color-primary-dark: #2d3748;
+  --color-primary-light: #718096;
+  --color-bg: #fafafa; /* Very light grey background */
+  --color-surface: #f7fafc; /* Slightly cooler white */
+  --color-bg-surface: #ffffff; /* Pure white for cards */
+  --color-error: #e53e3e; /* Softer red */
+  --color-error-dark: #c53030; /* Darker error red for hover */
   
   /* Status Colors - WCAG AA compliant */
   --color-success: #2e7d32; /* Green */
@@ -18,38 +20,38 @@
   --color-info-bg: #e3f2fd;
   --color-info-border: #bbdefb;
   
-  /* Neutral Colors */
+  /* Neutral Colors - Professional soft greys */
   --color-white: #ffffff;
-  --color-gray-50: #f8f9fa;
-  --color-gray-100: #f1f3f4;
-  --color-gray-200: #e9ecef;
-  --color-gray-300: #dee2e6;
-  --color-gray-400: #ced4da;
-  --color-gray-500: #adb5bd;
-  --color-gray-600: #6c757d;
-  --color-gray-700: #495057;
-  --color-gray-800: #343a40;
-  --color-gray-900: #212529;
+  --color-gray-50: #f9fafb;
+  --color-gray-100: #f4f5f7;
+  --color-gray-200: #e2e8f0;
+  --color-gray-300: #cbd5e0;
+  --color-gray-400: #a0aec0;
+  --color-gray-500: #718096;
+  --color-gray-600: #4a5568;
+  --color-gray-700: #2d3748;
+  --color-gray-800: #1a202c;
+  --color-gray-900: #171923;
   --color-black: #000000;
   
-  /* Background Colors */
+  /* Background Colors - Professional soft whites */
   --color-bg-primary: #ffffff;
-  --color-bg-secondary: #f8f9fa;
-  --color-bg-tertiary: #f1f3f4;
-  --color-bg-dark: #242424;
-  --color-bg-darker: #1a1a1a;
+  --color-bg-secondary: #f9fafb;
+  --color-bg-tertiary: #f4f5f7;
+  --color-bg-dark: #2d3748;
+  --color-bg-darker: #1a202c;
   
-  /* Text Colors */
-  --color-text-primary: #333333;
-  --color-text-secondary: #666666;
-  --color-text-muted: #999999;
-  --color-text-light: rgba(255, 255, 255, 0.87);
-  --color-text-dark: #213547;
+  /* Text Colors - Professional hierarchy */
+  --color-text-primary: #2d3748;
+  --color-text-secondary: #4a5568;
+  --color-text-muted: #718096;
+  --color-text-light: rgba(255, 255, 255, 0.9);
+  --color-text-dark: #2d3748;
   
-  /* Button Colors */
-  --color-button-primary: #007bff;
-  --color-button-primary-hover: #0056b3;
-  --color-button-primary-active: #004085;
+  /* Button Colors - Professional theme */
+  --color-button-primary: #4a5568;
+  --color-button-primary-hover: #2d3748;
+  --color-button-primary-active: #1a202c;
   
   /* Typography */
   --font-sans: 'Roboto', 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
@@ -94,15 +96,15 @@
   --radius-2xl: 1.5rem;   /* 24px */
   --radius-full: 9999px;
   
-  /* Shadows */
-  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.05);
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
-  --shadow-base: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
-  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06);
-  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05);
-  --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.1), 0 10px 10px rgba(0, 0, 0, 0.04);
-  --shadow-2xl: 0 25px 50px rgba(0, 0, 0, 0.15);
-  --shadow-inner: inset 0 2px 4px rgba(0, 0, 0, 0.06);
+  /* Shadows - Subtle and professional */
+  --shadow-xs: 0 1px 2px rgba(45, 55, 72, 0.03);
+  --shadow-sm: 0 1px 3px rgba(45, 55, 72, 0.05), 0 1px 2px rgba(45, 55, 72, 0.03);
+  --shadow-base: 0 1px 3px rgba(45, 55, 72, 0.05), 0 1px 2px rgba(45, 55, 72, 0.03);
+  --shadow-md: 0 4px 6px rgba(45, 55, 72, 0.05), 0 2px 4px rgba(45, 55, 72, 0.03);
+  --shadow-lg: 0 10px 15px rgba(45, 55, 72, 0.05), 0 4px 6px rgba(45, 55, 72, 0.03);
+  --shadow-xl: 0 20px 25px rgba(45, 55, 72, 0.05), 0 10px 10px rgba(45, 55, 72, 0.02);
+  --shadow-2xl: 0 25px 50px rgba(45, 55, 72, 0.08);
+  --shadow-inner: inset 0 2px 4px rgba(45, 55, 72, 0.03);
   
   /* Transitions */
   --transition-fast: 0.1s ease;

@@ -8,23 +8,27 @@ exports[`LoginForm > matches snapshot 1`] = `
     Login
   </h2>
   <input
+    class="input"
     placeholder="Email"
     required=""
     type="email"
     value=""
   />
   <input
+    class="input"
     placeholder="Password"
     required=""
     type="password"
     value=""
   />
   <button
+    class="btn btn--primary"
     type="submit"
   >
     Login
   </button>
   <button
+    class="btn btn--secondary"
     type="button"
   >
     Register
@@ -40,24 +44,29 @@ exports[`RegisterForm > matches snapshot 1`] = `
     Register
   </h2>
   <input
+    class="input"
     placeholder="Name"
     required=""
     type="text"
     value=""
   />
   <input
+    class="input"
     placeholder="Email"
     required=""
     type="email"
     value=""
   />
   <input
+    class="input"
     placeholder="Password"
     required=""
     type="password"
     value=""
   />
-  <select>
+  <select
+    class="select"
+  >
     <option
       value="USER"
     >
@@ -85,11 +94,13 @@ exports[`RegisterForm > matches snapshot 1`] = `
     </option>
   </select>
   <button
+    class="btn btn--primary"
     type="submit"
   >
     Register
   </button>
   <button
+    class="btn btn--secondary"
     type="button"
   >
     Back to Login
