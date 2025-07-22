@@ -4,6 +4,9 @@ import type { Task, TaskForm, User } from '../../types';
 import { ExpenseList } from '../Expenses/ExpenseList';
 import { Card } from '../ui/Card';
 import { CardHeader } from '../ui/CardHeader';
+import { TaskStatusBadge } from '../ui/StatusBadge';
+import { Table, TableColumn } from '../ui/Table';
+import { Tooltip } from '../ui/Tooltip';
 import '../ui/List.css';
 
 interface TaskListProps {
@@ -100,6 +103,91 @@ export function TaskList({ projectId, user, token }: TaskListProps): React.React
 
   const canEdit = user.role === UserRole.ADMIN || user.role === UserRole.SUPERVISOR;
 
+  // Map TaskStatus to our StatusBadge format
+  const mapTaskStatus = (status: TaskStatus): string => {
+    switch (status) {
+      case TaskStatus.NOT_STARTED:
+        return 'not-started';
+      case TaskStatus.IN_PROGRESS:
+        return 'in-progress';
+      case TaskStatus.COMPLETED:
+        return 'completed';
+      default:
+        return 'not-started';
+    }
+  };
+
+  // Define table columns
+  const columns: TableColumn<Task>[] = [
+    {
+      key: 'description',
+      title: 'Description',
+      dataIndex: 'Description',
+      width: '30%'
+    },
+    {
+      key: 'status',
+      title: 'Status',
+      width: '20%',
+      align: 'center',
+      render: (_, record) => (
+        <TaskStatusBadge
+          taskStatus={mapTaskStatus(record.CompletionStatus)}
+          metadata={{
+            description: `Task ${record.CompletionStatus === TaskStatus.COMPLETED ? 'completed' : 
+                         record.CompletionStatus === TaskStatus.IN_PROGRESS ? 'in progress' : 'not started'}`,
+            ...(record.Duration && { value: `${record.Duration} days` })
+          }}
+        />
+      )
+    },
+    {
+      key: 'assigned',
+      title: 'Assigned To',
+      width: '20%',
+      render: (_, record) => (
+        record.AssignedTo ? (
+          <Tooltip content={`Assigned to ${record.AssignedTo}`}>
+            <span className="font-medium">{record.AssignedTo}</span>
+          </Tooltip>
+        ) : (
+          <span className="text-gray-500 italic">Unassigned</span>
+        )
+      )
+    },
+    {
+      key: 'duration',
+      title: 'Duration',
+      width: '15%',
+      align: 'center',
+      render: (_, record) => record.Duration ? `${record.Duration} days` : '-'
+    },
+    {
+      key: 'actions',
+      title: 'Actions',
+      width: '15%',
+      align: 'right',
+      render: (_, record) => canEdit ? (
+        <div className="flex gap-2">
+          <button 
+            onClick={() => handleEdit(record)} 
+            className="btn btn--secondary btn--sm"
+            title="Edit task"
+          >
+            Edit
+          </button>
+          <button 
+            onClick={() => handleDelete(record.TaskID)} 
+            className="btn btn--danger btn--sm"
+            title="Delete task"
+          >
+            Delete
+          </button>
+        </div>
+      ) : null
+    }
+  ];
+
   return (
     <Card variant="outlined" className="nested-card">
       <CardHeader 
@@ -118,7 +206,6 @@ export function TaskList({ projectId, user, token }: TaskListProps): React.React
           </button>
         }
       />
-      {loading && <p>Loading...</p>}
       {error && <p className="error" role="alert" aria-live="polite">{error}</p>}
       {showForm && (
         <form onSubmit={handleSubmit} className="task-form" id="task-form" aria-labelledby="task-form-title">
@@ -169,20 +256,34 @@ export function TaskList({ projectId, user, token }: TaskListProps): React.React
           </button>
         </form>
       )}
-      <div className="list">
-        {tasks.map((t, index) => (
-          <div key={t.TaskID} className={`list__item ${index % 2 === 0 ? 'zebra-row' : ''}`}>
-            <b>{t.Description}</b> (Status: {t.CompletionStatus}) Assigned: {t.AssignedTo || 'Unassigned'}
-            {canEdit && (
-              <>
-                <button onClick={() => handleEdit(t)} className="btn btn--secondary">Edit</button>
-                <button onClick={() => handleDelete(t.TaskID)} className="btn btn--danger">Delete</button>
-              </>
-            )}
-            <ExpenseList taskId={t.TaskID} user={user} token={token} />
-          </div>
-        ))}
-      </div>
+      
+      <Table
+        dataSource={tasks}
+        columns={columns}
+        loading={loading}
+        rowKey={(record) => record.TaskID}
+        emptyState={
+          <>
+            <div className="text-4xl mb-4">📋</div>
+            <div className="font-medium text-gray-600">No tasks found</div>
+            <div className="text-sm text-gray-500 mt-2">
+              {canEdit ? 'Click "+ New Task" to add your first task' : 'Tasks will appear here when added'}
+            </div>
+          </>
+        }
+        caption="Project tasks with status indicators"
+      />
+      
+      {/* Expenses for each task - shown in expanded rows or separate section */}
+      {tasks.length > 0 && (
+        <div className="mt-6">
+          {tasks.map((task) => (
+            <div key={`expenses-${task.TaskID}`} className="mb-4">
+              <ExpenseList taskId={task.TaskID} user={user} token={token} />
+            </div>
+          ))}
+        </div>
+      )}
     </Card>
   );
 }

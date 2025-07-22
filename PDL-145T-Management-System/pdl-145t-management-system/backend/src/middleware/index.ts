@@ -16,20 +16,22 @@ export function validateSchema<T extends ZodSchema>(
       const validatedData = schema.parse(dataToValidate);
       
       // Replace the original data with validated data
-      (req as Record<string, unknown>)[target] = validatedData;
+      (req as any)[target] = validatedData;
       
       next();
     } catch (error) {
       if (error instanceof ZodError) {
-        return res.status(400).json({
+        res.status(400).json({
           error: 'Validation error',
           details: error.issues.map((err) => ({
             field: err.path.join('.'),
             message: err.message,
           })),
         });
+        return;
       }
-      return res.status(400).json({ error: 'Invalid request data' });
+      res.status(400).json({ error: 'Invalid request data' });
+      return;
     }
   };
 }
@@ -39,7 +41,8 @@ export function authenticateJWT(req: Request, res: Response, next: NextFunction)
   const authHeader = req.headers.authorization;
   
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return res.status(401).json({ error: 'Missing or invalid token.' });
+    res.status(401).json({ error: 'Missing or invalid token.' });
+    return;
   }
 
   try {
@@ -49,7 +52,8 @@ export function authenticateJWT(req: Request, res: Response, next: NextFunction)
     (req as AuthenticatedRequest).user = payload;
     next();
   } catch {
-    return res.status(401).json({ error: 'Invalid or expired token.' });
+    res.status(401).json({ error: 'Invalid or expired token.' });
+    return;
   }
 }
 
@@ -59,11 +63,13 @@ export function requireRole(allowedRoles: string[]) {
     const authReq = req as AuthenticatedRequest;
     
     if (!authReq.user) {
-      return res.status(401).json({ error: 'Authentication required' });
+      res.status(401).json({ error: 'Authentication required' });
+      return;
     }
     
     if (!allowedRoles.includes(authReq.user.role)) {
-      return res.status(403).json({ error: 'Insufficient permissions' });
+      res.status(403).json({ error: 'Insufficient permissions' });
+      return;
     }
     
     next();
@@ -82,20 +88,23 @@ export function errorHandler(err: Error, _req: Request, res: Response, next: Nex
   
   // Handle Prisma errors
   if (err.name === 'PrismaClientKnownRequestError') {
-    return res.status(400).json({ error: 'Database operation failed' });
+    res.status(400).json({ error: 'Database operation failed' });
+    return;
   }
   
   // Handle JWT errors
   if (err.name === 'JsonWebTokenError') {
-    return res.status(401).json({ error: 'Invalid token' });
+    res.status(401).json({ error: 'Invalid token' });
+    return;
   }
   
   // Handle validation errors
   if (err instanceof ZodError) {
-    return res.status(400).json({
+    res.status(400).json({
       error: 'Validation error',
       details: err.issues,
     });
+    return;
   }
   
   // Default error response
@@ -128,9 +137,10 @@ export function rateLimit(windowMs: number = 15 * 60 * 1000, max: number = 100) 
     }
     
     if (requestCounts[clientId].count > max) {
-      return res.status(429).json({
+      res.status(429).json({
         error: 'Too many requests, please try again later',
       });
+      return;
     }
     
     next();

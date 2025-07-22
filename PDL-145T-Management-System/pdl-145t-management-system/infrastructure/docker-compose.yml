@@ -2,8 +2,6 @@
 # Use docker-compose.dev.yml for full development setup with hot reload
 # Use docker-compose.prod.yml for production deployment
 
-version: '3.8'
-
 services:
   # Database Layer - PostgreSQL with PostGIS
   # Base image: postgis/postgis:15-3.3
@@ -47,12 +45,26 @@ services:
       db:
         condition: service_healthy
     ports:
-      - '3010:3010'
+      - '8000:8000'
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-password}@db:5432/${POSTGRES_DB:-pdl_management}
       NODE_ENV: development
       JWT_SECRET: ${JWT_SECRET:-dev_secret_key}
-      PORT: 3010
+      PORT: 8000
+    restart: unless-stopped
+    networks:
+      - pdl-network
+
+  # Database Administration - Adminer
+  # Purpose: Web-based database administration tool
+  adminer:
+    image: adminer:4.8.1
+    container_name: pdl-adminer
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - '8080:8080'
     restart: unless-stopped
     networks:
       - pdl-network
@@ -69,9 +81,9 @@ services:
     depends_on:
       - backend
     ports:
-      - '5173:80'
+      - '3001:80'
     environment:
-      VITE_API_URL: http://localhost:3010
+      VITE_API_URL: http://localhost:8000
     restart: unless-stopped
     networks:
       - pdl-network

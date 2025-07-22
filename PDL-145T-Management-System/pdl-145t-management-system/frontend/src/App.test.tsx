@@ -91,7 +91,7 @@ describe('App', () => {
       status: 401,
       json: (): Promise<{ error: string }> => Promise.resolve({ error: 'Invalid credentials' })
     };
-    (global.fetch as jest.Mock).mockResolvedValueOnce(errorResponse);
+    (global.fetch as any).mockResolvedValueOnce(errorResponse);
     
     const user = userEvent.setup();
     render(<App />);
@@ -149,7 +149,7 @@ describe('App', () => {
       status: 400,
       json: (): Promise<{ error: string }> => Promise.resolve({ error: 'Email already exists' })
     };
-    (global.fetch as jest.Mock).mockResolvedValueOnce(errorResponse);
+    (global.fetch as any).mockResolvedValueOnce(errorResponse);
     
     const user = userEvent.setup();
     render(<App />);

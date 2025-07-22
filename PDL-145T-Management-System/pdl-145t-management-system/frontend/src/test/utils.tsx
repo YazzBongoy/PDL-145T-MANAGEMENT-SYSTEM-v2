@@ -54,8 +54,8 @@ export const mockApiResponse = (data: unknown, options?: { ok?: boolean; status?
     json: (): Promise<unknown> => Promise.resolve(data),
   };
   
-  (global.fetch as jest.Mock).mockResolvedValueOnce(response);
-  return response;
+  (global.fetch as any).mockResolvedValueOnce(response);
+  return response as any;
 };
 
 export const mockApiError = (message: string, status: number = 400): Response => {
@@ -65,8 +65,8 @@ export const mockApiError = (message: string, status: number = 400): Response =>
     json: (): Promise<{ error: string }> => Promise.resolve({ error: message }),
   };
   
-  (global.fetch as jest.Mock).mockRejectedValueOnce(new Error(message));
-  return response;
+  (global.fetch as any).mockRejectedValueOnce(new Error(message));
+  return response as any;
 };
 
 // Custom render function with default props

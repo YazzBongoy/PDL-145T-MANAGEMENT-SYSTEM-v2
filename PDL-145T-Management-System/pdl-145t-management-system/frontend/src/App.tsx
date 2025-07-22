@@ -1,5 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import './App.css';
+import './components/ui/AppBar.css';
+import { AppBar } from './components/ui/AppBar';
 import type { User, HealthStatus, LoginCredentials, RegisterData } from './types';
 import { useApi } from './hooks/useApi';
 import { DashboardSwitcher } from './components/Dashboard/Dashboards';
@@ -67,10 +69,7 @@ function App(): React.ReactElement {
 
   return (
     <div className="app">
-      <header className="app__header">
-        <h1 className="app__header-title">PDL-145T Management System</h1>
-        <p className="app__header-subtitle">Welcome to the PDL-145T Management System frontend</p>
-      </header>
+      <AppBar user={user} onLogout={handleLogout} />
 
       <main className="app__main">
         <section className="auth-section">

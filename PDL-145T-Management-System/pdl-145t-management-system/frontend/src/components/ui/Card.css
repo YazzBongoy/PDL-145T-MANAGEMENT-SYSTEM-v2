@@ -1,35 +1,87 @@
-/* Card component styles */
+/* Card component styles - Enhanced with modern styling */
 .card {
   background-color: var(--color-bg-primary);
-  border-radius: var(--radius-lg);
-  transition: var(--transition-base);
+  border-radius: var(--radius-xl);
+  transition: all var(--transition-base);
+  overflow: hidden;
+  position: relative;
+  width: 100%;
 }
 
-/* Zebra rows style */
+.card:hover {
+  transform: translateY(-2px);
+}
+
+/* Card header styling */
+.card-header {
+  padding: var(--space-4) var(--space-6);
+  border-bottom: 1px solid var(--color-gray-200);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.card-header h2, .card-header h3 {
+  margin: 0;
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+}
+
+/* Card body styling */
+.card-body {
+  padding: var(--space-6);
+}
+
+/* Card footer styling */
+.card-footer {
+  padding: var(--space-4) var(--space-6);
+  border-top: 1px solid var(--color-gray-200);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-3);
+}
+
+/* Zebra rows style - Enhanced */
 .zebra-row {
   background-color: var(--color-bg-secondary);
+  transition: background-color var(--transition-fast);
 }
 
-/* Nested and deeply nested card styles */
+.zebra-row:hover {
+  background-color: var(--color-primary-50);
+}
+
+/* Nested and deeply nested card styles - Enhanced */
 .nested-card {
   margin: var(--space-4);
-  border-left: 4px solid var(--color-gray-200);
+  border-left: 4px solid var(--color-primary-200);
+  border-radius: var(--radius-lg);
 }
 
 .deeply-nested-card {
   margin: var(--space-4) var(--space-6);
-  border-left: 4px solid var(--color-gray-300);
+  border-left: 4px solid var(--color-primary-300);
+  border-radius: var(--radius-lg);
 }
 
-/* Card variants */
+/* Card variants - Enhanced with better visual hierarchy */
 .card--default {
   box-shadow: var(--shadow-sm);
   border: 1px solid var(--color-gray-200);
 }
 
+.card--default:hover {
+  box-shadow: var(--shadow-base);
+}
+
 .card--outlined {
   border: 1px solid var(--color-gray-300);
   box-shadow: none;
+}
+
+.card--outlined:hover {
+  border-color: var(--color-primary-300);
 }
 
 .card--elevated {
@@ -41,21 +93,59 @@
   box-shadow: var(--shadow-lg);
 }
 
-/* Padding variants */
+/* New card variants */
+.card--primary {
+  border-top: 4px solid var(--color-primary);
+}
+
+.card--success {
+  border-top: 4px solid var(--color-success);
+}
+
+.card--warning {
+  border-top: 4px solid var(--color-warning);
+}
+
+.card--danger {
+  border-top: 4px solid var(--color-error);
+}
+
+.card--info {
+  border-top: 4px solid var(--color-info);
+}
+
+/* Padding variants - Enhanced with better spacing */
 .card--padding-sm {
   padding: var(--space-3);
 }
 
 .card--padding-md {
-  padding: var(--space-4);
-}
-
-.card--padding-lg {
   padding: var(--space-5);
 }
 
-/* Dark theme support */
+.card--padding-lg {
+  padding: var(--space-8);
+}
+
+/* New card size variants */
+.card--full-width {
+  width: 100%;
+}
+
+.card--compact {
+  max-width: 480px;
+}
+
+.card--wide {
+  max-width: 800px;
+}
+
+/* Dark theme support - Enhanced */
 @media (prefers-color-scheme: dark) {
+  .card {
+    background-color: var(--color-bg-primary);
+  }
+  
   .card--default {
     border-color: var(--color-gray-700);
   }
@@ -63,6 +153,22 @@
   .card--outlined {
     border-color: var(--color-gray-600);
   }
+  
+  .card-header {
+    border-bottom-color: var(--color-gray-700);
+  }
+  
+  .card-footer {
+    border-top-color: var(--color-gray-700);
+  }
+  
+  .zebra-row:hover {
+    background-color: var(--color-gray-800);
+  }
+}
+
+[data-theme="dark"] .card {
+  background-color: var(--color-bg-primary);
 }
 
 [data-theme="dark"] .card--default {
@@ -71,4 +177,16 @@
 
 [data-theme="dark"] .card--outlined {
   border-color: var(--color-gray-600);
+}
+
+[data-theme="dark"] .card-header {
+  border-bottom-color: var(--color-gray-700);
+}
+
+[data-theme="dark"] .card-footer {
+  border-top-color: var(--color-gray-700);
+}
+
+[data-theme="dark"] .zebra-row:hover {
+  background-color: rgba(59, 130, 246, 0.1);
 }

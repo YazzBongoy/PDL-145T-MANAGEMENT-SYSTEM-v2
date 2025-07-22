@@ -1,48 +1,294 @@
-/* App-specific styles - minimal as design system handles most patterns */
+/* App-specific styles - Mobile-first responsive design */
 
-/* App container */
+/* App container - CSS Grid Layout with responsive considerations */
 .app {
-  max-width: var(--container-xl);
-  margin: 0 auto;
-  padding: var(--space-6);
+  display: grid;
+  grid-template-rows: auto 1fr;
+  min-height: 100vh;
   font-family: var(--font-sans);
   background-color: var(--color-bg);
-  min-height: 100vh;
+  /* Prevent horizontal scroll on mobile */
+  overflow-x: hidden;
 }
 
-/* App main content */
+/* App main content - Mobile-first responsive layout */
 .app__main {
   display: flex;
   flex-direction: column;
-  gap: var(--space-6);
+  gap: var(--spacing-4); /* Smaller gap on mobile */
+  padding: var(--spacing-3); /* Smaller padding on mobile */
+  max-width: 100%; /* Full width on mobile */
+  margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
 }
 
-/* Status indicator component - app-specific component */
-.status-indicator {
-  padding: var(--space-3);
-  border-radius: var(--radius-base);
+/* App sections */
+.app-section {
+  margin-bottom: var(--space-8);
+}
+
+.app-section__header {
+  margin-bottom: var(--space-6);
+}
+
+.app-section__title {
+  font-size: var(--font-size-2xl);
   font-weight: var(--font-weight-semibold);
-  font-size: var(--font-size-4);
-  margin-bottom: var(--space-3);
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-2);
+}
+
+.app-section__description {
+  color: var(--color-text-secondary);
+  max-width: 800px;
+}
+
+/* Auth section - Mobile-first responsive */
+.auth-section {
+  max-width: 100%; /* Full width on mobile */
+  margin: 0 auto;
+  width: 100%;
+  padding: var(--spacing-4);
+}
+
+/* Login/Register forms - Mobile-optimized */
+.login-form,
+.register-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
+  max-width: 100%;
+}
+
+.login-form h2,
+.register-form h2 {
+  text-align: center;
+  margin-bottom: var(--space-6);
+  color: var(--color-primary);
+}
+
+/* Health check section - Mobile-first responsive */
+.health-check {
+  background-color: var(--color-bg-primary);
+  border-radius: var(--radius-lg); /* Smaller radius on mobile */
+  padding: var(--spacing-4); /* Smaller padding on mobile */
+  box-shadow: var(--elevation-2);
+  margin-top: var(--spacing-4);
+}
+
+.health-check h2 {
+  font-size: var(--font-size-xl);
+  margin-bottom: var(--space-4);
+  color: var(--color-text-primary);
   text-align: center;
 }
 
-.status-indicator--healthy,
-.status-indicator--ok {
+
+/* Status indicator component - Mobile-first responsive */
+.status-indicator {
+  padding: var(--spacing-3); /* Smaller padding on mobile */
+  border-radius: var(--radius-md);
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-sm); /* Smaller text on mobile */
+  margin-bottom: var(--spacing-3);
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-2);
+  box-shadow: var(--elevation-1);
+  /* Better touch targets on mobile */
+  min-height: 44px;
+}
+
+.status-indicator::before {
+  content: '';
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.status-indicator.ok::before,
+.status-indicator.healthy::before {
+  background-color: var(--color-success);
+  box-shadow: 0 0 0 2px var(--color-success-bg);
+}
+
+.status-indicator.error::before {
+  background-color: var(--color-error);
+  box-shadow: 0 0 0 2px var(--color-error-bg);
+}
+
+.status-indicator.warning::before {
+  background-color: var(--color-warning);
+  box-shadow: 0 0 0 2px var(--color-warning-bg);
+}
+
+.status-indicator.ok,
+.status-indicator.healthy {
   background-color: var(--color-success-bg);
-  color: var(--color-success);
+  color: var(--color-success-dark);
   border: 1px solid var(--color-success-border);
 }
 
-.status-indicator--error {
+.status-indicator.error {
   background-color: var(--color-error-bg);
-  color: var(--color-error);
+  color: var(--color-error-dark);
   border: 1px solid var(--color-error-border);
 }
 
-/* Responsive design */
-@media (max-width: 768px) {
-  .app {
-    padding: var(--space-4);
+.status-indicator.warning {
+  background-color: var(--color-warning-bg);
+  color: var(--color-warning-dark);
+  border: 1px solid var(--color-warning-border);
+}
+
+/* Health status container - Mobile optimized */
+.health-status {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3); /* Smaller gap on mobile */
+  align-items: center;
+}
+
+.health-status p {
+  margin: var(--space-1) 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+/* Error message styling - Mobile-first */
+.error {
+  background-color: var(--color-error-bg);
+  color: var(--color-error-dark);
+  padding: var(--spacing-3); /* Smaller padding on mobile */
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-error-border);
+  margin-bottom: var(--spacing-3);
+  text-align: center;
+  /* Better readability on mobile */
+  font-size: var(--font-size-sm);
+}
+
+.error p {
+  margin-bottom: var(--space-3);
+  font-weight: var(--font-weight-medium);
+}
+
+/* Mobile-First Responsive Design Implementation */
+
+/* Small devices - tablets (640px and up) */
+@media (min-width: 640px) {
+  .app__main {
+    padding: var(--spacing-4);
+    gap: var(--spacing-5);
+    max-width: var(--container-sm);
+  }
+  
+  .auth-section {
+    max-width: 480px;
+    padding: var(--spacing-6);
+  }
+  
+  .health-check {
+    padding: var(--spacing-5);
+    border-radius: var(--radius-xl);
+  }
+  
+  .status-indicator {
+    padding: var(--spacing-4);
+    font-size: var(--font-size-base);
   }
 }
+
+/* Medium devices - small laptops (768px and up) */
+@media (min-width: 768px) {
+  .app__main {
+    padding: var(--spacing-6);
+    gap: var(--spacing-6);
+    max-width: var(--container-md);
+  }
+  
+  .login-form,
+  .register-form {
+    padding: var(--spacing-6);
+  }
+  
+  .health-check {
+    padding: var(--spacing-6);
+  }
+  
+  /* Button groups become horizontal */
+  .button-group {
+    flex-direction: row;
+    gap: var(--spacing-4);
+  }
+  
+  .error {
+    padding: var(--spacing-4);
+    font-size: var(--font-size-base);
+  }
+}
+
+/* Large devices - laptops (1024px and up) */
+@media (min-width: 1024px) {
+  .app__main {
+    padding: var(--spacing-8);
+    gap: var(--spacing-8);
+    max-width: var(--container-lg);
+  }
+  
+  .health-check {
+    padding: var(--spacing-8);
+  }
+  
+  /* Enhanced spacing for larger screens */
+  .health-status {
+    gap: var(--spacing-4);
+  }
+}
+
+/* Extra large devices - desktops (1280px and up) */
+@media (min-width: 1280px) {
+  .app__main {
+    max-width: var(--container-xl);
+    padding: var(--spacing-10);
+    gap: var(--spacing-10);
+  }
+  
+  .auth-section {
+    max-width: 520px;
+  }
+  
+  .health-check {
+    padding: var(--spacing-10);
+  }
+}
+
+/* Button group responsive behavior */
+.button-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3);
+  width: 100%;
+}
+
+.button-group button {
+  min-height: 44px; /* Better touch targets */
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .button-group {
+    flex-direction: row;
+    width: auto;
+  }
+  
+  .button-group button {
+    width: auto;
+    min-width: 120px;
+  }
+}
+

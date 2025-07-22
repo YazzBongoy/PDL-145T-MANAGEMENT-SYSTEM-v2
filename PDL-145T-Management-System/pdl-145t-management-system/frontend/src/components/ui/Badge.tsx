@@ -92,8 +92,9 @@ export const Badge: React.FC<BadgeProps> = ({
 };
 
 // Export common badge configurations for convenience
-export const StatusBadge: React.FC<Omit<BadgeProps, 'variant'> & { 
-  status: 'healthy' | 'warning' | 'error' | 'loading' | 'info' 
+export const StatusBadge: React.FC<Omit<BadgeProps, 'variant' | 'children'> & { 
+  status: 'healthy' | 'warning' | 'error' | 'loading' | 'info'
+  children?: React.ReactNode
 }> = ({ status, children, ...props }) => {
   const variantMap: Record<string, BadgeProps['variant']> = {
     healthy: 'success',
@@ -110,7 +111,7 @@ export const StatusBadge: React.FC<Omit<BadgeProps, 'variant'> & {
       loadingText={status === 'loading' ? 'Loading...' : undefined}
       {...props}
     >
-      {children || (status === 'loading' ? 'Loading...' : status)}
+      {children || (status === 'loading' ? 'Loading...' : String(status))}
     </Badge>
   );
 };

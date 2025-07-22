@@ -1,71 +1,132 @@
+/* Import Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
 :root {
-  /* Professional Color Palette - Soft whites and greys */
-  --color-primary: #4a5568; /* Professional dark grey */
-  --color-primary-dark: #2d3748;
-  --color-primary-light: #718096;
-  --color-bg: #fafafa; /* Very light grey background */
-  --color-surface: #f7fafc; /* Slightly cooler white */
+  /* Modern Professional Color Palette */
+  /* Primary - Modern Blue (Trust, Innovation, Technology) */
+  --color-primary: #2563eb; /* Blue-600 */
+  --color-primary-50: #eff6ff;
+  --color-primary-100: #dbeafe;
+  --color-primary-200: #bfdbfe;
+  --color-primary-300: #93c5fd;
+  --color-primary-400: #60a5fa;
+  --color-primary-500: #3b82f6;
+  --color-primary-600: #2563eb;
+  --color-primary-700: #1d4ed8;
+  --color-primary-800: #1e40af;
+  --color-primary-900: #1e3a8a;
+  --color-primary-950: #172554;
+  
+  /* Secondary - Emerald Green (Success, Growth, Reliability) */
+  --color-secondary: #059669; /* Emerald-600 */
+  --color-secondary-50: #ecfdf5;
+  --color-secondary-100: #d1fae5;
+  --color-secondary-200: #a7f3d0;
+  --color-secondary-300: #6ee7b7;
+  --color-secondary-400: #34d399;
+  --color-secondary-500: #10b981;
+  --color-secondary-600: #059669;
+  --color-secondary-700: #047857;
+  --color-secondary-800: #065f46;
+  --color-secondary-900: #064e3b;
+  --color-secondary-950: #022c22;
+  
+  /* Accent - Violet Purple (Premium, Innovation, Creativity) */
+  --color-accent: #7c3aed; /* Violet-600 */
+  --color-accent-50: #f5f3ff;
+  --color-accent-100: #ede9fe;
+  --color-accent-200: #ddd6fe;
+  --color-accent-300: #c4b5fd;
+  --color-accent-400: #a78bfa;
+  --color-accent-500: #8b5cf6;
+  --color-accent-600: #7c3aed;
+  --color-accent-700: #6d28d9;
+  --color-accent-800: #5b21b6;
+  --color-accent-900: #4c1d95;
+  --color-accent-950: #2e1065;
+  
+  --color-bg: #f9fafb; /* Refined light background */
+  --color-surface: #f8fafc; /* Slightly cooler white */
   --color-bg-surface: #ffffff; /* Pure white for cards */
-  --color-error: #e53e3e; /* Softer red */
-  --color-error-dark: #c53030; /* Darker error red for hover */
   
-  /* Status Colors - WCAG AA compliant */
-  --color-success: #2e7d32; /* Green */
-  --color-success-bg: #e8f5e8;
-  --color-success-border: #c8e6c9;
-  --color-warning: #f57c00; /* Orange */
-  --color-warning-bg: #fff3e0;
-  --color-warning-border: #ffe0b2;
-  --color-info: #1976d2; /* Blue */
-  --color-info-bg: #e3f2fd;
-  --color-info-border: #bbdefb;
+  /* Status Colors - Enhanced for better visibility */
+  --color-error: #ef4444; /* Vibrant red */
+  --color-error-dark: #dc2626; /* Darker error red for hover */
+  --color-error-bg: #fee2e2;
+  --color-error-border: #fecaca;
   
-  /* Neutral Colors - Professional soft greys */
+  --color-success: #22c55e; /* Vibrant green */
+  --color-success-dark: #16a34a;
+  --color-success-bg: #dcfce7;
+  --color-success-border: #bbf7d0;
+  
+  --color-warning: #f59e0b; /* Vibrant amber */
+  --color-warning-dark: #d97706;
+  --color-warning-bg: #fef3c7;
+  --color-warning-border: #fde68a;
+  
+  --color-info: #0ea5e9; /* Sky blue */
+  --color-info-dark: #0284c7;
+  --color-info-bg: #e0f2fe;
+  --color-info-border: #bae6fd;
+  
+  /* Neutral Colors - Refined slate greys */
   --color-white: #ffffff;
-  --color-gray-50: #f9fafb;
-  --color-gray-100: #f4f5f7;
+  --color-gray-50: #f8fafc;
+  --color-gray-100: #f1f5f9;
   --color-gray-200: #e2e8f0;
   --color-gray-300: #cbd5e0;
-  --color-gray-400: #a0aec0;
-  --color-gray-500: #718096;
-  --color-gray-600: #4a5568;
-  --color-gray-700: #2d3748;
-  --color-gray-800: #1a202c;
-  --color-gray-900: #171923;
+  --color-gray-400: #94a3b8;
+  --color-gray-500: #64748b;
+  --color-gray-600: #475569;
+  --color-gray-700: #334155;
+  --color-gray-800: #1e293b;
+  --color-gray-900: #0f172a;
+  --color-gray-950: #020617;
   --color-black: #000000;
   
-  /* Background Colors - Professional soft whites */
+  /* Background Colors - Refined soft whites */
   --color-bg-primary: #ffffff;
-  --color-bg-secondary: #f9fafb;
-  --color-bg-tertiary: #f4f5f7;
-  --color-bg-dark: #2d3748;
-  --color-bg-darker: #1a202c;
+  --color-bg-secondary: #f8fafc;
+  --color-bg-tertiary: #f1f5f9;
+  --color-bg-dark: #334155;
+  --color-bg-darker: #1e293b;
   
-  /* Text Colors - Professional hierarchy */
-  --color-text-primary: #2d3748;
-  --color-text-secondary: #4a5568;
-  --color-text-muted: #718096;
-  --color-text-light: rgba(255, 255, 255, 0.9);
-  --color-text-dark: #2d3748;
+  /* Text Colors - Refined hierarchy */
+  --color-text-primary: #1e293b;
+  --color-text-secondary: #475569;
+  --color-text-muted: #64748b;
+  --color-text-light: rgba(255, 255, 255, 0.95);
+  --color-text-dark: #0f172a;
   
-  /* Button Colors - Professional theme */
-  --color-button-primary: #4a5568;
-  --color-button-primary-hover: #2d3748;
-  --color-button-primary-active: #1a202c;
+  /* Button Colors - Modern theme */
+  --color-button-primary: #3b82f6;
+  --color-button-primary-hover: #2563eb;
+  --color-button-primary-active: #1d4ed8;
+  --color-button-secondary: #64748b;
+  --color-button-secondary-hover: #475569;
+  --color-button-secondary-active: #334155;
+  --color-button-danger: #ef4444;
+  --color-button-danger-hover: #dc2626;
+  --color-button-danger-active: #b91c1c;
   
-  /* Typography */
-  --font-sans: 'Roboto', 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
-  --font-family-mono: 'Courier New', monospace;
+  /* Typography - Enhanced with Inter font */
+  --font-sans: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+  --font-family-mono: 'JetBrains Mono', 'Courier New', monospace;
+  --font-family-display: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
   
-  /* Font Sizes */
-  --font-size-1: 0.75rem;    /* XS */
-  --font-size-2: 0.875rem;   /* SM */
-  --font-size-3: 1rem;       /* BASE */
-  --font-size-4: 1.25rem;    /* LG */
-  --font-size-5: 1.5rem;     /* XL */
-  --font-size-6: 2rem;       /* 2XL */
+  /* Font Sizes - More comprehensive scale */
+  --font-size-xs: 0.75rem;     /* 12px */
+  --font-size-sm: 0.875rem;    /* 14px */
+  --font-size-base: 1rem;      /* 16px */
+  --font-size-lg: 1.125rem;    /* 18px */
+  --font-size-xl: 1.25rem;     /* 20px */
+  --font-size-2xl: 1.5rem;     /* 24px */
+  --font-size-3xl: 1.875rem;   /* 30px */
+  --font-size-4xl: 2.25rem;    /* 36px */
+  --font-size-5xl: 3rem;       /* 48px */
   
-  /* Font Weights */
+  /* Font Weights - Standard scale */
   --font-weight-light: 300;
   --font-weight-normal: 400;
   --font-weight-medium: 500;
@@ -73,38 +134,59 @@
   --font-weight-bold: 700;
   --font-weight-extrabold: 800;
   
-  /* Line Heights */
-  --line-height-tight: 1.1;
+  /* Line Heights - Refined for better readability */
+  --line-height-none: 1;
+  --line-height-tight: 1.25;
+  --line-height-snug: 1.375;
   --line-height-normal: 1.5;
-  --line-height-relaxed: 1.75;
+  --line-height-relaxed: 1.625;
+  --line-height-loose: 2;
   
-  /* Spacing Scale */
-  --space-1: 0.25rem;  /* XS */
-  --space-2: 0.5rem;    /* SM */
-  --space-3: 1rem;      /* BASE */
-  --space-4: 1.5rem;    /* LG */
-  --space-5: 2rem;      /* XL */
-  --space-6: 3rem;      /* 2XL */
+  /* Spacing Scale - More comprehensive */
+  --space-0: 0;
+  --space-px: 1px;
+  --space-0-5: 0.125rem;  /* 2px */
+  --space-1: 0.25rem;     /* 4px */
+  --space-1-5: 0.375rem;  /* 6px */
+  --space-2: 0.5rem;      /* 8px */
+  --space-2-5: 0.625rem;  /* 10px */
+  --space-3: 0.75rem;     /* 12px */
+  --space-3-5: 0.875rem;  /* 14px */
+  --space-4: 1rem;        /* 16px */
+  --space-5: 1.25rem;     /* 20px */
+  --space-6: 1.5rem;      /* 24px */
+  --space-7: 1.75rem;     /* 28px */
+  --space-8: 2rem;        /* 32px */
+  --space-9: 2.25rem;     /* 36px */
+  --space-10: 2.5rem;     /* 40px */
+  --space-11: 2.75rem;    /* 44px */
+  --space-12: 3rem;       /* 48px */
+  --space-14: 3.5rem;     /* 56px */
+  --space-16: 4rem;       /* 64px */
+  --space-20: 5rem;       /* 80px */
+  --space-24: 6rem;       /* 96px */
   
-  /* Border Radius */
+  /* Border Radius - Refined */
   --radius-none: 0;
-  --radius-sm: 0.25rem;   /* 4px */
-  --radius-base: 0.375rem; /* 6px */
-  --radius-md: 0.5rem;    /* 8px */
-  --radius-lg: 0.75rem;   /* 12px */
-  --radius-xl: 1rem;      /* 16px */
-  --radius-2xl: 1.5rem;   /* 24px */
+  --radius-sm: 0.125rem;   /* 2px */
+  --radius-base: 0.25rem;  /* 4px */
+  --radius-md: 0.375rem;   /* 6px */
+  --radius-lg: 0.5rem;     /* 8px */
+  --radius-xl: 0.75rem;    /* 12px */
+  --radius-2xl: 1rem;      /* 16px */
+  --radius-3xl: 1.5rem;    /* 24px */
   --radius-full: 9999px;
   
-  /* Shadows - Subtle and professional */
-  --shadow-xs: 0 1px 2px rgba(45, 55, 72, 0.03);
-  --shadow-sm: 0 1px 3px rgba(45, 55, 72, 0.05), 0 1px 2px rgba(45, 55, 72, 0.03);
-  --shadow-base: 0 1px 3px rgba(45, 55, 72, 0.05), 0 1px 2px rgba(45, 55, 72, 0.03);
-  --shadow-md: 0 4px 6px rgba(45, 55, 72, 0.05), 0 2px 4px rgba(45, 55, 72, 0.03);
-  --shadow-lg: 0 10px 15px rgba(45, 55, 72, 0.05), 0 4px 6px rgba(45, 55, 72, 0.03);
-  --shadow-xl: 0 20px 25px rgba(45, 55, 72, 0.05), 0 10px 10px rgba(45, 55, 72, 0.02);
-  --shadow-2xl: 0 25px 50px rgba(45, 55, 72, 0.08);
-  --shadow-inner: inset 0 2px 4px rgba(45, 55, 72, 0.03);
+  /* Shadows - Enhanced for depth perception */
+  --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  --shadow-base: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  --shadow-xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  --shadow-2xl: 0 35px 60px -15px rgba(0, 0, 0, 0.3);
+  --shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
+  --shadow-outline: 0 0 0 3px rgba(59, 130, 246, 0.5);
   
   /* Transitions */
   --transition-fast: 0.1s ease;
@@ -136,34 +218,53 @@
   --container-2xl: 1536px;
 }
 
-/* Dark Theme Support */
+/* Dark Theme Support - Enhanced */
 @media (prefers-color-scheme: dark) {
   :root {
-    --color-bg-primary: var(--color-bg-dark);
-    --color-bg-secondary: var(--color-bg-darker);
-    --color-bg-tertiary: var(--color-gray-800);
-    --color-text-primary: var(--color-text-light);
+    --color-bg-primary: var(--color-gray-900);
+    --color-bg-secondary: var(--color-gray-800);
+    --color-bg-tertiary: var(--color-gray-700);
+    --color-text-primary: var(--color-gray-100);
     --color-text-secondary: var(--color-gray-300);
     --color-text-muted: var(--color-gray-400);
+    --color-button-primary: var(--color-primary-400);
+    --color-button-primary-hover: var(--color-primary-300);
+    --color-button-primary-active: var(--color-primary-500);
+    --color-button-secondary: var(--color-gray-600);
+    --color-button-secondary-hover: var(--color-gray-500);
+    --color-button-secondary-active: var(--color-gray-700);
+    --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.3), 0 1px 2px 0 rgba(0, 0, 0, 0.2);
+    --shadow-base: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+    --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
+    --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
   }
 }
 
-/* Light Theme Override */
+/* Light Theme Override - Enhanced */
 [data-theme="light"] {
   --color-bg-primary: var(--color-white);
   --color-bg-secondary: var(--color-gray-50);
   --color-bg-tertiary: var(--color-gray-100);
-  --color-text-primary: var(--color-text-dark);
-  --color-text-secondary: var(--color-gray-600);
+  --color-text-primary: var(--color-gray-900);
+  --color-text-secondary: var(--color-gray-700);
   --color-text-muted: var(--color-gray-500);
+  --color-button-primary: var(--color-primary-600);
+  --color-button-primary-hover: var(--color-primary-700);
+  --color-button-primary-active: var(--color-primary-800);
 }
 
-/* Dark Theme Override */
+/* Dark Theme Override - Enhanced */
 [data-theme="dark"] {
-  --color-bg-primary: var(--color-bg-dark);
-  --color-bg-secondary: var(--color-bg-darker);
-  --color-bg-tertiary: var(--color-gray-800);
-  --color-text-primary: var(--color-text-light);
+  --color-bg-primary: var(--color-gray-900);
+  --color-bg-secondary: var(--color-gray-800);
+  --color-bg-tertiary: var(--color-gray-700);
+  --color-text-primary: var(--color-gray-100);
   --color-text-secondary: var(--color-gray-300);
   --color-text-muted: var(--color-gray-400);
+  --color-button-primary: var(--color-primary-400);
+  --color-button-primary-hover: var(--color-primary-300);
+  --color-button-primary-active: var(--color-primary-500);
+  --color-button-secondary: var(--color-gray-600);
+  --color-button-secondary-hover: var(--color-gray-500);
+  --color-button-secondary-active: var(--color-gray-700);
 }

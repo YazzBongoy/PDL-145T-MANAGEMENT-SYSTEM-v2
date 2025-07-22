@@ -4,6 +4,9 @@ import type { Project, ProjectForm, User } from '../../types';
 import { TaskList } from '../Tasks/TaskList';
 import { Card } from '../ui/Card';
 import { CardHeader } from '../ui/CardHeader';
+import { HealthStatusBadge, getHealthStatus } from '../ui/StatusBadge';
+import { Table, TableColumn } from '../ui/Table';
+import { Tooltip } from '../ui/Tooltip';
 import '../ui/List.css';
 
 interface ProjectListProps {
@@ -99,6 +102,157 @@ export function ProjectList({ user, token }: ProjectListProps): React.ReactEleme
 
   const canEdit = user.role === UserRole.ADMIN || user.role === UserRole.SUPERVISOR;
 
+  // Helper functions for project status
+  const getProjectStatus = (project: Project): 'healthy' | 'warning' | 'critical' => {
+    const today = new Date();
+    const startDate = new Date(project.StartDate);
+    const endDate = project.EndDate ? new Date(project.EndDate) : null;
+    
+    // If project hasn't started yet
+    if (startDate > today) {
+      return 'healthy';
+    }
+    
+    // If project has an end date and is past due
+    if (endDate && today > endDate) {
+      return 'critical';
+    }
+    
+    // If project is nearing end date (within 2 weeks)
+    if (endDate) {
+      const twoWeeksFromNow = new Date(today);
+      twoWeeksFromNow.setDate(today.getDate() + 14);
+      if (endDate <= twoWeeksFromNow) {
+        return 'warning';
+      }
+    }
+    
+    return 'healthy';
+  };
+
+  const formatCurrency = (amount: number): string => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    }).format(amount);
+  };
+
+  const formatDate = (dateString: string): string => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
+  };
+
+  const getDaysRemaining = (endDate: string | null): string => {
+    if (!endDate) return 'No deadline';
+    
+    const today = new Date();
+    const end = new Date(endDate);
+    const diffTime = end.getTime() - today.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    if (diffDays < 0) return `${Math.abs(diffDays)} days overdue`;
+    if (diffDays === 0) return 'Due today';
+    return `${diffDays} days remaining`;
+  };
+
+  // Define table columns
+  const columns: TableColumn<Project>[] = [
+    {
+      key: 'name',
+      title: 'Project Name',
+      dataIndex: 'Name',
+      width: '25%',
+      render: (_, record) => (
+        <div>
+          <div className="font-semibold text-gray-900">{record.Name}</div>
+          <div className="text-sm text-gray-500">
+            Started {formatDate(record.StartDate)}
+          </div>
+        </div>
+      )
+    },
+    {
+      key: 'status',
+      title: 'Status',
+      width: '15%',
+      align: 'center',
+      render: (_, record) => (
+        <HealthStatusBadge
+          health={getProjectStatus(record)}
+          metadata={{
+            description: (() => {
+              const status = getProjectStatus(record);
+              if (status === 'critical') return 'Project is overdue or at risk';
+              if (status === 'warning') return 'Project deadline approaching';
+              return 'Project is on track';
+            })(),
+            value: getDaysRemaining(record.EndDate),
+            lastUpdated: 'Just now'
+          }}
+        />
+      )
+    },
+    {
+      key: 'dates',
+      title: 'Timeline',
+      width: '20%',
+      render: (_, record) => (
+        <div className="text-sm">
+          <div>
+            <span className="font-medium">Start:</span> {formatDate(record.StartDate)}
+          </div>
+          {record.EndDate && (
+            <div className="text-gray-600">
+              <span className="font-medium">End:</span> {formatDate(record.EndDate)}
+            </div>
+          )}
+        </div>
+      )
+    },
+    {
+      key: 'budget',
+      title: 'Budget',
+      width: '15%',
+      align: 'right',
+      render: (_, record) => (
+        <Tooltip content={`Total project budget: ${formatCurrency(record.TotalBudget)}`}>
+          <span className="font-medium text-green-600">
+            {formatCurrency(record.TotalBudget)}
+          </span>
+        </Tooltip>
+      )
+    },
+    {
+      key: 'actions',
+      title: 'Actions',
+      width: '15%',
+      align: 'right',
+      render: (_, record) => canEdit ? (
+        <div className="flex gap-2 justify-end">
+          <button 
+            onClick={() => handleEdit(record)} 
+            className="btn btn--secondary btn--sm"
+            title="Edit project"
+          >
+            Edit
+          </button>
+          <button 
+            onClick={() => handleDelete(record.ProjectID)} 
+            className="btn btn--danger btn--sm"
+            title="Delete project"
+          >
+            Delete
+          </button>
+        </div>
+      ) : null
+    }
+  ];
+
   return (
     <Card variant="outlined">
       <CardHeader 
@@ -116,7 +270,6 @@ export function ProjectList({ user, token }: ProjectListProps): React.ReactEleme
           </button>
         }
       />
-      {loading && <p>Loading...</p>}
       {error && <p className="error" role="alert" aria-live="polite">{error}</p>}
       {showForm && (
         <form onSubmit={handleSubmit} className="project-form" id="project-form" aria-labelledby="project-form-title">
@@ -168,20 +321,34 @@ export function ProjectList({ user, token }: ProjectListProps): React.ReactEleme
           </button>
         </form>
       )}
-      <div className="list">
-        {projects.map((p, index) => (
-          <div key={p.ProjectID} className={`list__item ${index % 2 === 0 ? 'zebra-row' : ''}`}>
-            <b>{p.Name}</b> (Start: {p.StartDate?.slice(0, 10)}) Budget: {p.TotalBudget}
-            {canEdit && (
-              <>
-                <button onClick={() => handleEdit(p)} className="btn btn--secondary">Edit</button>
-                <button onClick={() => handleDelete(p.ProjectID)} className="btn btn--danger">Delete</button>
-              </>
-            )}
-            <TaskList projectId={p.ProjectID} user={user} token={token} />
-          </div>
-        ))}
-      </div>
+      
+      <Table
+        dataSource={projects}
+        columns={columns}
+        loading={loading}
+        rowKey={(record) => record.ProjectID}
+        emptyState={
+          <>
+            <div className="text-4xl mb-4">📁</div>
+            <div className="font-medium text-gray-600">No projects found</div>
+            <div className="text-sm text-gray-500 mt-2">
+              {canEdit ? 'Click "+ New Project" to create your first project' : 'Projects will appear here when created'}
+            </div>
+          </>
+        }
+        caption="Active projects with status and budget tracking"
+      />
+      
+      {/* Tasks for each project - shown in separate cards */}
+      {projects.length > 0 && (
+        <div className="mt-8 space-y-6">
+          {projects.map((project) => (
+            <div key={`tasks-${project.ProjectID}`} className="border-t pt-6">
+              <TaskList projectId={project.ProjectID} user={user} token={token} />
+            </div>
+          ))}
+        </div>
+      )}
     </Card>
   );
 }
