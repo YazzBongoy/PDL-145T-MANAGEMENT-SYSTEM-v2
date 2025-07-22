@@ -1,3 +1,29 @@
+## Docker Startup Steps
+
+1. Ensure Docker is installed and running on your machine.
+2. Use the following command to build and start the Docker containers:
+   ```sh
+   docker-compose up --build
+   ```
+3. This command will spin up containers for the application and PostgreSQL database.
+
+## Accessing Adminer
+
+1. Adminer can be accessed via your browser at `http://localhost:8080`.
+2. Use the following credentials to access the PostgreSQL database:
+   - **System:** PostgreSQL
+   - **Server:** db (or localhost if accessing directly from the host machine)
+   - **Username:** your-db-username
+   - **Password:** your-db-password
+   - **Database:** pdl_management
+
+## UI Screenshots
+
+Below are some UI screenshots of the application.
+
+![Home Page](path/to/homepage-screenshot.png)
+![Dashboard](path/to/dashboard-screenshot.png)
+
 # React + TypeScript + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
