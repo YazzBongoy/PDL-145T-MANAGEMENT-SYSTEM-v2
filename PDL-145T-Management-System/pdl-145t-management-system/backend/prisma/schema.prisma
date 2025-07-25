@@ -112,6 +112,7 @@ model Measurement {
 
   // Relationships
   Task Task @relation(fields: [TaskID], references: [TaskID])
+  Site Site @relation(fields: [SiteID], references: [SiteID])
 }
 
 // Validations Table - Tracks validations of construction sites
@@ -127,6 +128,7 @@ model Validation {
 
   // Relationships
   Task Task @relation(fields: [TaskID], references: [TaskID])
+  Site Site @relation(fields: [SiteID], references: [SiteID])
   Reports Report[]
 }
 
@@ -142,6 +144,30 @@ model Report {
   // Relationships
   Validation Validation @relation(fields: [ValidationID], references: [ValidationID])
   Project    Project    @relation(fields: [ProjectID], references: [ProjectID])
+}
+
+// Territory Table - Manages territories containing multiple sites
+model Territory {
+  TerritoryID Int    @id @default(autoincrement())
+  Name        String @unique
+  Sites       Site[]
+}
+
+// Site Table - Manages construction sites within territories
+model Site {
+  SiteID      String @id      // keep string for compatibility with Measurement/Validation
+  Name        String
+  Type        SiteType
+  Province    String
+  TerritoryID Int
+  Location    String? // Coordinates as string (lat,lng)
+  Elevation   Float?
+  CreatedAt   DateTime @default(now())
+  UpdatedAt   DateTime @updatedAt
+
+  Territory   Territory @relation(fields: [TerritoryID], references: [TerritoryID])
+  Measurements Measurement[]
+  Validations  Validation[]
 }
 
 // User Table - Stores user authentication and profile information
@@ -165,6 +191,12 @@ enum ValidationStatus {
   Pending
   Approved
   Rejected
+}
+
+enum SiteType {
+  CENTRE_DE_SANTE
+  ECOLE_PRIMAIRE
+  BATIMENT_ADMINISTRATIF
 }
 
 enum UserRole {

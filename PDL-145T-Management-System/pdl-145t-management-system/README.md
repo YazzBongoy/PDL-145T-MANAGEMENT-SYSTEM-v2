@@ -18,7 +18,8 @@ A comprehensive management system for PDL-145T operations built with Node.js, Re
 
 ### Database
 
-- **PostgreSQL** (15.x) - Advanced open-source relational database with excellent JSON support, full-text search, and geospatial capabilities
+- **PostgreSQL with PostGIS** (15.x) - Advanced open-source relational database with geospatial capabilities for spatial data management
+- **Neo4j** (5.15-community) - Graph database for complex relationships and analytics, used for territory and site relationship modeling
 
 ### Development Tools
 
@@ -193,13 +194,61 @@ Navigate to the `frontend/` directory and run:
 - **`npm run format`** - Format frontend code
 - **`npm run format:check`** - Check code formatting
 
+## Data Models
+
+### Prisma Database Schema
+
+The system uses Prisma ORM with a comprehensive data model that includes:
+
+#### Core Entities
+
+- **Project** - Manages overall projects with budget tracking and timeline management
+- **Task** - Individual tasks within projects with completion status and resource assignments
+- **Expense** - Financial tracking for project costs and task-specific expenses
+- **Resource** - Available resources with quantity tracking
+- **User** - User authentication and role management (USER, ADMIN, SUPERVISOR, FINANCE, CONSTRUCTION)
+
+#### Geographic Entities
+
+- **Territory** - Administrative territories (INONGO, KUTU, MUSHIE, YUMBI)
+- **Site** - Construction sites with geographic coordinates and site types:
+  - CENTRE_DE_SANTE (Health Centers)
+  - ECOLE_PRIMAIRE (Primary Schools)
+  - BATIMENT_ADMINISTRATIF (Administrative Buildings)
+
+#### Operational Entities
+
+- **Measurement** - Site measurements performed by Construction Execution Agent
+- **Validation** - Site validations with status tracking (Pending, Approved, Rejected)
+- **Report** - Generated reports for billing validation and project tracking
+
+#### Relationship Tables
+
+- **ProjectResource** - Many-to-many relationship between projects and resources
+- **TaskResource** - Many-to-many relationship between tasks and resources
+
+### Neo4j Graph Database
+
+The Neo4j database complements the PostgreSQL database by storing:
+
+- **Territory nodes** - Administrative territory entities
+- **Site nodes** - Construction sites with spatial attributes
+- **LOCATED_IN relationships** - Connects sites to their territories
+
+This dual-database approach enables:
+- Complex relationship queries through Neo4j
+- Geospatial operations through PostGIS
+- Transactional operations through PostgreSQL
+
 ## Docker Development
 
 The project uses Docker Compose for development. The configuration includes:
 
-- **PostgreSQL with PostGIS** - Database server
-- **Backend API** - Express.js server
+- **PostgreSQL with PostGIS** - Primary database server with geospatial capabilities
+- **Neo4j** - Graph database for relationships and analytics
+- **Backend API** - Express.js server with Prisma ORM
 - **Frontend** - React application
+- **Adminer** - Database administration tool
 
 ### Docker Commands
 
@@ -224,6 +273,22 @@ docker compose -f infrastructure/docker-compose.yml up --build
 
 ## Database Management
 
+### Adminer - Database Administration Tool
+
+The development environment includes Adminer, a web-based database administration tool for easy database management.
+
+**Accessing Adminer:**
+1. Start the development environment: `npm run dev`
+2. Open http://localhost:8080 in your web browser
+3. Use the following credentials to log in:
+   - **System**: PostgreSQL
+   - **Server**: db
+   - **Username**: postgres
+   - **Password**: password
+   - **Database**: pdl_management
+
+**Note**: Adminer is only available in the development environment and provides full access to the PostgreSQL database for debugging, querying, and administration tasks.
+
 ### Migrations
 
 Database migrations are handled by Prisma:
@@ -241,11 +306,59 @@ cd backend && npx prisma migrate reset
 
 ### Seeding
 
-Seed the database with initial data:
+The project includes comprehensive seeding capabilities for both PostgreSQL and Neo4j databases:
+
+#### PostgreSQL Database Seeding
 
 ```bash
+# Seed PostgreSQL database with initial data
 npm run db:seed
 ```
+
+This runs the main seeding script (`scripts/db-seed.js`) which:
+- Executes Prisma seeding commands
+- Populates initial data for development and testing
+- Creates sample projects, tasks, users, and resources
+
+#### Neo4j Database Seeding
+
+The Neo4j database can be seeded using the specialized Neo4j seed script:
+
+```bash
+# Navigate to backend scripts directory
+cd backend/scripts
+
+# Seed with sample data
+node seedNeo4j.js
+
+# Seed with sample data (explicit)
+node seedNeo4j.js --sample
+
+# Parse KML file and seed
+node seedNeo4j.js path/to/sites.kml
+
+# Clear all Neo4j data
+node seedNeo4j.js --clear
+
+# Show help
+node seedNeo4j.js --help
+```
+
+The Neo4j seeding script (`backend/scripts/seedNeo4j.js`) provides:
+
+- **Territory Creation**: Seeds the four territories (INONGO, KUTU, MUSHIE, YUMBI)
+- **Site Management**: Creates construction sites with geographic coordinates
+- **Relationship Mapping**: Establishes LOCATED_IN relationships between sites and territories
+- **KML Import**: Parses KML files to extract site data automatically
+- **Sample Data**: Includes sample sites for development and testing
+- **Data Verification**: Validates seeded data and provides summary statistics
+
+**Neo4j Seeding Features:**
+- Automatic constraint creation for data integrity
+- Flexible territory mapping with fallback logic
+- Support for different site types (CENTRE_DE_SANTE, ECOLE_PRIMAIRE, BATIMENT_ADMINISTRATIF)
+- Geographic coordinate handling (longitude, latitude, elevation)
+- Error handling and progress reporting
 
 ## Code Quality
 
@@ -302,12 +415,49 @@ npm run test:watch --workspace=frontend
 
 ## Environment Variables
 
-Create a `.env` file in the `infrastructure/` directory:
+Create a `.env` file in the `infrastructure/` directory with the following configuration:
 
 ```env
+# PostgreSQL Configuration
 POSTGRES_USER=postgres
 POSTGRES_PASSWORD=password
 POSTGRES_DB=pdl_management
+
+# Neo4j Configuration
+NEO4J_USER=neo4j
+NEO4J_PASSWORD=password
+NEO4J_URI=bolt://localhost:7687
+
+# Backend Configuration
+DATABASE_URL=postgresql://postgres:password@localhost:5432/pdl_management
+JWT_SECRET=your_jwt_secret_key_here
+NODE_ENV=development
+PORT=8000
+
+# Frontend Configuration
+VITE_API_URL=http://localhost:8000
+```
+
+### Required Services
+
+Before running the development environment, ensure the following services are running:
+
+1. **PostgreSQL with PostGIS** - Required for spatial data operations and primary database functionality
+2. **Neo4j** - Required for graph database operations and territory/site relationships
+
+Both services are automatically started when using `npm run dev` with Docker Compose, but can also be run independently:
+
+```bash
+# Start only PostgreSQL with PostGIS
+docker compose -f infrastructure/docker-compose.yml up db
+
+# Start only Neo4j
+docker compose -f infrastructure/docker-compose.yml up neo4j
+
+# Access Neo4j browser (when running)
+# http://localhost:7475
+# Username: neo4j
+# Password: password
 ```
 
 ## Contributing
