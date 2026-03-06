@@ -27,13 +27,24 @@ module.exports = {
   testMatch: ["**/__tests__/**/*.ts", "**/?(*.)+(spec|test).ts"],
   moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json"],
   setupFilesAfterEnv: [],
+  globalSetup: "<rootDir>/src/tests/global-setup.ts",
+  globalTeardown: "<rootDir>/src/tests/global-teardown.ts",
   collectCoverageFrom: [
     "src/**/*.ts",
     "!src/**/*.d.ts",
     "!src/**/*.test.ts",
     "!src/**/*.spec.ts",
+    "!src/index.ts",
   ],
-  testTimeout: 10000,
+  coverageThreshold: {
+    global: {
+      branches: 75,
+      functions: 75,
+      lines: 75,
+      statements: 75,
+    },
+  },
+  testTimeout: 30000,
   extensionsToTreatAsEsm: [".ts"],
   moduleNameMapper: {
     "^(\.{1,2}/.*)\.js$": "$1",
