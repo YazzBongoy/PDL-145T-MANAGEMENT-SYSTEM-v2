@@ -8,10 +8,10 @@ import jwt from 'jsonwebtoken';
 // Import routes
 import measurementRoutes from './routes/measurementRoutes.js';
 import validationRoutes from './routes/validationRoutes.js';
+import tasksRoutes from './routes/tasksRoutes.js';
+import expensesRoutes from './routes/expensesRoutes.js';
+import resourcesRoutes from './routes/resourcesRoutes.js';
 // import projectRoutes from './routes/projectRoutes.js';
-// import taskRoutes from './routes/taskRoutes.js';
-// import expenseRoutes from './routes/expenseRoutes.js';
-// import resourceRoutes from './routes/resourceRoutes.js';
 // import reportRoutes from './routes/reportRoutes.js';
 
 // Import middleware and types
@@ -51,10 +51,10 @@ app.get('/api/health', (req, res) => {
 // API routes
 app.use('/api/measurements', measurementRoutes);
 app.use('/api/validations', validationRoutes);
+app.use('/api/tasks', tasksRoutes);
+app.use('/api/expenses', expensesRoutes);
+app.use('/api/resources', resourcesRoutes);
 // app.use('/api/projects', projectRoutes);
-// app.use('/api/tasks', taskRoutes);
-// app.use('/api/expenses', expenseRoutes);
-// app.use('/api/resources', resourceRoutes);
 // app.use('/api/reports', reportRoutes);
 
 // User registration

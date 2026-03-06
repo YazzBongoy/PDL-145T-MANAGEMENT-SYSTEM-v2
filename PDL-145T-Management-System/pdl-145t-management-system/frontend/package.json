@@ -17,6 +17,10 @@
     "test:run": "vitest run",
     "cypress:open": "cypress open",
     "cypress:run": "cypress run",
+    "playwright": "playwright test",
+    "playwright:ui": "playwright test --ui",
+    "playwright:debug": "playwright test --debug",
+    "playwright:headed": "playwright test --headed",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -26,6 +30,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.29.0",
+    "@playwright/test": "^1.58.2",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.1.0",
     "@testing-library/user-event": "^14.6.1",

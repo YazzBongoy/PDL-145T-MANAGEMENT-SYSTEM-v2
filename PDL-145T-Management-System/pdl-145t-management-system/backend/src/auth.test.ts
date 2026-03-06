@@ -172,7 +172,7 @@ describe('Authentication Endpoints', () => {
   it('should access protected route with valid token', async () => {
     const res = await request(app)
       .get('/me')
-      .set(getAuthHeaders(token)[0], getAuthHeaders(token)[1]);
+      .set('Authorization', `Bearer ${token}`);
 
     expect(res.status).toBe(200);
     expect(res.body.email).toBe(testUser.email);

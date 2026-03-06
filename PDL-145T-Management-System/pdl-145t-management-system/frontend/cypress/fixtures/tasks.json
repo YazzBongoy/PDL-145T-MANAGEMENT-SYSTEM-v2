@@ -1,0 +1,41 @@
+[
+  {
+    "id": 1,
+    "projectId": 1,
+    "name": "Foundation Work",
+    "description": "Prepare and lay foundation for the building",
+    "assignedTo": 3,
+    "assignedToName": "John Doe",
+    "status": "IN_PROGRESS",
+    "priority": "HIGH",
+    "dueDate": "2026-03-20T00:00:00Z",
+    "createdAt": "2026-03-06T00:00:00Z",
+    "completedAt": null
+  },
+  {
+    "id": 2,
+    "projectId": 1,
+    "name": "Structural Framework",
+    "description": "Install structural beams and columns",
+    "assignedTo": 4,
+    "assignedToName": "Jane Smith",
+    "status": "PENDING",
+    "priority": "HIGH",
+    "dueDate": "2026-03-27T00:00:00Z",
+    "createdAt": "2026-03-06T00:00:00Z",
+    "completedAt": null
+  },
+  {
+    "id": 3,
+    "projectId": 1,
+    "name": "Electrical Wiring",
+    "description": "Install electrical systems and wiring",
+    "assignedTo": 5,
+    "assignedToName": "Mike Johnson",
+    "status": "PENDING",
+    "priority": "MEDIUM",
+    "dueDate": "2026-04-10T00:00:00Z",
+    "createdAt": "2026-03-06T00:00:00Z",
+    "completedAt": null
+  }
+]
