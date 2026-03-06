@@ -65,7 +65,7 @@ export function FinanceDashboard({ user, onLogout, token }: DashboardProps): Rea
   );
 }
 
-export function ConstructionDashboard({ user, onLogout, token }: DashboardProps): React.ReactElement {
+export function ConstructionDashboard({ user, onLogout, token: _token }: DashboardProps): React.ReactElement {
   return (
     <div className="dashboard-container">
       <div className="dashboard-header">
@@ -83,7 +83,7 @@ export function ConstructionDashboard({ user, onLogout, token }: DashboardProps)
   );
 }
 
-export function UserDashboard({ user, onLogout, token }: DashboardProps): React.ReactElement {
+export function UserDashboard({ user, onLogout, token: _token }: DashboardProps): React.ReactElement {
   return (
     <div className="dashboard-container">
       <div className="dashboard-header">
@@ -114,10 +114,10 @@ export function DashboardSwitcher({ user, onLogout, token }: DashboardSwitcherPr
   case UserRole.SUPERVISOR:
     return <SupervisorDashboard user={user} onLogout={onLogout} token={token} />;
   case UserRole.FINANCE:
-    return <FinanceDashboard user={user} onLogout={onLogout} />;
+    return <FinanceDashboard user={user} onLogout={onLogout} token={token} />;
   case UserRole.CONSTRUCTION:
-    return <ConstructionDashboard user={user} onLogout={onLogout} />;
+    return <ConstructionDashboard user={user} onLogout={onLogout} token={token} />;
   default:
-    return <UserDashboard user={user} onLogout={onLogout} />;
+    return <UserDashboard user={user} onLogout={onLogout} token={token} />;
   }
 }
