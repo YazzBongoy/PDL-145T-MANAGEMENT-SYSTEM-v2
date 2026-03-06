@@ -1,0 +1,54 @@
+[
+  {
+    "id": 1,
+    "projectId": 1,
+    "description": "Concrete and cement materials",
+    "amount": 5000,
+    "category": "MATERIALS",
+    "date": "2026-03-05T00:00:00Z",
+    "vendor": "ABC Supplies",
+    "approvalStatus": "APPROVED",
+    "approvedBy": 1,
+    "notes": "Bulk purchase for foundation work",
+    "documentUrl": "https://example.com/invoice/001.pdf"
+  },
+  {
+    "id": 2,
+    "projectId": 1,
+    "description": "Labor costs - Week 1",
+    "amount": 3000,
+    "category": "LABOR",
+    "date": "2026-03-06T00:00:00Z",
+    "vendor": "Construction Team",
+    "approvalStatus": "PENDING",
+    "approvedBy": null,
+    "notes": "Payment for 10 workers, 5 days",
+    "documentUrl": null
+  },
+  {
+    "id": 3,
+    "projectId": 1,
+    "description": "Transportation and logistics",
+    "amount": 1500,
+    "category": "TRANSPORTATION",
+    "date": "2026-03-04T00:00:00Z",
+    "vendor": "Quick Transport",
+    "approvalStatus": "APPROVED",
+    "approvedBy": 1,
+    "notes": "Equipment delivery to site",
+    "documentUrl": "https://example.com/invoice/003.pdf"
+  },
+  {
+    "id": 4,
+    "projectId": 1,
+    "description": "Safety equipment and gear",
+    "amount": 800,
+    "category": "SAFETY",
+    "date": "2026-03-03T00:00:00Z",
+    "vendor": "Safety Plus",
+    "approvalStatus": "REJECTED",
+    "approvedBy": 1,
+    "notes": "Helmet and protective gear - duplicate purchase",
+    "documentUrl": "https://example.com/invoice/004.pdf"
+  }
+]
