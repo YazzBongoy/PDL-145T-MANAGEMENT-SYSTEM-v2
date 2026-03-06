@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { UserRole } from '../../types';
-import type { Project, ProjectForm, User } from '../../types';
+import type { Project, ProjectForm, User, Task } from '../../types';
 import { TaskList } from '../Tasks/TaskList';
+import { GanttChart } from './Gantt';
+import { SprintList } from './SprintList';
 import { Card } from '../ui/Card';
 import { CardHeader } from '../ui/CardHeader';
-import { HealthStatusBadge, getHealthStatus } from '../ui/StatusBadge';
-import { Table, TableColumn } from '../ui/Table';
+import { HealthStatusBadge } from '../ui/StatusBadge';
+import { Table, type TableColumn } from '../ui/Table';
 import { Tooltip } from '../ui/Tooltip';
 import '../ui/List.css';
 
@@ -26,6 +28,33 @@ export function ProjectList({ user, token }: ProjectListProps): React.ReactEleme
     TotalBudget: '' 
   });
   const [editId, setEditId] = useState<number | null>(null);
+  const [viewMode, setViewMode] = useState<'list' | 'gantt'>('list');
+  const [projectTasks, setProjectTasks] = useState<Record<number, Task[]>>({});
+
+  const fetchProjectTasks = useCallback(async (projectId: number): Promise<void> => {
+    try {
+      const res = await fetch(`/api/projects/${projectId}/tasks`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) throw new Error('Failed to fetch tasks');
+      const data = await res.json();
+      setProjectTasks(prev => ({ ...prev, [projectId]: data }));
+    } catch (err) {
+      console.error('Failed to fetch tasks for Gantt:', err);
+    }
+  }, [token]);
+
+  const handleViewModeChange = useCallback((mode: 'list' | 'gantt'): void => {
+    setViewMode(mode);
+    if (mode === 'gantt') {
+      // Fetch tasks for all projects when switching to Gantt view
+      projects.forEach(p => {
+        if (!projectTasks[p.ProjectID]) {
+          fetchProjectTasks(p.ProjectID);
+        }
+      });
+    }
+  }, [projects, projectTasks, fetchProjectTasks]);
 
   const fetchProjects = useCallback(async (): Promise<void> => {
     setLoading(true);
@@ -191,7 +220,7 @@ export function ProjectList({ user, token }: ProjectListProps): React.ReactEleme
               if (status === 'warning') return 'Project deadline approaching';
               return 'Project is on track';
             })(),
-            value: getDaysRemaining(record.EndDate),
+            value: getDaysRemaining(record.EndDate || null),
             lastUpdated: 'Just now'
           }}
         />
@@ -258,16 +287,34 @@ export function ProjectList({ user, token }: ProjectListProps): React.ReactEleme
       <CardHeader 
         title="Projects" 
         actions={
-          <button 
-            onClick={() => { setShowForm(true); setEditId(null); }} 
-            disabled={!canEdit}
-            className="btn btn--primary"
-            aria-expanded={showForm}
-            aria-label="Add new project"
-            aria-controls="project-form"
-          >
-            + New Project
-          </button>
+          <div className="flex gap-2">
+            <div className="view-toggle">
+              <button
+                onClick={() => handleViewModeChange('list')}
+                className={`btn btn--sm ${viewMode === 'list' ? 'btn--primary' : 'btn--secondary'}`}
+                aria-pressed={viewMode === 'list'}
+              >
+                List
+              </button>
+              <button
+                onClick={() => handleViewModeChange('gantt')}
+                className={`btn btn--sm ${viewMode === 'gantt' ? 'btn--primary' : 'btn--secondary'}`}
+                aria-pressed={viewMode === 'gantt'}
+              >
+                Timeline
+              </button>
+            </div>
+            <button 
+              onClick={() => { setShowForm(true); setEditId(null); }} 
+              disabled={!canEdit}
+              className="btn btn--primary"
+              aria-expanded={showForm}
+              aria-label="Add new project"
+              aria-controls="project-form"
+            >
+              + New Project
+            </button>
+          </div>
         }
       />
       {error && <p className="error" role="alert" aria-live="polite">{error}</p>}
@@ -322,29 +369,53 @@ export function ProjectList({ user, token }: ProjectListProps): React.ReactEleme
         </form>
       )}
       
-      <Table
-        dataSource={projects}
-        columns={columns}
-        loading={loading}
-        rowKey={(record) => record.ProjectID}
-        emptyState={
-          <>
-            <div className="text-4xl mb-4">📁</div>
-            <div className="font-medium text-gray-600">No projects found</div>
-            <div className="text-sm text-gray-500 mt-2">
-              {canEdit ? 'Click "+ New Project" to create your first project' : 'Projects will appear here when created'}
+      {viewMode === 'list' ? (
+        <Table
+          dataSource={projects}
+          columns={columns}
+          loading={loading}
+          rowKey={(record) => record.ProjectID}
+          emptyState={
+            <>
+              <div className="text-4xl mb-4">📁</div>
+              <div className="font-medium text-gray-600">No projects found</div>
+              <div className="text-sm text-gray-500 mt-2">
+                {canEdit ? 'Click "+ New Project" to create your first project' : 'Projects will appear here when created'}
+              </div>
+            </>
+          }
+          caption="Active projects with status and budget tracking"
+        />
+      ) : (
+        <div className="gantt-view">
+          {projects.map(project => (
+            <GanttChart
+              key={project.ProjectID}
+              projectName={project.Name}
+              projectStart={project.StartDate}
+              projectEnd={project.EndDate}
+              tasks={projectTasks[project.ProjectID] || []}
+            />
+          ))}
+          {projects.length === 0 && (
+            <div className="text-center py-8 text-gray-500">
+              <div className="text-4xl mb-4">📁</div>
+              <div>No projects to display in timeline view</div>
             </div>
-          </>
-        }
-        caption="Active projects with status and budget tracking"
-      />
+          )}
+        </div>
+      )}
       
-      {/* Tasks for each project - shown in separate cards */}
-      {projects.length > 0 && (
+      {viewMode === 'list' && projects.length > 0 && (
         <div className="mt-8 space-y-6">
           {projects.map((project) => (
-            <div key={`tasks-${project.ProjectID}`} className="border-t pt-6">
-              <TaskList projectId={project.ProjectID} user={user} token={token} />
+            <div key={`tasks-${project.ProjectID}`}>
+              <div className="border-t pt-6">
+                <TaskList projectId={project.ProjectID} user={user} token={token} />
+              </div>
+              <div className="border-t pt-6 mt-6">
+                <SprintList projectId={project.ProjectID} user={user} token={token} />
+              </div>
             </div>
           ))}
         </div>

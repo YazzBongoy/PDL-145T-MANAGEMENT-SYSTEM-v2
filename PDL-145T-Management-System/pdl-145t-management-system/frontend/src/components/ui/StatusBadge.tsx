@@ -1,5 +1,5 @@
 import React from 'react';
-import { Badge, BadgeProps } from './Badge';
+import { Badge, type BadgeProps } from './Badge';
 import { Tooltip } from './Tooltip';
 import './StatusBadge.css';
 

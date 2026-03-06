@@ -85,6 +85,15 @@ export interface ExpenseForm {
   Date: string;
 }
 
+export interface Sprint {
+  SprintID: number;
+  ProjectID: number;
+  Name: string;
+  StartDate: string;
+  EndDate: string;
+  Status: 'PLANNED' | 'ACTIVE' | 'COMPLETED' | 'CANCELLED';
+}
+
 export interface AuthState {
   token: string | null;
   user: User | null;

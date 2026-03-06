@@ -1,0 +1,212 @@
+.finance-dashboard {
+  padding: var(--spacing-lg, 16px);
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.finance-header {
+  margin-bottom: var(--spacing-xl, 24px);
+}
+
+.finance-header h2 {
+  margin: 0 0 var(--spacing-sm, 8px) 0;
+  font-size: var(--font-size-2xl, 1.5rem);
+  font-weight: var(--font-weight-bold, 700);
+  color: var(--color-text-primary, #111827);
+}
+
+.finance-header p {
+  margin: 0;
+  color: var(--color-text-secondary, #6b7280);
+  font-size: var(--font-size-sm, 0.875rem);
+}
+
+.finance-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: var(--spacing-md, 12px);
+  margin-bottom: var(--spacing-xl, 24px);
+}
+
+.summary-card {
+  padding: var(--spacing-lg, 16px);
+  text-align: center;
+}
+
+.summary-value {
+  font-size: var(--font-size-2xl, 1.5rem);
+  font-weight: var(--font-weight-bold, 700);
+  color: var(--color-text-primary, #111827);
+  margin-bottom: var(--spacing-xs, 4px);
+}
+
+.summary-label {
+  font-size: var(--font-size-sm, 0.875rem);
+  color: var(--color-text-secondary, #6b7280);
+  margin-bottom: var(--spacing-xs, 4px);
+}
+
+.summary-meta {
+  font-size: var(--font-size-xs, 0.75rem);
+  color: var(--color-text-muted, #9ca3af);
+}
+
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  background-color: var(--color-gray-200, #e5e7eb);
+  border-radius: var(--radius-full, 9999px);
+  overflow: hidden;
+  margin-top: var(--spacing-sm, 8px);
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: var(--radius-full, 9999px);
+  transition: width 0.3s ease;
+}
+
+.mt-6 {
+  margin-top: var(--spacing-xl, 24px);
+}
+
+/* Project Budget List */
+.project-budget-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md, 12px);
+}
+
+.project-budget-item {
+  padding: var(--spacing-md, 12px);
+  border: 1px solid var(--color-border, #e5e7eb);
+  border-radius: var(--radius-lg, 8px);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.project-budget-item:hover {
+  background-color: var(--color-gray-50, #f9fafb);
+}
+
+.project-budget-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--spacing-sm, 8px);
+}
+
+.project-budget-header h4 {
+  margin: 0;
+  font-size: var(--font-size-base, 1rem);
+  font-weight: var(--font-weight-semibold, 600);
+}
+
+.project-progress-bar {
+  width: 100%;
+  height: 6px;
+  background-color: var(--color-gray-200, #e5e7eb);
+  border-radius: var(--radius-full, 9999px);
+  overflow: hidden;
+  margin-top: var(--spacing-xs, 4px);
+}
+
+/* Expense List */
+.expense-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.expense-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-sm, 8px) 0;
+  border-bottom: 1px solid var(--color-border-light, #f3f4f6);
+}
+
+.expense-item:last-child {
+  border-bottom: none;
+}
+
+.expense-description {
+  font-size: var(--font-size-sm, 0.875rem);
+  color: var(--color-text-primary, #111827);
+}
+
+.expense-meta {
+  display: flex;
+  gap: var(--spacing-md, 12px);
+  align-items: center;
+}
+
+.expense-date {
+  font-size: var(--font-size-xs, 0.75rem);
+  color: var(--color-text-secondary, #6b7280);
+}
+
+.expense-amount {
+  font-size: var(--font-size-sm, 0.875rem);
+  font-weight: var(--font-weight-semibold, 600);
+  color: var(--color-error, #dc2626);
+}
+
+/* Category List */
+.category-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.category-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-sm, 8px) 0;
+  border-bottom: 1px solid var(--color-border-light, #f3f4f6);
+}
+
+.category-item:last-child {
+  border-bottom: none;
+}
+
+.category-name {
+  font-size: var(--font-size-sm, 0.875rem);
+  color: var(--color-text-primary, #111827);
+  font-weight: var(--font-weight-medium, 500);
+}
+
+.category-amount {
+  font-size: var(--font-size-sm, 0.875rem);
+  font-weight: var(--font-weight-semibold, 600);
+  color: var(--color-text-secondary, #6b7280);
+}
+
+/* Utility classes */
+.text-sm {
+  font-size: var(--font-size-sm, 0.875rem);
+}
+
+.text-gray-500 {
+  color: var(--color-gray-500, #6b7280);
+}
+
+.text-center {
+  text-align: center;
+}
+
+.py-4 {
+  padding-top: var(--spacing-md, 12px);
+  padding-bottom: var(--spacing-md, 12px);
+}
+
+.font-medium {
+  font-weight: var(--font-weight-medium, 500);
+}
+
+.text-right {
+  text-align: right;
+}
+
+.mt-1 {
+  margin-top: var(--spacing-xs, 4px);
+}

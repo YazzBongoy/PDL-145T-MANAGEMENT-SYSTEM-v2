@@ -11,6 +11,7 @@ import validationRoutes from './routes/validationRoutes.js';
 import tasksRoutes from './routes/tasksRoutes.js';
 import expensesRoutes from './routes/expensesRoutes.js';
 import resourcesRoutes from './routes/resourcesRoutes.js';
+import sprintRoutes from './routes/sprintRoutes.js';
 // import projectRoutes from './routes/projectRoutes.js';
 // import reportRoutes from './routes/reportRoutes.js';
 
@@ -54,6 +55,7 @@ app.use('/api/validations', validationRoutes);
 app.use('/api/tasks', tasksRoutes);
 app.use('/api/expenses', expensesRoutes);
 app.use('/api/resources', resourcesRoutes);
+app.use('/api/sprints', sprintRoutes);
 // app.use('/api/projects', projectRoutes);
 // app.use('/api/reports', reportRoutes);
 

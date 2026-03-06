@@ -4,8 +4,8 @@ import type { Task, TaskForm, User } from '../../types';
 import { ExpenseList } from '../Expenses/ExpenseList';
 import { Card } from '../ui/Card';
 import { CardHeader } from '../ui/CardHeader';
-import { TaskStatusBadge } from '../ui/StatusBadge';
-import { Table, TableColumn } from '../ui/Table';
+import { TaskStatusBadge, type TaskStatusType } from '../ui/StatusBadge';
+import { Table, type TableColumn } from '../ui/Table';
 import { Tooltip } from '../ui/Tooltip';
 import '../ui/List.css';
 
@@ -104,7 +104,7 @@ export function TaskList({ projectId, user, token }: TaskListProps): React.React
   const canEdit = user.role === UserRole.ADMIN || user.role === UserRole.SUPERVISOR;
 
   // Map TaskStatus to our StatusBadge format
-  const mapTaskStatus = (status: TaskStatus): string => {
+  const mapTaskStatus = (status: TaskStatus): TaskStatusType => {
     switch (status) {
       case TaskStatus.NOT_STARTED:
         return 'not-started';

@@ -3,6 +3,7 @@ import { UserRole } from '../../types';
 import type { User } from '../../types';
 import { ProjectList } from '../Projects/ProjectList';
 import { ResourceList } from '../Resources/ResourceList';
+import { FinanceDashboard as FinanceDashboardFull } from './FinanceDashboard';
 import './Dashboard.css';
 
 interface DashboardProps {
@@ -53,22 +54,10 @@ export function SupervisorDashboard({ user, onLogout, token }: DashboardProps): 
   );
 }
 
-interface SimpleDashboardProps {
-  user: User;
-  onLogout: () => void;
-}
-
-export function FinanceDashboard({ user, onLogout }: SimpleDashboardProps): React.ReactElement {
+export function FinanceDashboard({ user, onLogout, token }: DashboardProps): React.ReactElement {
   return (
     <div className="dashboard-container">
-      <div className="dashboard-header">
-        <h2>Finance Dashboard</h2>
-      </div>
-      <div className="dashboard-grid">
-        <div className="dashboard-card">
-          <p>Welcome, {user.name}!</p>
-        </div>
-      </div>
+      <FinanceDashboardFull user={user} token={token} />
       <div className="dashboard-actions">
         <button onClick={onLogout} className="btn btn--secondary">Logout</button>
       </div>
@@ -76,7 +65,7 @@ export function FinanceDashboard({ user, onLogout }: SimpleDashboardProps): Reac
   );
 }
 
-export function ConstructionDashboard({ user, onLogout }: SimpleDashboardProps): React.ReactElement {
+export function ConstructionDashboard({ user, onLogout, token }: DashboardProps): React.ReactElement {
   return (
     <div className="dashboard-container">
       <div className="dashboard-header">
@@ -94,7 +83,7 @@ export function ConstructionDashboard({ user, onLogout }: SimpleDashboardProps):
   );
 }
 
-export function UserDashboard({ user, onLogout }: SimpleDashboardProps): React.ReactElement {
+export function UserDashboard({ user, onLogout, token }: DashboardProps): React.ReactElement {
   return (
     <div className="dashboard-container">
       <div className="dashboard-header">
