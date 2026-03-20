@@ -1,0 +1,209 @@
+.approval-workflow {
+  padding: 20px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background: #f9f9f9;
+}
+
+.approval-workflow.loading,
+.approval-workflow.empty {
+  text-align: center;
+  color: #666;
+  padding: 40px 20px;
+}
+
+.workflow-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #e0e0e0;
+  padding-bottom: 10px;
+}
+
+.workflow-header h3 {
+  margin: 0;
+  color: #333;
+  font-size: 18px;
+}
+
+.payment-blocked-badge {
+  background: #fff3cd;
+  color: #856404;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 600;
+  border: 1px solid #ffeaa7;
+}
+
+.workflow-timeline {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.workflow-level {
+  flex: 1;
+  min-width: 200px;
+  padding: 15px;
+  border: 2px solid #ddd;
+  border-radius: 6px;
+  background: white;
+  transition: all 0.3s ease;
+}
+
+.workflow-level.approved {
+  border-color: #28a745;
+  background: #f0f8f4;
+}
+
+.workflow-level.rejected {
+  border-color: #dc3545;
+  background: #faf3f5;
+}
+
+.workflow-level.pending {
+  border-color: #ffc107;
+  background: #fffbf0;
+}
+
+.workflow-level.current {
+  box-shadow: 0 0 8px rgba(0, 123, 255, 0.5);
+  border-color: #007bff;
+}
+
+.level-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+
+.level-number {
+  background: #007bff;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.level-role {
+  color: #495057;
+  font-size: 14px;
+}
+
+.level-content {
+  font-size: 13px;
+  color: #666;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  font-size: 12px;
+}
+
+.workflow-level.approved .status-badge {
+  background: #d4edda;
+  color: #155724;
+}
+
+.workflow-level.rejected .status-badge {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.workflow-level.pending .status-badge {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.approver,
+.approval-date,
+.approval-notes {
+  margin-top: 8px;
+  padding: 4px 0;
+}
+
+.approval-notes {
+  font-style: italic;
+  color: #555;
+  background: rgba(0, 0, 0, 0.03);
+  padding: 8px;
+  border-radius: 4px;
+  margin-top: 8px;
+}
+
+.workflow-arrow {
+  font-size: 24px;
+  color: #ddd;
+  font-weight: bold;
+  text-align: center;
+}
+
+.workflow-footer {
+  padding-top: 15px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.workflow-legend {
+  display: flex;
+  gap: 20px;
+  font-size: 12px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.legend-item.approved .dot {
+  background: #28a745;
+}
+
+.legend-item.rejected .dot {
+  background: #dc3545;
+}
+
+.legend-item.pending .dot {
+  background: #ffc107;
+}
+
+@media (max-width: 768px) {
+  .workflow-timeline {
+    flex-direction: column;
+  }
+
+  .workflow-level {
+    min-width: 100%;
+  }
+
+  .workflow-arrow {
+    transform: rotate(90deg);
+    margin: 5px 0;
+  }
+
+  .level-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .workflow-legend {
+    flex-wrap: wrap;
+  }
+}

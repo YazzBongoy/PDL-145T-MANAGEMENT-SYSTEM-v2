@@ -12,6 +12,9 @@ import tasksRoutes from './routes/tasksRoutes.js';
 import expensesRoutes from './routes/expensesRoutes.js';
 import resourcesRoutes from './routes/resourcesRoutes.js';
 import sprintRoutes from './routes/sprintRoutes.js';
+import auditRoutes from './routes/auditRoutes.js';
+import approvalRoutes from './routes/approvalRoutes.js';
+import reconciliationRoutes from './routes/reconciliationRoutes.js';
 // import projectRoutes from './routes/projectRoutes.js';
 // import reportRoutes from './routes/reportRoutes.js';
 
@@ -32,6 +35,9 @@ const prisma = new PrismaClient();
 // Middleware
 app.use(cors());
 app.use(express.json());
+
+// Store prisma client in app locals for route access
+app.locals.prisma = prisma;
 
 const JWT_SECRET = process.env.JWT_SECRET || 'dev_secret';
 
@@ -56,6 +62,9 @@ app.use('/api/tasks', tasksRoutes);
 app.use('/api/expenses', expensesRoutes);
 app.use('/api/resources', resourcesRoutes);
 app.use('/api/sprints', sprintRoutes);
+app.use('/api/audit', auditRoutes);
+app.use('/api/approvals', approvalRoutes);
+app.use('/api/reconciliation', reconciliationRoutes);
 // app.use('/api/projects', projectRoutes);
 // app.use('/api/reports', reportRoutes);
 

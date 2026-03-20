@@ -39,6 +39,10 @@ model Task {
   Duration       Int?
   AssignedTo     String?
   CompletionStatus TaskCompletionStatus @default(NotStarted)
+  progressPercentage Int @default(0)
+  actualCost     Decimal? @default(0)
+  estimatedCost  Decimal? @default(0)
+  statusReason   String?
   CreatedAt      DateTime @default(now())
   UpdatedAt      DateTime @updatedAt
 
@@ -63,6 +67,9 @@ model Expense {
 
   // Relationships
   Task Task @relation(fields: [TaskID], references: [TaskID])
+  ApprovalWorkflow ApprovalWorkflow?
+  ExpenseHistory ExpenseHistory[]
+  ReconciliationAudits ReconciliationAudit[]
 }
 
 // Resources Table - Stores information about available resources
@@ -182,6 +189,17 @@ model User {
   role         UserRole @default(USER)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+
+  // Relationships for audit trail
+  auditLogs    AuditLog[]
+  expenseHistories ExpenseHistory[]
+  reconciliationAudits ReconciliationAudit[]
+  
+  // Relationships for approval workflow
+  level1Approvals ApprovalWorkflow[] @relation("level1Approver")
+  level2Approvals ApprovalWorkflow[] @relation("level2Approver")
+  level3Approvals ApprovalWorkflow[] @relation("level3Approver")
+  level4Approvals ApprovalWorkflow[] @relation("level4Approver")
 }
 
 // Sprint Table - Manages agile sprints within projects
@@ -231,4 +249,140 @@ enum UserRole {
   SUPERVISOR
   FINANCE
   CONSTRUCTION
+}
+
+enum ApprovalStatus {
+  Pending
+  Approved
+  Rejected
+}
+
+enum ApprovalLevel {
+  LEVEL_1_RL
+  LEVEL_2_RC
+  LEVEL_3_CQ
+  LEVEL_4_CFEF
+}
+
+enum ReconciliationStatus {
+  Matched
+  Discrepancy
+  Pending
+  Resolved
+}
+
+// ============================================
+// AUDIT & APPROVAL MODELS
+// ============================================
+
+// AuditLog - Complete audit trail of all operations
+model AuditLog {
+  id            Int      @id @default(autoincrement())
+  entityType    String   // "Expense", "Approval", etc.
+  entityId      Int
+  action        String   // "CREATE", "UPDATE", "DELETE", "APPROVE", "REJECT"
+  userId        Int
+  timestamp     DateTime @default(now())
+  changes       Json?    // JSON of what changed
+  reason        String?  // Justification for the action
+  createdAt     DateTime @default(now())
+
+  user          User     @relation(fields: [userId], references: [id])
+  
+  @@index([entityType, entityId])
+  @@index([userId])
+  @@index([timestamp])
+}
+
+// ExpenseHistory - Track modifications to expenses
+model ExpenseHistory {
+  id            Int      @id @default(autoincrement())
+  expenseId     Int
+  fieldName     String   // Which field changed
+  oldValue      String?  // Previous value
+  newValue      String?  // New value
+  changedBy     Int
+  changedAt     DateTime @default(now())
+
+  user          User     @relation(fields: [changedBy], references: [id])
+  expense       Expense  @relation(fields: [expenseId], references: [ExpenseID], onDelete: Cascade)
+
+  @@index([expenseId])
+  @@index([changedBy])
+  @@index([changedAt])
+}
+
+// ApprovalWorkflow - 4-level approval workflow for expenses
+model ApprovalWorkflow {
+  id                Int      @id @default(autoincrement())
+  expenseId         Int      @unique
+  currentLevel      ApprovalLevel @default(LEVEL_1_RL)
+  
+  // Level 1 - Responsable Logistique (RL)
+  level1_approver   Int?
+  level1_status     ApprovalStatus @default(Pending)
+  level1_date       DateTime?
+  level1_notes      String?
+  
+  // Level 2 - Responsable Comptable (RC)
+  level2_approver   Int?
+  level2_status     ApprovalStatus @default(Pending)
+  level2_date       DateTime?
+  level2_notes      String?
+  
+  // Level 3 - Coordinateur Qualité (CQ)
+  level3_approver   Int?
+  level3_status     ApprovalStatus @default(Pending)
+  level3_date       DateTime?
+  level3_notes      String?
+  
+  // Level 4 - CFEF Commission (Final approval)
+  level4_approver   Int?
+  level4_status     ApprovalStatus @default(Pending)
+  level4_date       DateTime?
+  level4_notes      String?
+  
+  paymentBlockedUntil DateTime?
+  createdAt         DateTime @default(now())
+  completedAt       DateTime?
+  updatedAt         DateTime @updatedAt
+  
+  expense           Expense  @relation(fields: [expenseId], references: [ExpenseID], onDelete: Cascade)
+  
+  level1User        User?    @relation("level1Approver", fields: [level1_approver], references: [id])
+  level2User        User?    @relation("level2Approver", fields: [level2_approver], references: [id])
+  level3User        User?    @relation("level3Approver", fields: [level3_approver], references: [id])
+  level4User        User?    @relation("level4Approver", fields: [level4_approver], references: [id])
+
+  @@index([expenseId])
+  @@index([currentLevel])
+  @@index([level1_status])
+  @@index([level4_status])
+}
+
+// ReconciliationAudit - Track reconciliation of invoices vs purchase orders
+model ReconciliationAudit {
+  id                     Int      @id @default(autoincrement())
+  expenseId              Int
+  invoiceId              String
+  purchaseOrderId        String?
+  
+  status                 ReconciliationStatus @default(Pending)
+  discrepancyReason      String?  // Why there's a discrepancy
+  
+  auditedBy              Int      // CQ user ID
+  auditDate              DateTime @default(now())
+  resolutionDate         DateTime?
+  resolutionNotes        String?
+  
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+  
+  expense                Expense  @relation(fields: [expenseId], references: [ExpenseID], onDelete: Cascade)
+  auditor                User     @relation(fields: [auditedBy], references: [id])
+
+  @@index([expenseId])
+  @@index([status])
+  @@index([invoiceId])
+  @@index([auditDate])
 }

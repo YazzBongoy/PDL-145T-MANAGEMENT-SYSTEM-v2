@@ -1,4 +1,4 @@
-# PDL-145T Development Program Management System
+pandoc "PDL-145T-Management-System/docs/MANUEL DE GESTION INTEGREE DU PROJET 2025- 08- 27- 22- 55- 00.docx" -o docs/manuel-approbation.md# PDL-145T Development Program Management System
 
 ## Project Overview
 
