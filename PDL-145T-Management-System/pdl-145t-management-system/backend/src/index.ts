@@ -15,6 +15,8 @@ import sprintRoutes from './routes/sprintRoutes.js';
 import auditRoutes from './routes/auditRoutes.js';
 import approvalRoutes from './routes/approvalRoutes.js';
 import reconciliationRoutes from './routes/reconciliationRoutes.js';
+import metricsRoutes from './routes/metricsRoutes.js';
+import exportRoutes from './routes/exportRoutes.js';
 // import projectRoutes from './routes/projectRoutes.js';
 // import reportRoutes from './routes/reportRoutes.js';
 
@@ -65,6 +67,8 @@ app.use('/api/sprints', sprintRoutes);
 app.use('/api/audit', auditRoutes);
 app.use('/api/approvals', approvalRoutes);
 app.use('/api/reconciliation', reconciliationRoutes);
+app.use('/api/metrics', metricsRoutes);
+app.use('/api/export', exportRoutes);
 // app.use('/api/projects', projectRoutes);
 // app.use('/api/reports', reportRoutes);
 

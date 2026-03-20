@@ -1,0 +1,216 @@
+.project-metrics {
+  width: 100%;
+  padding: 20px;
+}
+
+.project-metrics.loading,
+.project-metrics.error {
+  text-align: center;
+  padding: 60px 20px;
+  color: #666;
+  font-size: 16px;
+}
+
+.project-metrics.error {
+  background: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+  border-radius: 4px;
+}
+
+.metrics-header {
+  margin-bottom: 30px;
+  border-bottom: 2px solid #e0e0e0;
+  padding-bottom: 15px;
+}
+
+.metrics-header h2 {
+  margin: 0;
+  color: #333;
+  font-size: 28px;
+}
+
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.metric-card {
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.metric-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-color: #bbb;
+}
+
+.card-header {
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.card-header h3 {
+  margin: 0;
+  color: #555;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.card-content {
+  min-height: 100px;
+}
+
+.big-number {
+  font-size: 32px;
+  font-weight: 700;
+  color: #007bff;
+  margin-bottom: 5px;
+}
+
+.small-text {
+  font-size: 13px;
+  color: #999;
+  margin-bottom: 15px;
+}
+
+.progress-bar-container {
+  margin-bottom: 15px;
+}
+
+.progress-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: #666;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.progress-value {
+  color: #007bff;
+}
+
+.progress-bar {
+  height: 8px;
+  background: #e9ecef;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.metric-detail {
+  font-size: 12px;
+  color: #666;
+  background: #f9f9f9;
+  padding: 8px;
+  border-radius: 4px;
+}
+
+.metric-card.budget {
+  border-left: 4px solid #28a745;
+}
+
+.metric-card.progress {
+  border-left: 4px solid #007bff;
+}
+
+.metric-card.timeline {
+  border-left: 4px solid #ffc107;
+}
+
+.metric-card.tasks {
+  border-left: 4px solid #6f42c1;
+}
+
+.timeline-info {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.timeline-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  padding: 8px;
+  background: #f9f9f9;
+  border-radius: 4px;
+}
+
+.timeline-label {
+  color: #666;
+  font-weight: 600;
+}
+
+.timeline-value {
+  color: #333;
+  font-weight: 700;
+}
+
+.task-summary {
+  display: flex;
+  justify-content: space-around;
+  gap: 10px;
+}
+
+.task-stat {
+  text-align: center;
+  flex: 1;
+  padding: 10px;
+  background: #f9f9f9;
+  border-radius: 6px;
+}
+
+.task-number {
+  font-size: 28px;
+  font-weight: 700;
+  color: #007bff;
+  margin-bottom: 5px;
+}
+
+.task-label {
+  font-size: 12px;
+  color: #666;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+@media (max-width: 768px) {
+  .project-metrics {
+    padding: 15px;
+  }
+
+  .metrics-header h2 {
+    font-size: 22px;
+  }
+
+  .metrics-grid {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+
+  .big-number {
+    font-size: 24px;
+  }
+
+  .task-summary {
+    gap: 5px;
+  }
+
+  .task-number {
+    font-size: 22px;
+  }
+}
