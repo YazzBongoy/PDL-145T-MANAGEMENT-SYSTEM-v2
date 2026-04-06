@@ -70,7 +70,7 @@ export async function getProjectMetrics(projectId: number): Promise<ProjectMetri
     let totalProgress = 0;
     let completedCount = 0;
 
-    tasks.forEach((task) => {
+    tasks.forEach((task: any) => {
       // Calculate spent
       const taskSpent = task.Expenses?.reduce((sum: number, exp: any) => sum + (exp.Cost || 0), 0) || 0;
       totalSpent += taskSpent;
@@ -138,7 +138,7 @@ export async function getTaskMetrics(projectId: number): Promise<TaskMetrics[]> 
 
     const tasks = project.Tasks || [];
 
-    return tasks.map((task) => {
+    return tasks.map((task: any) => {
       const actualCost = task.Expenses?.reduce((sum: number, exp: any) => sum + (exp.Cost || 0), 0) || 0;
       const estimatedCost = (task as any).estimatedCost || 0;
       const variance = estimatedCost > 0 ? actualCost - estimatedCost : 0;
@@ -169,12 +169,12 @@ export async function getBudgetVariance(projectId: number) {
 
     const variance = {
       totalEstimated: metrics.reduce((sum, t) => sum + (t.estimatedCost || 0), 0),
-      totalActual: metrics.reduce((sum, t) => sum + t.actualCost, 0),
+      totalActual: metrics.reduce((sum, t) => sum + (t.actualCost || 0), 0),
       taskVariances: metrics
         .filter((t) => t.variance !== 0)
         .sort((a, b) => Math.abs(b.variance!) - Math.abs(a.variance!)),
-      favorableVariance: metrics.filter((t) => (t.variance || 0) < 0).length, // under budget
-      unfavorableVariance: metrics.filter((t) => (t.variance || 0) > 0).length, // over budget
+      favorableVariance: metrics.filter((t: { variance?: number }) => (t.variance || 0) < 0).length, // under budget
+      unfavorableVariance: metrics.filter((t: { variance?: number }) => (t.variance || 0) > 0).length, // over budget
     };
 
     variance.totalActual = Math.round(variance.totalActual * 100) / 100;
@@ -235,7 +235,7 @@ export async function getApprovalQueueMetrics(projectId?: number) {
       where: projectId
         ? {
             expense: {
-              task: {
+              Task: {
                 ProjectID: projectId,
               },
             },
@@ -248,19 +248,19 @@ export async function getApprovalQueueMetrics(projectId?: number) {
 
     const metrics = {
       totalPending: workflows.filter(
-        (w) => w.level1_status === 'Pending' || w.level2_status === 'Pending' || w.level3_status === 'Pending' || w.level4_status === 'Pending'
+        (w: { level1_status: string; level2_status: string; level3_status: string; level4_status: string }) => w.level1_status === 'Pending' || w.level2_status === 'Pending' || w.level3_status === 'Pending' || w.level4_status === 'Pending'
       ).length,
-      level1Pending: workflows.filter((w) => w.level1_status === 'Pending').length,
-      level2Pending: workflows.filter((w) => w.level2_status === 'Pending').length,
-      level3Pending: workflows.filter((w) => w.level3_status === 'Pending').length,
-      level4Pending: workflows.filter((w) => w.level4_status === 'Pending').length,
+      level1Pending: workflows.filter((w: { level1_status: string }) => w.level1_status === 'Pending').length,
+      level2Pending: workflows.filter((w: { level2_status: string }) => w.level2_status === 'Pending').length,
+      level3Pending: workflows.filter((w: { level3_status: string }) => w.level3_status === 'Pending').length,
+      level4Pending: workflows.filter((w: { level4_status: string }) => w.level4_status === 'Pending').length,
       approved: workflows.filter(
-        (w) => w.level1_status === 'Approved' && w.level2_status === 'Approved' && w.level3_status === 'Approved' && w.level4_status === 'Approved'
+        (w: { level1_status: string; level2_status: string; level3_status: string; level4_status: string }) => w.level1_status === 'Approved' && w.level2_status === 'Approved' && w.level3_status === 'Approved' && w.level4_status === 'Approved'
       ).length,
       rejected: workflows.filter(
-        (w) => w.level1_status === 'Rejected' || w.level2_status === 'Rejected' || w.level3_status === 'Rejected' || w.level4_status === 'Rejected'
+        (w: { level1_status: string; level2_status: string; level3_status: string; level4_status: string }) => w.level1_status === 'Rejected' || w.level2_status === 'Rejected' || w.level3_status === 'Rejected' || w.level4_status === 'Rejected'
       ).length,
-      paymentBlocked: workflows.filter((w) => w.paymentBlockedUntil !== null).length,
+      paymentBlocked: workflows.filter((w: { paymentBlockedUntil: Date | null }) => w.paymentBlockedUntil !== null).length,
     };
 
     return metrics;
@@ -279,7 +279,7 @@ export async function getReconciliationMetrics(projectId?: number) {
       where: projectId
         ? {
             expense: {
-              task: {
+              Task: {
                 ProjectID: projectId,
               },
             },
@@ -289,11 +289,11 @@ export async function getReconciliationMetrics(projectId?: number) {
 
     const metrics = {
       total: audits.length,
-      matched: audits.filter((a) => a.status === 'Matched').length,
-      discrepancies: audits.filter((a) => a.status === 'Discrepancy').length,
-      pending: audits.filter((a) => a.status === 'Pending').length,
-      resolved: audits.filter((a) => a.status === 'Resolved').length,
-      discrepancyRate: audits.length > 0 ? ((audits.filter((a) => a.status === 'Discrepancy').length / audits.length) * 100).toFixed(2) : '0',
+      matched: audits.filter((a: { status: string }) => a.status === 'Matched').length,
+      discrepancies: audits.filter((a: { status: string }) => a.status === 'Discrepancy').length,
+      pending: audits.filter((a: { status: string }) => a.status === 'Pending').length,
+      resolved: audits.filter((a: { status: string }) => a.status === 'Resolved').length,
+      discrepancyRate: audits.length > 0 ? ((audits.filter((a: { status: string }) => a.status === 'Discrepancy').length / audits.length) * 100).toFixed(2) : '0',
     };
 
     return metrics;

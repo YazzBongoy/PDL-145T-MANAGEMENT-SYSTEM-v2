@@ -6,29 +6,24 @@ const prisma = new PrismaClient();
 
 // Create a new expense
 export const createExpense = asyncHandler(async (req: Request, res: Response) => {
-  const { projectId, description, amount, category, date, vendor, notes } = req.body;
+  const { taskId, description, cost, date } = req.body;
 
-  if (!projectId || !description || !amount) {
-    res.status(400).json({ error: 'projectId, description, and amount are required' });
+  if (!taskId || !description || cost === undefined) {
+    res.status(400).json({ error: 'taskId, description, and cost are required' });
     return;
   }
 
-  if (amount < 0) {
-    res.status(400).json({ error: 'Amount cannot be negative' });
+  if (cost < 0) {
+    res.status(400).json({ error: 'Cost cannot be negative' });
     return;
   }
 
   const expense = await prisma.expense.create({
     data: {
-      projectId,
-      description,
-      amount,
-      category: category || 'OTHER',
-      date: date ? new Date(date) : new Date(),
-      vendor: vendor || '',
-      notes: notes || '',
-      approvalStatus: 'PENDING',
-      approvedBy: null,
+      TaskID: parseInt(taskId),
+      Description: description,
+      Cost: cost,
+      Date: date ? new Date(date) : new Date(),
     },
   });
 
@@ -37,12 +32,15 @@ export const createExpense = asyncHandler(async (req: Request, res: Response) =>
 
 // Get all expenses with filtering
 export const getExpenses = asyncHandler(async (req: Request, res: Response) => {
-  const { projectId, status, category } = req.query;
+  const { taskId, startDate, endDate } = req.query;
 
   const where: any = {};
-  if (projectId) where.projectId = parseInt(projectId as string);
-  if (status) where.approvalStatus = status;
-  if (category) where.category = category;
+  if (taskId) where.TaskID = parseInt(taskId as string);
+  if (startDate || endDate) {
+    where.Date = {};
+    if (startDate) where.Date.gte = new Date(startDate as string);
+    if (endDate) where.Date.lte = new Date(endDate as string);
+  }
 
   const expenses = await prisma.expense.findMany({ where });
   res.json(expenses);
@@ -52,7 +50,7 @@ export const getExpenses = asyncHandler(async (req: Request, res: Response) => {
 export const getExpenseById = asyncHandler(async (req: Request, res: Response) => {
   const { id } = req.params;
   const expense = await prisma.expense.findUnique({
-    where: { id: parseInt(id) },
+    where: { ExpenseID: parseInt(id) },
   });
 
   if (!expense) {
@@ -63,46 +61,47 @@ export const getExpenseById = asyncHandler(async (req: Request, res: Response) =
   res.json(expense);
 });
 
-// Get expenses by project
-export const getExpensesByProject = asyncHandler(async (req: Request, res: Response) => {
-  const { projectId } = req.params;
+// Get expenses by task
+export const getExpensesByTask = asyncHandler(async (req: Request, res: Response) => {
+  const { taskId } = req.params;
   const expenses = await prisma.expense.findMany({
-    where: { projectId: parseInt(projectId) },
+    where: { TaskID: parseInt(taskId) },
   });
 
   res.json(expenses);
 });
 
-// Get expenses by status
-export const getExpensesByStatus = asyncHandler(async (req: Request, res: Response) => {
-  const { status } = req.params;
-  const expenses = await prisma.expense.findMany({
-    where: { approvalStatus: status },
-  });
+// Get expenses by date range
+export const getExpensesByDateRange = asyncHandler(async (req: Request, res: Response) => {
+  const { startDate, endDate } = req.query;
 
+  const where: any = {};
+  if (startDate || endDate) {
+    where.Date = {};
+    if (startDate) where.Date.gte = new Date(startDate as string);
+    if (endDate) where.Date.lte = new Date(endDate as string);
+  }
+
+  const expenses = await prisma.expense.findMany({ where });
   res.json(expenses);
 });
 
 // Update expense
 export const updateExpense = asyncHandler(async (req: Request, res: Response) => {
   const { id } = req.params;
-  const { description, amount, category, vendor, notes, approvalStatus, approvedBy } = req.body;
+  const { description, cost, date } = req.body;
 
-  if (amount !== undefined && amount < 0) {
-    res.status(400).json({ error: 'Amount cannot be negative' });
+  if (cost !== undefined && cost < 0) {
+    res.status(400).json({ error: 'Cost cannot be negative' });
     return;
   }
 
   const expense = await prisma.expense.update({
-    where: { id: parseInt(id) },
+    where: { ExpenseID: parseInt(id) },
     data: {
-      ...(description && { description }),
-      ...(amount !== undefined && { amount }),
-      ...(category && { category }),
-      ...(vendor && { vendor }),
-      ...(notes && { notes }),
-      ...(approvalStatus && { approvalStatus }),
-      ...(approvedBy !== undefined && { approvedBy }),
+      ...(description && { Description: description }),
+      ...(cost !== undefined && { Cost: cost }),
+      ...(date && { Date: new Date(date) }),
     },
   });
 
@@ -114,59 +113,24 @@ export const deleteExpense = asyncHandler(async (req: Request, res: Response) =>
   const { id } = req.params;
 
   await prisma.expense.delete({
-    where: { id: parseInt(id) },
+    where: { ExpenseID: parseInt(id) },
   });
 
   res.status(204).send();
 });
 
-// Approve expense
-export const approveExpense = asyncHandler(async (req: Request, res: Response) => {
-  const { id } = req.params;
-  const { approvedBy } = req.body;
-
-  const expense = await prisma.expense.update({
-    where: { id: parseInt(id) },
-    data: {
-      approvalStatus: 'APPROVED',
-      approvedBy: approvedBy || null,
-    },
-  });
-
-  res.json(expense);
-});
-
-// Reject expense
-export const rejectExpense = asyncHandler(async (req: Request, res: Response) => {
-  const { id } = req.params;
-  const { reason } = req.body;
-
-  const expense = await prisma.expense.update({
-    where: { id: parseInt(id) },
-    data: {
-      approvalStatus: 'REJECTED',
-      notes: reason || 'Rejected by admin',
-    },
-  });
-
-  res.json(expense);
-});
-
-// Get expense summary by project
-export const getProjectExpenseSummary = asyncHandler(async (req: Request, res: Response) => {
-  const { projectId } = req.params;
+// Get expense summary by task
+export const getTaskExpenseSummary = asyncHandler(async (req: Request, res: Response) => {
+  const { taskId } = req.params;
 
   const expenses = await prisma.expense.findMany({
-    where: { projectId: parseInt(projectId) },
+    where: { TaskID: parseInt(taskId) },
   });
 
   const summary = {
-    projectId: parseInt(projectId),
+    taskId: parseInt(taskId),
     totalExpenses: expenses.length,
-    totalAmount: expenses.reduce((sum, e) => sum + e.amount, 0),
-    approved: expenses.filter((e) => e.approvalStatus === 'APPROVED').reduce((sum, e) => sum + e.amount, 0),
-    pending: expenses.filter((e) => e.approvalStatus === 'PENDING').reduce((sum, e) => sum + e.amount, 0),
-    rejected: expenses.filter((e) => e.approvalStatus === 'REJECTED').reduce((sum, e) => sum + e.amount, 0),
+    totalCost: expenses.reduce((sum: number, e: { Cost: { toNumber: () => number } | number }) => sum + (typeof e.Cost === 'object' ? e.Cost.toNumber() : e.Cost), 0),
   };
 
   res.json(summary);

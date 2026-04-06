@@ -6,22 +6,22 @@ const prisma = new PrismaClient();
 
 // Create a new task
 export const createTask = asyncHandler(async (req: Request, res: Response) => {
-  const { projectId, name, description, assignedTo, status, priority, dueDate } = req.body;
+  const { projectId, description, duration, assignedTo, sprintId } = req.body;
 
-  if (!projectId || !name) {
-    res.status(400).json({ error: 'projectId and name are required' });
+  if (!projectId || !description) {
+    res.status(400).json({ error: 'projectId and description are required' });
     return;
   }
 
   const task = await prisma.task.create({
     data: {
-      projectId,
-      name,
-      description: description || '',
-      assignedTo: assignedTo || null,
-      status: status || 'PENDING',
-      priority: priority || 'MEDIUM',
-      dueDate: dueDate ? new Date(dueDate) : null,
+      ProjectID: parseInt(projectId),
+      SprintID: sprintId ? parseInt(sprintId) : null,
+      Description: description,
+      Duration: duration ? parseInt(duration) : null,
+      AssignedTo: assignedTo || null,
+      CompletionStatus: 'NotStarted',
+      progressPercentage: 0,
     },
   });
 
@@ -30,12 +30,12 @@ export const createTask = asyncHandler(async (req: Request, res: Response) => {
 
 // Get all tasks with filtering
 export const getTasks = asyncHandler(async (req: Request, res: Response) => {
-  const { projectId, status, assignedTo } = req.query;
+  const { projectId, completionStatus, assignedTo } = req.query;
 
   const where: any = {};
-  if (projectId) where.projectId = parseInt(projectId as string);
-  if (status) where.status = status;
-  if (assignedTo) where.assignedTo = parseInt(assignedTo as string);
+  if (projectId) where.ProjectID = parseInt(projectId as string);
+  if (completionStatus) where.CompletionStatus = completionStatus;
+  if (assignedTo) where.AssignedTo = assignedTo;
 
   const tasks = await prisma.task.findMany({ where });
   res.json(tasks);
@@ -45,7 +45,7 @@ export const getTasks = asyncHandler(async (req: Request, res: Response) => {
 export const getTaskById = asyncHandler(async (req: Request, res: Response) => {
   const { id } = req.params;
   const task = await prisma.task.findUnique({
-    where: { id: parseInt(id) },
+    where: { TaskID: parseInt(id) },
   });
 
   if (!task) {
@@ -60,7 +60,7 @@ export const getTaskById = asyncHandler(async (req: Request, res: Response) => {
 export const getTasksByProject = asyncHandler(async (req: Request, res: Response) => {
   const { projectId } = req.params;
   const tasks = await prisma.task.findMany({
-    where: { projectId: parseInt(projectId) },
+    where: { ProjectID: parseInt(projectId) },
   });
 
   res.json(tasks);
@@ -69,17 +69,19 @@ export const getTasksByProject = asyncHandler(async (req: Request, res: Response
 // Update task
 export const updateTask = asyncHandler(async (req: Request, res: Response) => {
   const { id } = req.params;
-  const { name, description, assignedTo, status, priority, dueDate } = req.body;
+  const { description, duration, assignedTo, completionStatus, progressPercentage, actualCost, estimatedCost, statusReason } = req.body;
 
   const task = await prisma.task.update({
-    where: { id: parseInt(id) },
+    where: { TaskID: parseInt(id) },
     data: {
-      ...(name && { name }),
-      ...(description && { description }),
-      ...(assignedTo !== undefined && { assignedTo }),
-      ...(status && { status }),
-      ...(priority && { priority }),
-      ...(dueDate && { dueDate: new Date(dueDate) }),
+      ...(description && { Description: description }),
+      ...(duration !== undefined && { Duration: parseInt(duration) }),
+      ...(assignedTo !== undefined && { AssignedTo: assignedTo }),
+      ...(completionStatus && { CompletionStatus: completionStatus }),
+      ...(progressPercentage !== undefined && { progressPercentage: parseInt(progressPercentage) }),
+      ...(actualCost !== undefined && { actualCost: actualCost }),
+      ...(estimatedCost !== undefined && { estimatedCost: estimatedCost }),
+      ...(statusReason && { statusReason: statusReason }),
     },
   });
 
@@ -91,7 +93,7 @@ export const deleteTask = asyncHandler(async (req: Request, res: Response) => {
   const { id } = req.params;
 
   await prisma.task.delete({
-    where: { id: parseInt(id) },
+    where: { TaskID: parseInt(id) },
   });
 
   res.status(204).send();
@@ -102,10 +104,10 @@ export const completeTask = asyncHandler(async (req: Request, res: Response) => 
   const { id } = req.params;
 
   const task = await prisma.task.update({
-    where: { id: parseInt(id) },
+    where: { TaskID: parseInt(id) },
     data: {
-      status: 'COMPLETED',
-      completedAt: new Date(),
+      CompletionStatus: 'Completed',
+      progressPercentage: 100,
     },
   });
 

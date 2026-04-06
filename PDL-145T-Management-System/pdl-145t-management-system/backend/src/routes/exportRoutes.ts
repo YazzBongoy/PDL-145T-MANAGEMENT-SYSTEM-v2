@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
-import { generateProjectReport, generateExcelData, generatePdfData } from '../services/exportService';
-import { requireAuth, requireRole } from '../middleware/authMiddleware';
+import { generateProjectReport, generateExcelData, generatePdfData } from '../services/exportService.js';
+import { requireAuth, requireRole } from '../middleware/authMiddleware.js';
 
 const router = Router();
 

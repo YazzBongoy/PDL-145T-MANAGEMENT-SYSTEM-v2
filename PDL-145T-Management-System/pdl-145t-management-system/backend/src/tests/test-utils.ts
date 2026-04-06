@@ -26,6 +26,7 @@ export const createTestUser = async (overrides = {}) => {
     data: {
       ...rest,
       passwordHash,
+      role: rest.role as any,
     },
   });
 };
@@ -48,13 +49,10 @@ export const createTestFinanceUser = async (overrides = {}) => {
 
 export const createTestProject = async (userId: number, overrides = {}) => {
   const defaults = {
-    name: `Test Project ${Date.now()}`,
-    description: 'A test project',
-    supervisorId: userId,
-    startDate: new Date(),
-    endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
-    status: 'PLANNING',
-    territory: 'INONGO',
+    Name: `Test Project ${Date.now()}`,
+    StartDate: new Date(),
+    EndDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
+    TotalBudget: 100000,
   };
 
   return prisma.project.create({

@@ -3,13 +3,11 @@ import {
   createExpense,
   getExpenses,
   getExpenseById,
-  getExpensesByProject,
-  getExpensesByStatus,
+  getExpensesByTask,
+  getExpensesByDateRange,
   updateExpense,
   deleteExpense,
-  approveExpense,
-  rejectExpense,
-  getProjectExpenseSummary,
+  getTaskExpenseSummary,
 } from '../controllers/expensesController.js';
 import { authenticateJWT, requireAdminOrSupervisor } from '../middleware/index.js';
 
@@ -24,14 +22,14 @@ router.post('/', createExpense);
 // Get all expenses
 router.get('/', getExpenses);
 
-// Get expenses by status
-router.get('/status/:status', getExpensesByStatus);
+// Get expenses by date range
+router.get('/date-range', getExpensesByDateRange);
 
-// Get expenses by project ID
-router.get('/project/:projectId/list', getExpensesByProject);
+// Get expenses by task ID
+router.get('/task/:taskId/list', getExpensesByTask);
 
-// Get project expense summary
-router.get('/project/:projectId/summary', getProjectExpenseSummary);
+// Get task expense summary
+router.get('/task/:taskId/summary', getTaskExpenseSummary);
 
 // Get expense by ID
 router.get('/:id', getExpenseById);
@@ -41,11 +39,5 @@ router.put('/:id', requireAdminOrSupervisor, updateExpense);
 
 // Delete expense (admin only)
 router.delete('/:id', requireAdminOrSupervisor, deleteExpense);
-
-// Approve expense (admin/supervisor only)
-router.patch('/:id/approve', requireAdminOrSupervisor, approveExpense);
-
-// Reject expense (admin/supervisor only)
-router.patch('/:id/reject', requireAdminOrSupervisor, rejectExpense);
 
 export default router;

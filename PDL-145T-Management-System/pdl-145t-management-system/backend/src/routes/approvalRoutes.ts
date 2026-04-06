@@ -4,8 +4,8 @@ import {
   approveExpense,
   getApprovalStatus,
   isPaymentReady,
-} from '../services/approvalService';
-import { requireAuth, requireRole } from '../middleware/authMiddleware';
+} from '../services/approvalService.js';
+import { requireAuth, requireRole } from '../middleware/authMiddleware.js';
 
 const router = Router();
 

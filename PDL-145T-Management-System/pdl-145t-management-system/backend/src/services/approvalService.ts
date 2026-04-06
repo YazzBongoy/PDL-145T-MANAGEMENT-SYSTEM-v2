@@ -1,7 +1,12 @@
-import { PrismaClient, ApprovalStatus, ApprovalLevel, UserRole } from '@prisma/client';
-import { logAudit, logExpenseHistory } from '../middleware/auditMiddleware';
+import { PrismaClient } from '@prisma/client';
+import { logAudit, logExpenseHistory } from '../middleware/auditMiddleware.js';
 
 const prisma = new PrismaClient();
+
+// Local type definitions until Prisma client is generated
+type ApprovalStatus = 'Pending' | 'Approved' | 'Rejected';
+type ApprovalLevel = 'LEVEL_1_RL' | 'LEVEL_2_RC' | 'LEVEL_3_CQ' | 'LEVEL_4_CFEF';
+type UserRole = 'USER' | 'ADMIN' | 'SUPERVISOR' | 'FINANCE' | 'CONSTRUCTION';
 
 interface ApprovalRequest {
   expenseId: number;
@@ -20,17 +25,17 @@ export async function getApprovalQueue(userRole: UserRole, userId?: number) {
 
   // Filter by role
   switch (userRole) {
-    case UserRole.FINANCE: // RL - Responsable Logistique
-      whereCondition.currentLevel = ApprovalLevel.LEVEL_1_RL;
-      whereCondition.level1_status = ApprovalStatus.Pending;
+    case 'FINANCE': // RL - Responsable Logistique
+      whereCondition.currentLevel = 'LEVEL_1_RL';
+      whereCondition.level1_status = 'Pending';
       break;
-    case UserRole.SUPERVISOR: // RC - Responsable Comptable
-      whereCondition.currentLevel = ApprovalLevel.LEVEL_2_RC;
-      whereCondition.level2_status = ApprovalStatus.Pending;
+    case 'SUPERVISOR': // RC - Responsable Comptable
+      whereCondition.currentLevel = 'LEVEL_2_RC';
+      whereCondition.level2_status = 'Pending';
       break;
-    case UserRole.ADMIN: // CQ - Coordinateur Qualité
-      whereCondition.currentLevel = ApprovalLevel.LEVEL_3_CQ;
-      whereCondition.level3_status = ApprovalStatus.Pending;
+    case 'ADMIN': // CQ - Coordinateur Qualité
+      whereCondition.currentLevel = 'LEVEL_3_CQ';
+      whereCondition.level3_status = 'Pending';
       break;
     // CFEF Commission handled separately (multiple admins)
   }
@@ -41,7 +46,7 @@ export async function getApprovalQueue(userRole: UserRole, userId?: number) {
       include: {
         expense: {
           include: {
-            task: true,
+            Task: true,
           },
         },
       },
@@ -66,10 +71,10 @@ export async function approveExpense(request: ApprovalRequest) {
   try {
     // Validate user role matches the level
     const validRoles: { [key in ApprovalLevel]: UserRole[] } = {
-      [ApprovalLevel.LEVEL_1_RL]: [UserRole.FINANCE], // RL
-      [ApprovalLevel.LEVEL_2_RC]: [UserRole.SUPERVISOR], // RC
-      [ApprovalLevel.LEVEL_3_CQ]: [UserRole.ADMIN], // CQ
-      [ApprovalLevel.LEVEL_4_CFEF]: [UserRole.ADMIN, UserRole.SUPERVISOR], // CFEF Commission
+      'LEVEL_1_RL': ['FINANCE'], // RL
+      'LEVEL_2_RC': ['SUPERVISOR'], // RC
+      'LEVEL_3_CQ': ['ADMIN'], // CQ
+      'LEVEL_4_CFEF': ['ADMIN', 'SUPERVISOR'], // CFEF Commission
     };
 
     const currentLevel = `LEVEL_${level}_${['RL', 'RC', 'CQ', 'CFEF'][level - 1]}` as ApprovalLevel;
@@ -118,14 +123,14 @@ export async function approveExpense(request: ApprovalRequest) {
 
     // If rejected, revert to level 1
     if (status === 'Rejected') {
-      updateData.currentLevel = ApprovalLevel.LEVEL_1_RL;
-      updateData.level1_status = ApprovalStatus.Pending;
+      updateData.currentLevel = 'LEVEL_1_RL';
+      updateData.level1_status = 'Pending';
       updateData.level1_approver = null;
       updateData.level1_date = null;
       updateData.level1_notes = null;
-      updateData.level2_status = ApprovalStatus.Pending;
-      updateData.level3_status = ApprovalStatus.Pending;
-      updateData.level4_status = ApprovalStatus.Pending;
+      updateData.level2_status = 'Pending';
+      updateData.level3_status = 'Pending';
+      updateData.level4_status = 'Pending';
     } else {
       // Move to next level if approved
       updateData.currentLevel = getNextLevel(level);
@@ -147,10 +152,12 @@ export async function approveExpense(request: ApprovalRequest) {
     });
 
     // Log expense history
+    const levelStatusKey = `level${level}_status` as const;
+    const oldStatus = (workflow as any)[levelStatusKey];
     await logExpenseHistory(
       expenseId,
       `approval_level_${level}`,
-      workflow[`level${level}_status`],
+      oldStatus,
       status,
       userId,
     );
@@ -166,13 +173,13 @@ export async function approveExpense(request: ApprovalRequest) {
  * Get next approval level
  */
 function getNextLevel(currentLevel: number): ApprovalLevel {
-  const levels = [
-    ApprovalLevel.LEVEL_1_RL,
-    ApprovalLevel.LEVEL_2_RC,
-    ApprovalLevel.LEVEL_3_CQ,
-    ApprovalLevel.LEVEL_4_CFEF,
+  const levels: ApprovalLevel[] = [
+    'LEVEL_1_RL',
+    'LEVEL_2_RC',
+    'LEVEL_3_CQ',
+    'LEVEL_4_CFEF',
   ];
-  return levels[currentLevel] || ApprovalLevel.LEVEL_4_CFEF;
+  return levels[currentLevel] || 'LEVEL_4_CFEF';
 }
 
 /**
@@ -251,10 +258,10 @@ export async function isPaymentReady(expenseId: number): Promise<boolean> {
     }
 
     return (
-      workflow.level1_status === ApprovalStatus.Approved &&
-      workflow.level2_status === ApprovalStatus.Approved &&
-      workflow.level3_status === ApprovalStatus.Approved &&
-      workflow.level4_status === ApprovalStatus.Approved &&
+      workflow.level1_status === 'Approved' &&
+      workflow.level2_status === 'Approved' &&
+      workflow.level3_status === 'Approved' &&
+      workflow.level4_status === 'Approved' &&
       !workflow.paymentBlockedUntil
     );
   } catch (error) {

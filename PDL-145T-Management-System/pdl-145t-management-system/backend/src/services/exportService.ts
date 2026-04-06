@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import { getProjectMetrics, getTaskMetrics, getBudgetVariance } from './metricsService';
+import { getProjectMetrics, getTaskMetrics, getBudgetVariance } from './metricsService.js';
 
 const prisma = new PrismaClient();
 
@@ -72,7 +72,7 @@ export async function generateProjectReport(options: ReportOptions): Promise<Rep
       const workflows = await prisma.approvalWorkflow.findMany({
         where: {
           expense: {
-            task: {
+            Task: {
               ProjectID: options.projectId,
             },
           },
@@ -85,15 +85,15 @@ export async function generateProjectReport(options: ReportOptions): Promise<Rep
       reportData.approvalSummary = {
         total: workflows.length,
         approved: workflows.filter(
-          (w) =>
+          (w: { level1_status: string; level2_status: string; level3_status: string; level4_status: string }) =>
             w.level1_status === 'Approved' &&
             w.level2_status === 'Approved' &&
             w.level3_status === 'Approved' &&
             w.level4_status === 'Approved'
         ).length,
-        pending: workflows.filter((w) => w.level1_status === 'Pending').length,
+        pending: workflows.filter((w: { level1_status: string }) => w.level1_status === 'Pending').length,
         rejected: workflows.filter(
-          (w) =>
+          (w: { level1_status: string; level2_status: string; level3_status: string; level4_status: string }) =>
             w.level1_status === 'Rejected' ||
             w.level2_status === 'Rejected' ||
             w.level3_status === 'Rejected' ||
@@ -107,7 +107,7 @@ export async function generateProjectReport(options: ReportOptions): Promise<Rep
       const audits = await prisma.reconciliationAudit.findMany({
         where: {
           expense: {
-            task: {
+            Task: {
               ProjectID: options.projectId,
             },
           },
@@ -116,10 +116,10 @@ export async function generateProjectReport(options: ReportOptions): Promise<Rep
 
       reportData.reconciliationSummary = {
         total: audits.length,
-        matched: audits.filter((a) => a.status === 'Matched').length,
-        discrepancies: audits.filter((a) => a.status === 'Discrepancy').length,
-        pending: audits.filter((a) => a.status === 'Pending').length,
-        resolved: audits.filter((a) => a.status === 'Resolved').length,
+        matched: audits.filter((a: { status: string }) => a.status === 'Matched').length,
+        discrepancies: audits.filter((a: { status: string }) => a.status === 'Discrepancy').length,
+        pending: audits.filter((a: { status: string }) => a.status === 'Pending').length,
+        resolved: audits.filter((a: { status: string }) => a.status === 'Resolved').length,
       };
     }
 

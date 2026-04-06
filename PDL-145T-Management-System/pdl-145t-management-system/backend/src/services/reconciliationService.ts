@@ -1,7 +1,10 @@
-import { PrismaClient, ReconciliationStatus } from '@prisma/client';
-import { logAudit } from '../middleware/auditMiddleware';
+import { PrismaClient } from '@prisma/client';
+import { logAudit } from '../middleware/auditMiddleware.js';
 
 const prisma = new PrismaClient();
+
+// Local type definition until Prisma client is generated
+type ReconciliationStatusType = 'Matched' | 'Discrepancy' | 'Pending' | 'Resolved';
 
 interface ReconciliationData {
   expenseId: number;
@@ -28,7 +31,7 @@ export async function createReconciliationAudit(data: ReconciliationData) {
         invoiceId: data.invoiceId,
         purchaseOrderId: data.purchaseOrderId,
         auditedBy: data.auditedBy,
-        status: ReconciliationStatus.Pending,
+        status: 'Pending',
       },
     });
 
@@ -71,7 +74,7 @@ export async function matchInvoiceToPO(
       where: { id: auditId },
       data: {
         purchaseOrderId,
-        status: ReconciliationStatus.Matched,
+        status: 'Matched',
         resolutionDate: new Date(),
         resolutionNotes: 'Matched to purchase order',
       },
@@ -107,7 +110,7 @@ export async function reportDiscrepancy(
     const audit = await prisma.reconciliationAudit.update({
       where: { id: auditId },
       data: {
-        status: ReconciliationStatus.Discrepancy,
+        status: 'Discrepancy',
         discrepancyReason,
       },
     });
@@ -118,7 +121,7 @@ export async function reportDiscrepancy(
       entityId: auditId,
       action: 'UPDATE',
       userId: auditedBy,
-      changes: { status: ReconciliationStatus.Discrepancy },
+      changes: { status: 'Discrepancy' },
       reason: discrepancyReason,
     });
 
@@ -141,7 +144,7 @@ export async function resolveDiscrepancy(
     const audit = await prisma.reconciliationAudit.update({
       where: { id: auditId },
       data: {
-        status: ReconciliationStatus.Resolved,
+        status: 'Resolved',
         resolutionDate: new Date(),
         resolutionNotes,
       },
@@ -153,7 +156,7 @@ export async function resolveDiscrepancy(
       entityId: auditId,
       action: 'APPROVE',
       userId: auditedBy,
-      changes: { status: ReconciliationStatus.Resolved },
+      changes: { status: 'Resolved' },
       reason: resolutionNotes,
     });
 
@@ -172,7 +175,7 @@ export async function getPendingReconciliations(limit: number = 50) {
     return await prisma.reconciliationAudit.findMany({
       where: {
         status: {
-          in: [ReconciliationStatus.Pending, ReconciliationStatus.Discrepancy],
+          in: ['Pending', 'Discrepancy'],
         },
       },
       include: {
@@ -230,10 +233,10 @@ export async function generateReconciliationReport(startDate: Date, endDate: Dat
 
     const stats = {
       total: audits.length,
-      matched: audits.filter((a) => a.status === ReconciliationStatus.Matched).length,
-      discrepancies: audits.filter((a) => a.status === ReconciliationStatus.Discrepancy).length,
-      pending: audits.filter((a) => a.status === ReconciliationStatus.Pending).length,
-      resolved: audits.filter((a) => a.status === ReconciliationStatus.Resolved).length,
+      matched: audits.filter((a: { status: string }) => a.status === 'Matched').length,
+      discrepancies: audits.filter((a: { status: string }) => a.status === 'Discrepancy').length,
+      pending: audits.filter((a: { status: string }) => a.status === 'Pending').length,
+      resolved: audits.filter((a: { status: string }) => a.status === 'Resolved').length,
     };
 
     return {
@@ -254,7 +257,7 @@ export async function getActiveDiscrepancies() {
   try {
     return await prisma.reconciliationAudit.findMany({
       where: {
-        status: ReconciliationStatus.Discrepancy,
+        status: 'Discrepancy',
       },
       include: {
         expense: true,

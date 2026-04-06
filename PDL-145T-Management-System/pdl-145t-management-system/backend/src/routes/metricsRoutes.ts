@@ -6,8 +6,8 @@ import {
   generateBurndownChart,
   getApprovalQueueMetrics,
   getReconciliationMetrics,
-} from '../services/metricsService';
-import { requireAuth, requireRole } from '../middleware/authMiddleware';
+} from '../services/metricsService.js';
+import { requireAuth, requireRole } from '../middleware/authMiddleware.js';
 
 const router = Router();
 

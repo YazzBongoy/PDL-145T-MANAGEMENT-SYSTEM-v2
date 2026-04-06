@@ -8,8 +8,8 @@ import {
   getReconciliationHistory,
   generateReconciliationReport,
   getActiveDiscrepancies,
-} from '../services/reconciliationService';
-import { requireAuth, requireRole } from '../middleware/authMiddleware';
+} from '../services/reconciliationService.js';
+import { requireAuth, requireRole } from '../middleware/authMiddleware.js';
 
 const router = Router();
 

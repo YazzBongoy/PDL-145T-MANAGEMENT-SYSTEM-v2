@@ -59,7 +59,7 @@ export async function logAudit(auditData: {
         entityId: auditData.entityId || 0,
         action: auditData.action,
         userId: auditData.userId || 0,
-        changes: auditData.changes || null,
+        changes: auditData.changes || undefined,
         reason: auditData.reason,
       },
     });
@@ -96,8 +96,10 @@ export async function logExpenseHistory(
 /**
  * Get audit trail for an entity
  */
-export async function getAuditTrail(entityType: string, entityId: number) {
+export async function getAuditTrail(entityType: string, entityId: number, totalBudget: number, totalSpent: number) {
   try {
+    const budgetUtilization = totalBudget > 0 ? (Number(totalSpent) / Number(totalBudget)) * 100 : 0;
+    const remainingBudget = Math.max(0, Number(totalBudget) - Number(totalSpent));
     return await prisma.auditLog.findMany({
       where: {
         entityType,

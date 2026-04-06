@@ -2,8 +2,8 @@ import { Router, Request, Response } from 'express';
 import { 
   getAuditTrail, 
   getExpenseHistory 
-} from '../middleware/auditMiddleware';
-import { requireAuth, requireRole } from '../middleware/authMiddleware';
+} from '../middleware/auditMiddleware.js';
+import { requireAuth, requireRole } from '../middleware/authMiddleware.js';
 
 const router = Router();
 
