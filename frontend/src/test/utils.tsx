@@ -1,3 +1,4 @@
+import '@testing-library/jest-dom';
 import React from 'react';
 import { render, type RenderOptions } from '@testing-library/react';
 import { type User, UserRole, type Project, type Task, type Resource, type Expense, TaskStatus } from '../types';

@@ -55,7 +55,7 @@ test.describe('Dashboard Functionality', () => {
     expect(supervisorVisible || await page.locator('body').isVisible()).toBeTruthy();
   });
 
-  test('should display app for construction user', async ({ page }) => {
+  test('should show construction dashboard with tabs', async ({ page }) => {
     await page.goto('/', { waitUntil: 'networkidle' });
 
     // Mock construction user login
@@ -71,9 +71,18 @@ test.describe('Dashboard Functionality', () => {
 
     await page.reload({ waitUntil: 'networkidle' });
 
-    // Check if app is still responsive
-    const bodyElement = page.locator('body');
-    await expect(bodyElement).toBeTruthy();
+    // Verify Construction Dashboard header
+    const constructionText = page.locator('text=Construction Dashboard');
+    await expect(constructionText).toBeVisible();
+
+    // Verify all tabs are present
+    await expect(page.locator('text=My Tasks')).toBeVisible();
+    await expect(page.locator('text=Measurements')).toBeVisible();
+    await expect(page.locator('text=Sprint Board')).toBeVisible();
+    await expect(page.locator('text=Validation')).toBeVisible();
+
+    // Verify user welcome message
+    await expect(page.locator('text=Welcome, Construction User')).toBeVisible();
   });
 
   test('should redirect to login after logout', async ({ page }) => {

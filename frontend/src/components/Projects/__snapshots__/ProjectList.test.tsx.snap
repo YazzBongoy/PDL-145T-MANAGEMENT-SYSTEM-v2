@@ -1,0 +1,414 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`ProjectList > matches snapshot 1`] = `
+<div
+  class="card card--outlined card--padding-md "
+>
+  <div
+    class="card-header "
+  >
+    <h3
+      class="card-header__title"
+    >
+      Projects
+    </h3>
+    <div
+      class="card-header__actions"
+    >
+      <div
+        class="flex gap-2"
+      >
+        <div
+          class="view-toggle"
+        >
+          <button
+            aria-pressed="true"
+            class="btn btn--sm btn--primary"
+          >
+            List
+          </button>
+          <button
+            aria-pressed="false"
+            class="btn btn--sm btn--secondary"
+          >
+            Timeline
+          </button>
+        </div>
+        <button
+          aria-controls="project-form"
+          aria-expanded="false"
+          aria-label="Add new project"
+          class="btn btn--primary"
+        >
+          + New Project
+        </button>
+      </div>
+    </div>
+  </div>
+  <div
+    class="enhanced-table enhanced-table--striped enhanced-table--default enhanced-table--responsive"
+  >
+    <div
+      class="enhanced-table__wrapper"
+    >
+      <table
+        class="enhanced-table__table"
+        role="table"
+      >
+        <caption
+          class="enhanced-table__caption"
+        >
+          Active projects with status and budget tracking
+        </caption>
+        <thead
+          class="enhanced-table__head"
+        >
+          <tr
+            class="enhanced-table__header-row"
+          >
+            <th
+              class="enhanced-table__header-cell enhanced-table__header-cell--left"
+              scope="col"
+              style="width: 25%;"
+            >
+              <div
+                class="enhanced-table__header-content"
+              >
+                Project Name
+              </div>
+            </th>
+            <th
+              class="enhanced-table__header-cell enhanced-table__header-cell--center"
+              scope="col"
+              style="width: 15%;"
+            >
+              <div
+                class="enhanced-table__header-content"
+              >
+                Status
+              </div>
+            </th>
+            <th
+              class="enhanced-table__header-cell enhanced-table__header-cell--left"
+              scope="col"
+              style="width: 20%;"
+            >
+              <div
+                class="enhanced-table__header-content"
+              >
+                Timeline
+              </div>
+            </th>
+            <th
+              class="enhanced-table__header-cell enhanced-table__header-cell--right"
+              scope="col"
+              style="width: 15%;"
+            >
+              <div
+                class="enhanced-table__header-content"
+              >
+                Budget
+              </div>
+            </th>
+            <th
+              class="enhanced-table__header-cell enhanced-table__header-cell--right"
+              scope="col"
+              style="width: 15%;"
+            >
+              <div
+                class="enhanced-table__header-content"
+              >
+                Actions
+              </div>
+            </th>
+          </tr>
+        </thead>
+        <tbody
+          class="enhanced-table__body"
+        >
+          <tr
+            class="enhanced-table__row enhanced-table__row--even"
+          >
+            <td
+              class="enhanced-table__cell enhanced-table__cell--left"
+            >
+              <div
+                class="enhanced-table__cell-content"
+              >
+                <div>
+                  <div
+                    class="font-semibold text-gray-900"
+                  >
+                    Test Project
+                  </div>
+                  <div
+                    class="text-sm text-gray-500"
+                  >
+                    Started 
+                    Jan 1, 2024
+                  </div>
+                </div>
+              </div>
+            </td>
+            <td
+              class="enhanced-table__cell enhanced-table__cell--center"
+            >
+              <div
+                class="enhanced-table__cell-content"
+              >
+                <div
+                  class="tooltip-wrapper"
+                >
+                  <span
+                    class="badge badge--error status-badge status-badge--critical "
+                  >
+                    <span
+                      class="status-badge__icon"
+                      style="color: var(--color-error);"
+                    >
+                      ✕
+                    </span>
+                    <span
+                      class="status-badge__label"
+                    >
+                      Critical
+                    </span>
+                  </span>
+                  <div
+                    aria-hidden="true"
+                    class="tooltip tooltip--top tooltip--with-arrow tooltip--multiline"
+                    role="tooltip"
+                    style="max-width: 200px;"
+                  >
+                    <div
+                      class="tooltip__content"
+                    >
+                      <div
+                        class="status-tooltip"
+                      >
+                        <div
+                          class="status-tooltip__header"
+                        >
+                          <span
+                            class="status-tooltip__icon"
+                            style="color: var(--color-error);"
+                          >
+                            ✕
+                          </span>
+                          <span
+                            class="status-tooltip__title"
+                          >
+                            Critical
+                          </span>
+                        </div>
+                        <div
+                          class="status-tooltip__metadata"
+                        >
+                          <div
+                            class="status-tooltip__item"
+                          >
+                            <span
+                              class="status-tooltip__label"
+                            >
+                              Value:
+                            </span>
+                            <span
+                              class="status-tooltip__value"
+                            >
+                              468 days overdue
+                            </span>
+                          </div>
+                          <div
+                            class="status-tooltip__description"
+                          >
+                            Project is overdue or at risk
+                          </div>
+                          <div
+                            class="status-tooltip__timestamp"
+                          >
+                            Last updated: 
+                            Just now
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div
+                      class="tooltip__arrow"
+                    />
+                  </div>
+                </div>
+              </div>
+            </td>
+            <td
+              class="enhanced-table__cell enhanced-table__cell--left"
+            >
+              <div
+                class="enhanced-table__cell-content"
+              >
+                <div
+                  class="text-sm"
+                >
+                  <div>
+                    <span
+                      class="font-medium"
+                    >
+                      Start:
+                    </span>
+                     
+                    Jan 1, 2024
+                  </div>
+                  <div
+                    class="text-gray-600"
+                  >
+                    <span
+                      class="font-medium"
+                    >
+                      End:
+                    </span>
+                     
+                    Dec 31, 2024
+                  </div>
+                </div>
+              </div>
+            </td>
+            <td
+              class="enhanced-table__cell enhanced-table__cell--right"
+            >
+              <div
+                class="enhanced-table__cell-content"
+              >
+                <div
+                  class="tooltip-wrapper"
+                >
+                  <span
+                    class="font-medium text-green-600"
+                  >
+                    $10,000
+                  </span>
+                  <div
+                    aria-hidden="true"
+                    class="tooltip tooltip--top tooltip--with-arrow"
+                    role="tooltip"
+                    style="max-width: 200px;"
+                  >
+                    <div
+                      class="tooltip__content"
+                    >
+                      Total project budget: $10,000
+                    </div>
+                    <div
+                      class="tooltip__arrow"
+                    />
+                  </div>
+                </div>
+              </div>
+            </td>
+            <td
+              class="enhanced-table__cell enhanced-table__cell--right"
+            >
+              <div
+                class="enhanced-table__cell-content"
+              >
+                <div
+                  class="flex gap-2 justify-end"
+                >
+                  <button
+                    class="btn btn--secondary btn--sm"
+                    title="Edit project"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    class="btn btn--danger btn--sm"
+                    title="Delete project"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div
+    class="mt-8 space-y-6"
+  >
+    <div>
+      <div
+        class="border-t pt-6"
+      >
+        <div
+          class="card card--outlined card--padding-md nested-card"
+        >
+          <div
+            class="card-header "
+          >
+            <h4
+              class="card-header__title"
+            >
+              Tasks
+            </h4>
+            <div
+              class="card-header__actions"
+            >
+              <button
+                aria-controls="task-form"
+                aria-expanded="false"
+                aria-label="Add new task"
+                class="btn btn--primary"
+              >
+                + New Task
+              </button>
+            </div>
+          </div>
+          <div
+            class="enhanced-table enhanced-table--striped enhanced-table--default enhanced-table--responsive enhanced-table--loading"
+          >
+            <div
+              class="enhanced-table__loading"
+            >
+              <div
+                class="enhanced-table__spinner"
+              />
+              <span>
+                Loading...
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="border-t pt-6 mt-6"
+      >
+        <div
+          class="card card--outlined card--padding-md nested-card"
+        >
+          <div
+            class="card-header "
+          >
+            <h4
+              class="card-header__title"
+            >
+              Sprints
+            </h4>
+            <div
+              class="card-header__actions"
+            >
+              <button
+                class="btn btn--primary"
+              >
+                + New Sprint
+              </button>
+            </div>
+          </div>
+          <p>
+            Loading sprints...
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;

@@ -214,13 +214,13 @@ export class ReportService {
       throw new Error('Project not found');
     }
 
-    const totalExpenses = project.Tasks.reduce((total, task) => {
-      return total + task.Expenses.reduce((taskTotal, expense) => taskTotal + Number(expense.Cost), 0);
+    const totalExpenses = project.Tasks.reduce((total: number, task: typeof project.Tasks[0]) => {
+      return total + task.Expenses.reduce((taskTotal: number, expense: typeof task.Expenses[0]) => taskTotal + Number(expense.Cost), 0);
     }, 0);
 
-    const approvedValidations = project.Tasks.reduce((total, task) => total + task.Validations.length, 0);
+    const approvedValidations = project.Tasks.reduce((total: number, task: typeof project.Tasks[0]) => total + task.Validations.length, 0);
     const totalTasks = project.Tasks.length;
-    const completedTasks = project.Tasks.filter(task => task.CompletionStatus === 'Completed').length;
+    const completedTasks = project.Tasks.filter((task: typeof project.Tasks[0]) => task.CompletionStatus === 'Completed').length;
 
     return {
       project: {
@@ -239,11 +239,11 @@ export class ReportService {
         completionRate: (completedTasks / totalTasks) * 100,
       },
       details: {
-        tasks: project.Tasks.map(task => ({
+        tasks: project.Tasks.map((task: typeof project.Tasks[0]) => ({
           id: task.TaskID,
           description: task.Description,
           status: task.CompletionStatus,
-          expenses: task.Expenses.map(expense => ({
+          expenses: task.Expenses.map((expense: typeof task.Expenses[0]) => ({
             id: expense.ExpenseID,
             description: expense.Description,
             cost: Number(expense.Cost),

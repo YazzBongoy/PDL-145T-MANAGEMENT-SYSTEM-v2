@@ -54,20 +54,20 @@ describe('FinanceDashboard', () => {
   const financeUser = createMockUser({ role: UserRole.FINANCE, name: 'Finance User' });
 
   it('renders finance dashboard with correct title and user name', () => {
-    render(<FinanceDashboard user={financeUser} onLogout={mockOnLogout} />);
+    render(<FinanceDashboard user={financeUser} onLogout={mockOnLogout} token={mockToken} />);
     expect(screen.getByText('Finance Dashboard')).toBeInTheDocument();
     expect(screen.getByText('Welcome, Finance User!')).toBeInTheDocument();
   });
 
   it('calls onLogout when logout button is clicked', async () => {
     const user = userEvent.setup();
-    render(<FinanceDashboard user={financeUser} onLogout={mockOnLogout} />);
+    render(<FinanceDashboard user={financeUser} onLogout={mockOnLogout} token={mockToken} />);
     await user.click(screen.getByRole('button', { name: /logout/i }));
     expect(mockOnLogout).toHaveBeenCalled();
   });
 
   it('matches snapshot', () => {
-    const { container } = render(<FinanceDashboard user={financeUser} onLogout={mockOnLogout} />);
+    const { container } = render(<FinanceDashboard user={financeUser} onLogout={mockOnLogout} token={mockToken} />);
     expect(container.firstChild).toMatchSnapshot();
   });
 });
@@ -96,20 +96,20 @@ describe('ConstructionDashboard', () => {
 
 describe('UserDashboard', () => {
   it('renders user dashboard with correct title and user name', () => {
-    render(<UserDashboard user={mockUser} onLogout={mockOnLogout} />);
+    render(<UserDashboard user={mockUser} onLogout={mockOnLogout} token={mockToken} />);
     expect(screen.getByText('User Dashboard')).toBeInTheDocument();
     expect(screen.getByText('Welcome, Test User!')).toBeInTheDocument();
   });
 
   it('calls onLogout when logout button is clicked', async () => {
     const user = userEvent.setup();
-    render(<UserDashboard user={mockUser} onLogout={mockOnLogout} />);
+    render(<UserDashboard user={mockUser} onLogout={mockOnLogout} token={mockToken} />);
     await user.click(screen.getByRole('button', { name: /logout/i }));
     expect(mockOnLogout).toHaveBeenCalled();
   });
 
   it('matches snapshot', () => {
-    const { container } = render(<UserDashboard user={mockUser} onLogout={mockOnLogout} />);
+    const { container } = render(<UserDashboard user={mockUser} onLogout={mockOnLogout} token={mockToken} />);
     expect(container.firstChild).toMatchSnapshot();
   });
 });

@@ -84,6 +84,7 @@ export function AppBar({ user, currentView = 'dashboard', onViewChange, onLogout
                 currentView === item.key ? 'app-bar__nav-item--active' : ''
               }`}
               aria-current={currentView === item.key ? 'page' : undefined}
+              data-testid={`nav-${item.key}`}
             >
               <item.icon className="app-bar__nav-icon" size={16} aria-hidden="true" />
               <span>{item.label}</span>
@@ -179,6 +180,7 @@ export function AppBar({ user, currentView = 'dashboard', onViewChange, onLogout
                     currentView === item.key ? 'app-bar__nav-item--active' : ''
                   }`}
                   aria-current={currentView === item.key ? 'page' : undefined}
+                  data-testid={`nav-mobile-${item.key}`}
                 >
                   <item.icon className="app-bar__nav-icon" size={20} aria-hidden="true" />
                   <span>{item.label}</span>

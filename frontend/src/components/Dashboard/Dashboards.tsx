@@ -4,6 +4,7 @@ import type { User } from '../../types';
 import { ProjectList } from '../Projects/ProjectList';
 import { ResourceList } from '../Resources/ResourceList';
 import { FinanceDashboard as FinanceDashboardFull } from './FinanceDashboard';
+import { ConstructionDashboard } from '../Construction/ConstructionDashboard';
 import './Dashboard.css';
 
 interface DashboardProps {
@@ -65,23 +66,7 @@ export function FinanceDashboard({ user, onLogout, token }: DashboardProps): Rea
   );
 }
 
-export function ConstructionDashboard({ user, onLogout, token: _token }: DashboardProps): React.ReactElement {
-  return (
-    <div className="dashboard-container">
-      <div className="dashboard-header">
-        <h2>Construction Dashboard</h2>
-      </div>
-      <div className="dashboard-grid">
-        <div className="dashboard-card">
-          <p>Welcome, {user.name}!</p>
-        </div>
-      </div>
-      <div className="dashboard-actions">
-        <button onClick={onLogout} className="btn btn--secondary">Logout</button>
-      </div>
-    </div>
-  );
-}
+export { ConstructionDashboard } from '../Construction/ConstructionDashboard';
 
 export function UserDashboard({ user, onLogout, token: _token }: DashboardProps): React.ReactElement {
   return (
@@ -116,7 +101,7 @@ export function DashboardSwitcher({ user, onLogout, token }: DashboardSwitcherPr
   case UserRole.FINANCE:
     return <FinanceDashboard user={user} onLogout={onLogout} token={token} />;
   case UserRole.CONSTRUCTION:
-    return <ConstructionDashboard user={user} onLogout={onLogout} token={token} />;
+    return <ConstructionDashboard user={user} onLogout={onLogout} />;
   default:
     return <UserDashboard user={user} onLogout={onLogout} token={token} />;
   }

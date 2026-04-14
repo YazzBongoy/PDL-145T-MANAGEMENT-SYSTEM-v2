@@ -17,6 +17,7 @@ import approvalRoutes from './routes/approvalRoutes.js';
 import reconciliationRoutes from './routes/reconciliationRoutes.js';
 import metricsRoutes from './routes/metricsRoutes.js';
 import exportRoutes from './routes/exportRoutes.js';
+import settingsRoutes from './routes/settingsRoutes.js';
 // import projectRoutes from './routes/projectRoutes.js';
 // import reportRoutes from './routes/reportRoutes.js';
 
@@ -29,13 +30,16 @@ dotenv.config();
 
 // Initialize Express app
 const app = express();
-const PORT = process.env.PORT || 3010;
+const PORT = process.env.PORT || 8001;
 
 // Initialize Prisma client
 const prisma = new PrismaClient();
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
+  credentials: true,
+}));
 app.use(express.json());
 
 // Store prisma client in app locals for route access
@@ -69,6 +73,7 @@ app.use('/api/approvals', approvalRoutes);
 app.use('/api/reconciliation', reconciliationRoutes);
 app.use('/api/metrics', metricsRoutes);
 app.use('/api/export', exportRoutes);
+app.use('/api/settings', settingsRoutes);
 // app.use('/api/projects', projectRoutes);
 // app.use('/api/reports', reportRoutes);
 
@@ -93,23 +98,28 @@ app.post('/auth/register', async (req, res) => {
 
 // User login
 app.post('/auth/login', async (req, res) => {
-  const { email, password } = req.body;
-  if (!email || !password) {
-    res.status(400).json({ error: 'Email and password are required.' });
-    return;
+  try {
+    const { email, password } = req.body;
+    if (!email || !password) {
+      res.status(400).json({ error: 'Email and password are required.' });
+      return;
+    }
+    const user = await prisma.user.findUnique({ where: { email } });
+    if (!user) {
+      res.status(401).json({ error: 'Invalid credentials.' });
+      return;
+    }
+    const valid = await bcrypt.compare(password, user.passwordHash);
+    if (!valid) {
+      res.status(401).json({ error: 'Invalid credentials.' });
+      return;
+    }
+    const token = jwt.sign({ userId: user.id, role: user.role }, JWT_SECRET, { expiresIn: '1d' });
+    res.json({ token, user: { id: user.id, name: user.name, email: user.email, role: user.role } });
+  } catch (error) {
+    console.error('Login error:', error);
+    res.status(500).json({ error: 'Database operation failed', details: error instanceof Error ? error.message : String(error) });
   }
-  const user = await prisma.user.findUnique({ where: { email } });
-  if (!user) {
-    res.status(401).json({ error: 'Invalid credentials.' });
-    return;
-  }
-  const valid = await bcrypt.compare(password, user.passwordHash);
-  if (!valid) {
-    res.status(401).json({ error: 'Invalid credentials.' });
-    return;
-  }
-  const token = jwt.sign({ userId: user.id, role: user.role }, JWT_SECRET, { expiresIn: '1d' });
-  res.json({ token, user: { id: user.id, name: user.name, email: user.email, role: user.role } });
 });
 
 // Middleware functions are now imported from ./middleware/index.js
@@ -231,8 +241,8 @@ app.get('/api/tasks/:id', authenticateJWT, async (req, res) => {
   res.json(task);
 });
 
-// Update Task
-app.put('/api/tasks/:id', authenticateJWT, requireAdminOrSupervisor, async (req, res) => {
+// Update Task (construction users can update status, admin/supervisor can update all fields)
+app.put('/api/tasks/:id', authenticateJWT, async (req, res) => {
   const id = Number(req.params.id);
   const { Description, Duration, AssignedTo, CompletionStatus } = req.body;
   const task = await prisma.task.findUnique({ where: { TaskID: id } });

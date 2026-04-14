@@ -39,20 +39,19 @@ describe('Measurement Endpoints', () => {
     const project = await createTestProject(adminUser.id, {
       name: `Measurement Test Project ${Date.now()}`,
     });
-    projectId = project.id;
+    projectId = project.ProjectID;
 
     // Create test task (assuming Task model exists)
     // Note: This assumes a Task model - adjust if using different schema
     const task = await prisma.task.create({
       data: {
-        projectId: projectId,
-        name: 'Test Measurement Task',
-        description: 'Task for testing measurements',
-        assignedTo: constructionUser.id,
-        status: 'IN_PROGRESS',
+        ProjectID: projectId,
+        Description: 'Test Measurement Task',
+        AssignedTo: constructionUser.id.toString(),
+        CompletionStatus: 'InProgress',
       },
     });
-    taskId = task.id;
+    taskId = task.TaskID;
   });
 
   afterAll(async () => {
@@ -268,8 +267,9 @@ describe('Measurement Endpoints', () => {
       }
     });
   });
-});
 
+  describe('Error handling', () => {
+    it('should handle errors gracefully', async () => {
       const measurementData = {
         SiteID: 'SITE003',
         MeasurementType: 'Height',
@@ -402,16 +402,31 @@ describe('Measurement Endpoints', () => {
   describe('Authentication', () => {
     it('should require authentication for all endpoints', async () => {
       const endpoints = [
-        { method: 'get', path: '/api/measurements' },
-        { method: 'get', path: `/api/measurements/${measurementId}` },
-        { method: 'post', path: `/api/measurements/task/${taskId}` },
-        { method: 'put', path: `/api/measurements/${measurementId}` },
-        { method: 'delete', path: `/api/measurements/${measurementId}` },
+        { method: 'get' as const, path: '/api/measurements' },
+        { method: 'get' as const, path: `/api/measurements/${measurementId}` },
+        { method: 'post' as const, path: `/api/measurements/task/${taskId}` },
+        { method: 'put' as const, path: `/api/measurements/${measurementId}` },
+        { method: 'delete' as const, path: `/api/measurements/${measurementId}` },
       ];
 
       for (const endpoint of endpoints) {
-        const res = await (request(app) as { [key: string]: (path: string) => request.Test })[endpoint.method](endpoint.path);
-        expect(res.status).toBe(401);
+        const req = request(app);
+        let res;
+        switch (endpoint.method) {
+          case 'get':
+            res = await req.get(endpoint.path);
+            break;
+          case 'post':
+            res = await req.post(endpoint.path);
+            break;
+          case 'put':
+            res = await req.put(endpoint.path);
+            break;
+          case 'delete':
+            res = await req.delete(endpoint.path);
+            break;
+        }
+        expect(res!.status).toBe(401);
       }
     });
   });

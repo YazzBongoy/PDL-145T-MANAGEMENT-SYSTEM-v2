@@ -94,6 +94,32 @@ export interface Sprint {
   Status: 'PLANNED' | 'ACTIVE' | 'COMPLETED' | 'CANCELLED';
 }
 
+export interface Measurement {
+  MeasurementID?: number;
+  TaskID: number;
+  SiteID: string;
+  MeasurementType: 'Distance' | 'Area' | 'Volume' | 'Weight' | 'Time' | string;
+  Value: number;
+  Unit: string;
+  Notes?: string;
+  Date?: string;
+  MeasuredBy?: number;
+}
+
+export interface Validation {
+  ValidationID?: number;
+  TaskID: number;
+  ExpenseID?: number;
+  Status: 'PENDING' | 'APPROVED' | 'REJECTED';
+  RL_Approval?: boolean;
+  RC_Approval?: boolean;
+  CQ_Approval?: boolean;
+  CFEF_Approval?: boolean;
+  Notes?: string;
+  SubmittedBy?: number;
+  SubmittedAt?: string;
+}
+
 export interface AuthState {
   token: string | null;
   user: User | null;
@@ -109,4 +135,21 @@ export interface RegisterData {
   email: string;
   password: string;
   role: UserRole;
+}
+
+export interface Device {
+  ResourceID: number;
+  Name: string;
+  Type: string;
+  Description?: string;
+  Quantity: number;
+  Status: 'active' | 'inactive' | 'maintenance';
+  Location?: string;
+  SerialNumber?: string;
+  PurchaseDate?: string;
+  LastMaintenance?: string;
+  NextMaintenance?: string;
+  Cost?: number;
+  CreatedAt: string;
+  UpdatedAt: string;
 }

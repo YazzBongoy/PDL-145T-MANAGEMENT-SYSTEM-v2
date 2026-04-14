@@ -7,12 +7,17 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'http://localhost:3010',
+        target: 'http://localhost:8002',
         changeOrigin: true,
         secure: false,
       },
       '/auth': {
-        target: 'http://localhost:3010',
+        target: 'http://localhost:8002',
+        changeOrigin: true,
+        secure: false,
+      },
+      '/me': {
+        target: 'http://localhost:8002',
         changeOrigin: true,
         secure: false,
       },

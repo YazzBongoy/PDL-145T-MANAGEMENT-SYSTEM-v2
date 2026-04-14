@@ -34,6 +34,9 @@ router.get('/project/:projectId/billing', authenticateJWT, requireFinance, gener
 // Validation-specific routes
 router.get('/validation/:validationId', authenticateJWT, getReportsByValidation);
 
+// Report generation route
+router.post('/generate', authenticateJWT, generateReport);
+
 // Admin/Finance routes
 router.post(
   '/',

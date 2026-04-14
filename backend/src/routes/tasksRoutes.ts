@@ -27,8 +27,8 @@ router.get('/project/:projectId', getTasksByProject);
 // Get task by ID
 router.get('/:id', getTaskById);
 
-// Update task (admin/supervisor only)
-router.put('/:id', requireAdminOrSupervisor, updateTask);
+// Update task (admin/supervisor can update all fields, construction can update status)
+router.put('/:id', updateTask);
 
 // Delete task (admin/supervisor only)
 router.delete('/:id', requireAdminOrSupervisor, deleteTask);

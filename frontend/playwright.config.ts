@@ -22,6 +22,12 @@ export default defineConfig({
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
+    
+    /* Screenshot on failure */
+    screenshot: 'only-on-failure',
+    
+    /* Video recording */
+    video: 'on-first-retry',
   },
 
   /* Configure projects for major browsers */
@@ -69,4 +75,8 @@ export default defineConfig({
     reuseExistingServer: !process.env.CI,
     timeout: 120 * 1000,
   },
+  
+  /* Global setup for test environment - using ES modules */
+  globalSetup: './tests/global-setup.ts',
+  globalTeardown: './tests/global-teardown.ts',
 });

@@ -72,13 +72,22 @@ model Expense {
   ReconciliationAudits ReconciliationAudit[]
 }
 
-// Resources Table - Stores information about available resources
+// Resources Table - Stores information about available resources (Equipment/Devices)
 model Resource {
-  ResourceID   Int      @id @default(autoincrement())
-  Type         String
-  Quantity     Decimal
-  CreatedAt    DateTime @default(now())
-  UpdatedAt    DateTime @updatedAt
+  ResourceID       Int      @id @default(autoincrement())
+  Name             String
+  Type             String
+  Description      String?
+  Quantity         Decimal  @default(1)
+  Status           String   @default("active")
+  Location         String?
+  SerialNumber     String?  @unique
+  PurchaseDate     DateTime?
+  LastMaintenance  DateTime?
+  NextMaintenance  DateTime?
+  Cost             Decimal?
+  CreatedAt        DateTime @default(now())
+  UpdatedAt        DateTime @updatedAt
 
   // Relationships
   ProjectResources ProjectResource[]
@@ -144,16 +153,21 @@ model Validation {
 
 // Reports Table - Holds reports generated for billing validation
 model Report {
-  ReportID    Int      @id @default(autoincrement())
-  ValidationID Int
-  ProjectID   Int
-  GeneratedBy String
-  Timestamp   DateTime @default(now())
-  UpdatedAt   DateTime @updatedAt
+  ReportID     Int       @id @default(autoincrement())
+  ValidationID Int?
+  ProjectID    Int?
+  Name         String    @default("Untitled Report")
+  Type         String    @default("progress")
+  Status       String    @default("generating")
+  GeneratedAt  DateTime  @default(now())
+  FileUrl      String?
+  GeneratedBy  String
+  Timestamp    DateTime  @default(now())
+  UpdatedAt    DateTime  @updatedAt
 
   // Relationships
-  Validation Validation @relation(fields: [ValidationID], references: [ValidationID])
-  Project    Project    @relation(fields: [ProjectID], references: [ProjectID])
+  Validation Validation? @relation(fields: [ValidationID], references: [ValidationID])
+  Project    Project?    @relation(fields: [ProjectID], references: [ProjectID])
 }
 
 // Territory Table - Manages territories containing multiple sites
@@ -200,6 +214,27 @@ model User {
   level2Approvals ApprovalWorkflow[] @relation("level2Approver")
   level3Approvals ApprovalWorkflow[] @relation("level3Approver")
   level4Approvals ApprovalWorkflow[] @relation("level4Approver")
+  
+  // User settings
+  settings UserSettings?
+}
+
+// UserSettings Table - Stores user preferences
+model UserSettings {
+  id           Int      @id @default(autoincrement())
+  userId       Int      @unique
+  theme        String   @default("system")
+  language     String   @default("en")
+  dateFormat   String   @default("MM/DD/YYYY")
+  notifications Json   @default("{}")
+  emailNotifications Json @default("{}")
+  pushNotifications Json @default("{}")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
 }
 
 // Sprint Table - Manages agile sprints within projects

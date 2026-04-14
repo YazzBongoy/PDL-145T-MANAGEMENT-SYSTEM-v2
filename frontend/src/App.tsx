@@ -6,11 +6,15 @@ import type { User, HealthStatus, LoginCredentials, RegisterData } from './types
 import { useApi } from './hooks/useApi';
 import { DashboardSwitcher } from './components/Dashboard/Dashboards';
 import { LoginForm, RegisterForm } from './components/Auth/AuthForms';
+import { DevicesView } from './components/Devices';
+import { ReportsView } from './components/Reports';
+import { SettingsView } from './components/Settings';
 
 function App(): React.ReactElement {
   const [authError, setAuthError] = useState<string | null>(null);
   const [registerError, setRegisterError] = useState<string | null>(null);
   const [showRegister, setShowRegister] = useState(false);
+  const [currentView, setCurrentView] = useState<string>('dashboard');
   const { data: healthStatus, loading, error, refetch: refreshHealth } = useApi<HealthStatus>('/api/health');
   const [token, setToken] = useState<string | null>(() => localStorage.getItem('token'));
   const [user, setUser] = useState<User | null>(() => {
@@ -43,9 +47,44 @@ function App(): React.ReactElement {
   const handleLogout = useCallback((): void => {
     setToken(null);
     setUser(null);
+    setCurrentView('dashboard');
     localStorage.removeItem('token');
     localStorage.removeItem('user');
   }, []);
+
+  const handleViewChange = useCallback((view: string): void => {
+    setCurrentView(view);
+  }, []);
+
+  const renderContent = (): React.ReactElement => {
+    if (!token || !user) {
+      return showRegister ? (
+        <RegisterForm
+          onRegister={handleRegister}
+          onShowLogin={() => setShowRegister(false)}
+          error={registerError}
+        />
+      ) : (
+        <LoginForm
+          onLogin={handleLogin}
+          onShowRegister={() => setShowRegister(true)}
+          error={authError}
+        />
+      );
+    }
+
+    switch (currentView) {
+      case 'devices':
+        return <DevicesView />;
+      case 'reports':
+        return <ReportsView />;
+      case 'settings':
+        return <SettingsView />;
+      case 'dashboard':
+      default:
+        return <DashboardSwitcher user={user} onLogout={handleLogout} token={token} />;
+    }
+  };
 
   const handleRegister = useCallback(async (data: RegisterData): Promise<void> => {
     setRegisterError(null);
@@ -69,25 +108,16 @@ function App(): React.ReactElement {
 
   return (
     <div className="app">
-      <AppBar user={user} onLogout={handleLogout} />
+      <AppBar 
+        user={user} 
+        onLogout={handleLogout} 
+        currentView={currentView}
+        onViewChange={handleViewChange}
+      />
 
       <main className="app__main">
         <section className="auth-section">
-          {token && user ? (
-            <DashboardSwitcher user={user} onLogout={handleLogout} token={token} />
-          ) : showRegister ? (
-            <RegisterForm
-              onRegister={handleRegister}
-              onShowLogin={() => setShowRegister(false)}
-              error={registerError}
-            />
-          ) : (
-            <LoginForm
-              onLogin={handleLogin}
-              onShowRegister={() => setShowRegister(true)}
-              error={authError}
-            />
-          )}
+          {renderContent()}
         </section>
         
         <section className="health-check">

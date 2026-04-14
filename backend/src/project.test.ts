@@ -190,9 +190,6 @@ describe('Project Management Endpoints', () => {
     expect(res.status).toBe(401);
     expect(res.body.error).toBeDefined();
   });
-});
-
-  });
 
   it('should not allow USER to update a project', async () => {
     const res = await request(app)
