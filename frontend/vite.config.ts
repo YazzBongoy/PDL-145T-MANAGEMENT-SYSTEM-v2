@@ -10,6 +10,7 @@ export default defineConfig({
         target: 'http://localhost:8002',
         changeOrigin: true,
         secure: false,
+        rewrite: (path) => path.replace(/^\/api/, '/api'),
       },
       '/auth': {
         target: 'http://localhost:8002',
@@ -22,5 +23,6 @@ export default defineConfig({
         secure: false,
       },
     },
+    cors: true,
   },
 });

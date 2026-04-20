@@ -29,7 +29,7 @@ interface Project {
 }
 
 const fetchPrograms = async (): Promise<Program[]> => {
-  const response = await fetch('http://localhost:8002/api/programs', {
+  const response = await fetch('/api/programs', {
     headers: {
       'Authorization': `Bearer ${localStorage.getItem('token')}`
     }

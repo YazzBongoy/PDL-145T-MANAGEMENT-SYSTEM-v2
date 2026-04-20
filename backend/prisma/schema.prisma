@@ -24,6 +24,7 @@ model Project {
   ProjectID        Int               @id @default(autoincrement())
   ProgramID        Int
   Name             String
+  Description      String?
   StartDate        DateTime
   EndDate          DateTime?
   TotalBudget      Decimal

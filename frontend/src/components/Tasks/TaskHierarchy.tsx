@@ -34,7 +34,7 @@ interface TaskHierarchyProps {
 }
 
 const fetchTaskHierarchy = async (projectId: number): Promise<Task[]> => {
-  const response = await fetch(`http://localhost:8002/api/tasks/hierarchy/${projectId}`, {
+  const response = await fetch(`/api/tasks/hierarchy/${projectId}`, {
     headers: {
       'Authorization': `Bearer ${localStorage.getItem('token')}`
     }
