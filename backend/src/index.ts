@@ -8,7 +8,7 @@ import jwt from 'jsonwebtoken';
 // Import routes
 import measurementRoutes from './routes/measurementRoutes.js';
 import validationRoutes from './routes/validationRoutes.js';
-import tasksRoutes from './routes/tasksRoutes.js';
+import tasksRoutes from './routes/taskRoutes.js';
 import expensesRoutes from './routes/expensesRoutes.js';
 import resourcesRoutes from './routes/resourcesRoutes.js';
 import sprintRoutes from './routes/sprintRoutes.js';
@@ -18,6 +18,7 @@ import reconciliationRoutes from './routes/reconciliationRoutes.js';
 import metricsRoutes from './routes/metricsRoutes.js';
 import exportRoutes from './routes/exportRoutes.js';
 import settingsRoutes from './routes/settingsRoutes.js';
+import programRoutes from './routes/programRoutes.js';
 // import projectRoutes from './routes/projectRoutes.js';
 // import reportRoutes from './routes/reportRoutes.js';
 
@@ -74,6 +75,7 @@ app.use('/api/reconciliation', reconciliationRoutes);
 app.use('/api/metrics', metricsRoutes);
 app.use('/api/export', exportRoutes);
 app.use('/api/settings', settingsRoutes);
+app.use('/api/programs', programRoutes);
 // app.use('/api/projects', projectRoutes);
 // app.use('/api/reports', reportRoutes);
 

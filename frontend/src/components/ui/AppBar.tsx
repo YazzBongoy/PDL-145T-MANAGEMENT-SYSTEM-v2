@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { BarChart3, Wrench, TrendingUp, Settings, X } from 'lucide-react';
+import { BarChart3, Wrench, TrendingUp, Settings, X, FolderTree } from 'lucide-react';
 import { Logo } from './Logo';
 import type { User } from '../../types';
 
@@ -18,6 +18,7 @@ export function AppBar({ user, currentView = 'dashboard', onViewChange, onLogout
 
   const navItems = [
     { key: 'dashboard', label: 'Dashboard', icon: BarChart3 },
+    { key: 'programs', label: 'Programs', icon: FolderTree },
     { key: 'devices', label: 'Devices', icon: Wrench },
     { key: 'reports', label: 'Reports', icon: TrendingUp },
     { key: 'settings', label: 'Settings', icon: Settings },

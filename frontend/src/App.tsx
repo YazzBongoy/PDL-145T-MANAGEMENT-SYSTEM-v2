@@ -9,6 +9,7 @@ import { LoginForm, RegisterForm } from './components/Auth/AuthForms';
 import { DevicesView } from './components/Devices';
 import { ReportsView } from './components/Reports';
 import { SettingsView } from './components/Settings';
+import { ProgramsView } from './components/Programs';
 
 function App(): React.ReactElement {
   const [authError, setAuthError] = useState<string | null>(null);
@@ -80,6 +81,8 @@ function App(): React.ReactElement {
         return <ReportsView />;
       case 'settings':
         return <SettingsView />;
+      case 'programs':
+        return <ProgramsView />;
       case 'dashboard':
       default:
         return <DashboardSwitcher user={user} onLogout={handleLogout} token={token} />;

@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -13,244 +7,327 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Projects Table - Manages the overall projects
+model Program {
+  ProgramID   Int       @id @default(autoincrement())
+  Name        String
+  Description String?
+  StartDate   DateTime?
+  EndDate     DateTime?
+  Budget      Decimal?
+  Status      ProgramStatus @default(ACTIVE)
+  CreatedAt   DateTime  @default(now())
+  UpdatedAt   DateTime  @updatedAt
+  Projects    Project[]
+}
+
 model Project {
-  ProjectID      Int      @id @default(autoincrement())
-  Name           String
-  StartDate      DateTime
-  EndDate        DateTime?
-  TotalBudget    Decimal
-  CreatedAt      DateTime @default(now())
-  UpdatedAt      DateTime @updatedAt
-
-  // Relationships
+  ProjectID        Int               @id @default(autoincrement())
+  ProgramID        Int
+  Name             String
+  StartDate        DateTime
+  EndDate          DateTime?
+  TotalBudget      Decimal
+  CreatedAt        DateTime          @default(now())
+  UpdatedAt        DateTime          @updatedAt
   ProjectResources ProjectResource[]
-  Tasks           Task[]
-  Reports         Report[]
-  Sprints         Sprint[]
+  Reports          Report[]
+  Sprints          Sprint[]
+  Tasks            Task[]
+  Program          Program           @relation(fields: [ProgramID], references: [ProgramID])
 }
 
-// Tasks Table - Manages individual tasks within a project
 model Task {
-  TaskID         Int      @id @default(autoincrement())
-  ProjectID      Int
-  SprintID       Int?
-  Description    String?
-  Duration       Int?
-  AssignedTo     String?
-  CompletionStatus TaskCompletionStatus @default(NotStarted)
-  progressPercentage Int @default(0)
-  actualCost     Decimal? @default(0)
-  estimatedCost  Decimal? @default(0)
-  statusReason   String?
-  CreatedAt      DateTime @default(now())
-  UpdatedAt      DateTime @updatedAt
-
-  // Relationships
-  Project       Project   @relation(fields: [ProjectID], references: [ProjectID])
-  Sprint        Sprint?   @relation(fields: [SprintID], references: [SprintID])
-  Expenses      Expense[]
-  TaskResources TaskResource[]
-  Measurements  Measurement[]
-  Validations   Validation[]
+  TaskID             Int                  @id @default(autoincrement())
+  ProjectID          Int
+  ParentTaskID       Int?
+  Name               String
+  Description        String?
+  Duration           Int?
+  AssignedTo         String?
+  CompletionStatus   TaskCompletionStatus @default(NotStarted)
+  CreatedAt          DateTime             @default(now())
+  UpdatedAt          DateTime             @updatedAt
+  SprintID           Int?
+  actualCost         Decimal?             @default(0)
+  estimatedCost      Decimal?             @default(0)
+  progressPercentage Int                  @default(0)
+  statusReason       String?
+  Level              Int                  @default(1) // Niveau 1, 2 ou 3
+  Expenses           Expense[]
+  Measurements       Measurement[]
+  Project            Project              @relation(fields: [ProjectID], references: [ProjectID])
+  Sprint             Sprint?              @relation(fields: [SprintID], references: [SprintID])
+  TaskResources      TaskResource[]
+  Validations        Validation[]
+  ParentTask         Task?                @relation("TaskHierarchy", fields: [ParentTaskID], references: [TaskID])
+  SubTasks           Task[]               @relation("TaskHierarchy")
 }
 
-// Expenses Table - Tracks expenses associated with tasks or projects
 model Expense {
-  ExpenseID    Int      @id @default(autoincrement())
-  TaskID       Int
-  Description  String?
-  Cost         Decimal
-  Date         DateTime
-  CreatedAt    DateTime @default(now())
-  UpdatedAt    DateTime @updatedAt
-
-  // Relationships
-  Task Task @relation(fields: [TaskID], references: [TaskID])
-  ApprovalWorkflow ApprovalWorkflow?
-  ExpenseHistory ExpenseHistory[]
+  ExpenseID            Int                   @id @default(autoincrement())
+  TaskID               Int
+  Description          String?
+  Cost                 Decimal
+  Date                 DateTime
+  CreatedAt            DateTime              @default(now())
+  UpdatedAt            DateTime              @updatedAt
+  ApprovalWorkflow     ApprovalWorkflow?
+  Task                 Task                  @relation(fields: [TaskID], references: [TaskID])
+  ExpenseHistory       ExpenseHistory[]
   ReconciliationAudits ReconciliationAudit[]
 }
 
-// Resources Table - Stores information about available resources (Equipment/Devices)
 model Resource {
-  ResourceID       Int      @id @default(autoincrement())
-  Name             String
+  ResourceID       Int               @id @default(autoincrement())
   Type             String
-  Description      String?
-  Quantity         Decimal  @default(1)
-  Status           String   @default("active")
-  Location         String?
-  SerialNumber     String?  @unique
-  PurchaseDate     DateTime?
-  LastMaintenance  DateTime?
-  NextMaintenance  DateTime?
+  Quantity         Decimal           @default(1)
+  CreatedAt        DateTime          @default(now())
+  UpdatedAt        DateTime          @updatedAt
   Cost             Decimal?
-  CreatedAt        DateTime @default(now())
-  UpdatedAt        DateTime @updatedAt
-
-  // Relationships
+  Description      String?
+  LastMaintenance  DateTime?
+  Location         String?
+  Name             String
+  NextMaintenance  DateTime?
+  PurchaseDate     DateTime?
+  SerialNumber     String?           @unique
+  Status           String            @default("active")
   ProjectResources ProjectResource[]
-  TaskResources TaskResource[]
+  TaskResources    TaskResource[]
 }
 
-// Project Resources - Many-to-Many relationship between Projects and Resources
 model ProjectResource {
   ProjectID  Int
   ResourceID Int
-
-  // Relationships
-  Project  Project  @relation(fields: [ProjectID], references: [ProjectID])
-  Resource Resource @relation(fields: [ResourceID], references: [ResourceID])
+  Project    Project  @relation(fields: [ProjectID], references: [ProjectID])
+  Resource   Resource @relation(fields: [ResourceID], references: [ResourceID])
 
   @@id([ProjectID, ResourceID])
 }
 
-// Task Resources - Many-to-Many relationship between Tasks and Resources
 model TaskResource {
-  TaskID     Int
-  ResourceID Int
-
-  // Relationships
-  Task     Task     @relation(fields: [TaskID], references: [TaskID])
-  Resource Resource @relation(fields: [ResourceID], references: [ResourceID])
+  TaskID            Int
+  ResourceID        Int
+  AllocatedQuantity Int      @default(1)
+  ActualQuantity    Int?
+  UsageDate         DateTime @default(now())
+  Resource          Resource @relation(fields: [ResourceID], references: [ResourceID])
+  Task              Task     @relation(fields: [TaskID], references: [TaskID])
 
   @@id([TaskID, ResourceID])
 }
 
-// Measurements Table - Records site measurements performed by the Construction Execution Agent
 model Measurement {
-  MeasurementID Int      @id @default(autoincrement())
-  TaskID      Int
-  SiteID      String
+  MeasurementID   Int      @id @default(autoincrement())
+  TaskID          Int
+  SiteID          String
   MeasurementType String
-  Value       Decimal
-  Date        DateTime
-  CreatedAt   DateTime @default(now())
-  UpdatedAt   DateTime @updatedAt
-
-  // Relationships
-  Task Task @relation(fields: [TaskID], references: [TaskID])
-  Site Site @relation(fields: [SiteID], references: [SiteID])
+  Value           Decimal
+  Date            DateTime
+  CreatedAt       DateTime @default(now())
+  UpdatedAt       DateTime @updatedAt
+  Site            Site     @relation(fields: [SiteID], references: [SiteID])
+  Task            Task     @relation(fields: [TaskID], references: [TaskID])
 }
 
-// Validations Table - Tracks validations of construction sites
 model Validation {
-  ValidationID Int      @id @default(autoincrement())
+  ValidationID Int              @id @default(autoincrement())
   TaskID       Int
   SiteID       String
   Status       ValidationStatus @default(Pending)
   Notes        String?
   GeneratedBy  String
-  Timestamp    DateTime @default(now())
-  UpdatedAt    DateTime @updatedAt
-
-  // Relationships
-  Task Task @relation(fields: [TaskID], references: [TaskID])
-  Site Site @relation(fields: [SiteID], references: [SiteID])
-  Reports Report[]
+  Timestamp    DateTime         @default(now())
+  UpdatedAt    DateTime         @updatedAt
+  Reports      Report[]
+  Site         Site             @relation(fields: [SiteID], references: [SiteID])
+  Task         Task             @relation(fields: [TaskID], references: [TaskID])
 }
 
-// Reports Table - Holds reports generated for billing validation
 model Report {
-  ReportID     Int       @id @default(autoincrement())
-  ValidationID Int?
-  ProjectID    Int?
-  Name         String    @default("Untitled Report")
-  Type         String    @default("progress")
-  Status       String    @default("generating")
-  GeneratedAt  DateTime  @default(now())
-  FileUrl      String?
+  ReportID     Int        @id @default(autoincrement())
+  ValidationID Int
+  ProjectID    Int
   GeneratedBy  String
-  Timestamp    DateTime  @default(now())
-  UpdatedAt    DateTime  @updatedAt
-
-  // Relationships
-  Validation Validation? @relation(fields: [ValidationID], references: [ValidationID])
-  Project    Project?    @relation(fields: [ProjectID], references: [ProjectID])
+  Timestamp    DateTime   @default(now())
+  UpdatedAt    DateTime   @updatedAt
+  Project      Project    @relation(fields: [ProjectID], references: [ProjectID])
+  Validation   Validation @relation(fields: [ValidationID], references: [ValidationID])
 }
 
-// Territory Table - Manages territories containing multiple sites
 model Territory {
   TerritoryID Int    @id @default(autoincrement())
   Name        String @unique
   Sites       Site[]
 }
 
-// Site Table - Manages construction sites within territories
 model Site {
-  SiteID      String @id      // keep string for compatibility with Measurement/Validation
-  Name        String
-  Type        SiteType
-  Province    String
-  TerritoryID Int
-  Location    String? // Coordinates as string (lat,lng)
-  Elevation   Float?
-  CreatedAt   DateTime @default(now())
-  UpdatedAt   DateTime @updatedAt
-
-  Territory   Territory @relation(fields: [TerritoryID], references: [TerritoryID])
+  SiteID       String        @id
+  Name         String
+  Type         SiteType
+  Province     String
+  TerritoryID  Int
+  Location     String?
+  Elevation    Float?
+  CreatedAt    DateTime      @default(now())
+  UpdatedAt    DateTime      @updatedAt
   Measurements Measurement[]
+  Territory    Territory     @relation(fields: [TerritoryID], references: [TerritoryID])
   Validations  Validation[]
 }
 
-// User Table - Stores user authentication and profile information
 model User {
-  id           Int      @id @default(autoincrement())
-  name         String
-  email        String   @unique
-  passwordHash String
-  role         UserRole @default(USER)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-
-  // Relationships for audit trail
-  auditLogs    AuditLog[]
-  expenseHistories ExpenseHistory[]
+  id                   Int                   @id @default(autoincrement())
+  name                 String
+  email                String                @unique
+  passwordHash         String
+  role                 UserRole              @default(USER)
+  createdAt            DateTime              @default(now())
+  updatedAt            DateTime              @updatedAt
+  level1Approvals      ApprovalWorkflow[]    @relation("level1Approver")
+  level2Approvals      ApprovalWorkflow[]    @relation("level2Approver")
+  level3Approvals      ApprovalWorkflow[]    @relation("level3Approver")
+  level4Approvals      ApprovalWorkflow[]    @relation("level4Approver")
+  auditLogs            AuditLog[]
+  expenseHistories     ExpenseHistory[]
   reconciliationAudits ReconciliationAudit[]
-  
-  // Relationships for approval workflow
-  level1Approvals ApprovalWorkflow[] @relation("level1Approver")
-  level2Approvals ApprovalWorkflow[] @relation("level2Approver")
-  level3Approvals ApprovalWorkflow[] @relation("level3Approver")
-  level4Approvals ApprovalWorkflow[] @relation("level4Approver")
-  
-  // User settings
-  settings UserSettings?
+  settings             UserSettings?
 }
 
-// UserSettings Table - Stores user preferences
 model UserSettings {
-  id           Int      @id @default(autoincrement())
-  userId       Int      @unique
-  theme        String   @default("system")
-  language     String   @default("en")
-  dateFormat   String   @default("MM/DD/YYYY")
-  notifications Json   @default("{}")
-  emailNotifications Json @default("{}")
-  pushNotifications Json @default("{}")
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+  id                 Int      @id @default(autoincrement())
+  userId             Int      @unique
+  theme              String   @default("system")
+  language           String   @default("en")
+  dateFormat         String   @default("MM/DD/YYYY")
+  notifications      Json     @default("{}")
+  emailNotifications Json     @default("{}")
+  pushNotifications  Json     @default("{}")
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@index([userId])
 }
 
-// Sprint Table - Manages agile sprints within projects
 model Sprint {
-  SprintID    Int          @id @default(autoincrement())
-  ProjectID   Int
-  Name        String
-  StartDate   DateTime
-  EndDate     DateTime
-  Status      SprintStatus @default(PLANNED)
-  CreatedAt   DateTime     @default(now())
-  UpdatedAt   DateTime     @updatedAt
+  SprintID  Int          @id @default(autoincrement())
+  ProjectID Int
+  Name      String
+  StartDate DateTime
+  EndDate   DateTime
+  Status    SprintStatus @default(PLANNED)
+  CreatedAt DateTime     @default(now())
+  UpdatedAt DateTime     @updatedAt
+  Project   Project      @relation(fields: [ProjectID], references: [ProjectID])
+  Tasks     Task[]
+}
 
-  // Relationships
-  Project Project @relation(fields: [ProjectID], references: [ProjectID])
-  Tasks   Task[]
+model AuditLog {
+  id         Int      @id @default(autoincrement())
+  entityType String
+  entityId   Int
+  action     String
+  userId     Int
+  timestamp  DateTime @default(now())
+  changes    Json?
+  reason     String?
+  createdAt  DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [id])
+
+  @@index([entityType, entityId])
+  @@index([userId])
+  @@index([timestamp])
+}
+
+model ExpenseHistory {
+  id        Int      @id @default(autoincrement())
+  expenseId Int
+  fieldName String
+  oldValue  String?
+  newValue  String?
+  changedBy Int
+  changedAt DateTime @default(now())
+  user      User     @relation(fields: [changedBy], references: [id])
+  expense   Expense  @relation(fields: [expenseId], references: [ExpenseID], onDelete: Cascade)
+
+  @@index([expenseId])
+  @@index([changedBy])
+  @@index([changedAt])
+}
+
+model ApprovalWorkflow {
+  id                  Int            @id @default(autoincrement())
+  expenseId           Int            @unique
+  currentLevel        ApprovalLevel  @default(LEVEL_1_RL)
+  level1_approver     Int?
+  level1_status       ApprovalStatus @default(Pending)
+  level1_date         DateTime?
+  level1_notes        String?
+  level2_approver     Int?
+  level2_status       ApprovalStatus @default(Pending)
+  level2_date         DateTime?
+  level2_notes        String?
+  level3_approver     Int?
+  level3_status       ApprovalStatus @default(Pending)
+  level3_date         DateTime?
+  level3_notes        String?
+  level4_approver     Int?
+  level4_status       ApprovalStatus @default(Pending)
+  level4_date         DateTime?
+  level4_notes        String?
+  paymentBlockedUntil DateTime?
+  createdAt           DateTime       @default(now())
+  completedAt         DateTime?
+  updatedAt           DateTime       @updatedAt
+  expense             Expense        @relation(fields: [expenseId], references: [ExpenseID], onDelete: Cascade)
+  level1User          User?          @relation("level1Approver", fields: [level1_approver], references: [id])
+  level2User          User?          @relation("level2Approver", fields: [level2_approver], references: [id])
+  level3User          User?          @relation("level3Approver", fields: [level3_approver], references: [id])
+  level4User          User?          @relation("level4Approver", fields: [level4_approver], references: [id])
+
+  @@index([expenseId])
+  @@index([currentLevel])
+  @@index([level1_status])
+  @@index([level4_status])
+}
+
+model ReconciliationAudit {
+  id                Int                  @id @default(autoincrement())
+  expenseId         Int
+  invoiceId         String
+  purchaseOrderId   String?
+  status            ReconciliationStatus @default(Pending)
+  discrepancyReason String?
+  auditedBy         Int
+  auditDate         DateTime             @default(now())
+  resolutionDate    DateTime?
+  resolutionNotes   String?
+  createdAt         DateTime             @default(now())
+  updatedAt         DateTime             @updatedAt
+  auditor           User                 @relation(fields: [auditedBy], references: [id])
+  expense           Expense              @relation(fields: [expenseId], references: [ExpenseID], onDelete: Cascade)
+
+  @@index([expenseId])
+  @@index([status])
+  @@index([invoiceId])
+  @@index([auditDate])
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model spatial_ref_sys {
+  srid      Int     @id
+  auth_name String? @db.VarChar(256)
+  auth_srid Int?
+  srtext    String? @db.VarChar(2048)
+  proj4text String? @db.VarChar(2048)
+}
+
+enum ProgramStatus {
+  ACTIVE
+  SUSPENDED
+  COMPLETED
+  CANCELLED
 }
 
 enum SprintStatus {
@@ -304,120 +381,4 @@ enum ReconciliationStatus {
   Discrepancy
   Pending
   Resolved
-}
-
-// ============================================
-// AUDIT & APPROVAL MODELS
-// ============================================
-
-// AuditLog - Complete audit trail of all operations
-model AuditLog {
-  id            Int      @id @default(autoincrement())
-  entityType    String   // "Expense", "Approval", etc.
-  entityId      Int
-  action        String   // "CREATE", "UPDATE", "DELETE", "APPROVE", "REJECT"
-  userId        Int
-  timestamp     DateTime @default(now())
-  changes       Json?    // JSON of what changed
-  reason        String?  // Justification for the action
-  createdAt     DateTime @default(now())
-
-  user          User     @relation(fields: [userId], references: [id])
-  
-  @@index([entityType, entityId])
-  @@index([userId])
-  @@index([timestamp])
-}
-
-// ExpenseHistory - Track modifications to expenses
-model ExpenseHistory {
-  id            Int      @id @default(autoincrement())
-  expenseId     Int
-  fieldName     String   // Which field changed
-  oldValue      String?  // Previous value
-  newValue      String?  // New value
-  changedBy     Int
-  changedAt     DateTime @default(now())
-
-  user          User     @relation(fields: [changedBy], references: [id])
-  expense       Expense  @relation(fields: [expenseId], references: [ExpenseID], onDelete: Cascade)
-
-  @@index([expenseId])
-  @@index([changedBy])
-  @@index([changedAt])
-}
-
-// ApprovalWorkflow - 4-level approval workflow for expenses
-model ApprovalWorkflow {
-  id                Int      @id @default(autoincrement())
-  expenseId         Int      @unique
-  currentLevel      ApprovalLevel @default(LEVEL_1_RL)
-  
-  // Level 1 - Responsable Logistique (RL)
-  level1_approver   Int?
-  level1_status     ApprovalStatus @default(Pending)
-  level1_date       DateTime?
-  level1_notes      String?
-  
-  // Level 2 - Responsable Comptable (RC)
-  level2_approver   Int?
-  level2_status     ApprovalStatus @default(Pending)
-  level2_date       DateTime?
-  level2_notes      String?
-  
-  // Level 3 - Coordinateur Qualité (CQ)
-  level3_approver   Int?
-  level3_status     ApprovalStatus @default(Pending)
-  level3_date       DateTime?
-  level3_notes      String?
-  
-  // Level 4 - CFEF Commission (Final approval)
-  level4_approver   Int?
-  level4_status     ApprovalStatus @default(Pending)
-  level4_date       DateTime?
-  level4_notes      String?
-  
-  paymentBlockedUntil DateTime?
-  createdAt         DateTime @default(now())
-  completedAt       DateTime?
-  updatedAt         DateTime @updatedAt
-  
-  expense           Expense  @relation(fields: [expenseId], references: [ExpenseID], onDelete: Cascade)
-  
-  level1User        User?    @relation("level1Approver", fields: [level1_approver], references: [id])
-  level2User        User?    @relation("level2Approver", fields: [level2_approver], references: [id])
-  level3User        User?    @relation("level3Approver", fields: [level3_approver], references: [id])
-  level4User        User?    @relation("level4Approver", fields: [level4_approver], references: [id])
-
-  @@index([expenseId])
-  @@index([currentLevel])
-  @@index([level1_status])
-  @@index([level4_status])
-}
-
-// ReconciliationAudit - Track reconciliation of invoices vs purchase orders
-model ReconciliationAudit {
-  id                     Int      @id @default(autoincrement())
-  expenseId              Int
-  invoiceId              String
-  purchaseOrderId        String?
-  
-  status                 ReconciliationStatus @default(Pending)
-  discrepancyReason      String?  // Why there's a discrepancy
-  
-  auditedBy              Int      // CQ user ID
-  auditDate              DateTime @default(now())
-  resolutionDate         DateTime?
-  resolutionNotes        String?
-  
-  createdAt              DateTime @default(now())
-  updatedAt              DateTime @updatedAt
-  
-  expense                Expense  @relation(fields: [expenseId], references: [ExpenseID], onDelete: Cascade)
-  auditor                User     @relation(fields: [auditedBy], references: [id])
-
-  @@index([expenseId])
-  @@index([status])
-  @@index([invoiceId])
-  @@index([auditDate])
 }
