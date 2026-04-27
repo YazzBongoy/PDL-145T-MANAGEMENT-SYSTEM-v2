@@ -10,13 +10,13 @@ export const getSettings = asyncHandler(async (req: Request, res: Response) => {
   const authReq = req as AuthenticatedRequest;
   const userId = authReq.user.userId;
 
-  let settings = await prisma.userSetting.findUnique({
+  let settings = await prisma.userSettings.findUnique({
     where: { userId },
   });
 
   // Create default settings if not exists
   if (!settings) {
-    settings = await prisma.userSetting.create({
+    settings = await prisma.userSettings.create({
       data: {
         userId,
         theme: 'system',
@@ -47,13 +47,13 @@ export const updateSettings = asyncHandler(async (req: Request, res: Response) =
   const { theme, language, dateFormat, notifications } = req.body;
 
   // Ensure settings exist
-  const existing = await prisma.userSetting.findUnique({
+  const existing = await prisma.userSettings.findUnique({
     where: { userId },
   });
 
   let settings;
   if (existing) {
-    settings = await prisma.userSetting.update({
+    settings = await prisma.userSettings.update({
       where: { userId },
       data: {
         ...(theme !== undefined && { theme }),
@@ -63,7 +63,7 @@ export const updateSettings = asyncHandler(async (req: Request, res: Response) =
       },
     });
   } else {
-    settings = await prisma.userSetting.create({
+    settings = await prisma.userSettings.create({
       data: {
         userId,
         theme: theme || 'system',
@@ -93,13 +93,13 @@ export const updateNotifications = asyncHandler(async (req: Request, res: Respon
   const userId = authReq.user.userId;
   const { emailNotifications, pushNotifications } = req.body;
 
-  const existing = await prisma.userSetting.findUnique({
+  const existing = await prisma.userSettings.findUnique({
     where: { userId },
   });
 
   let settings;
   if (existing) {
-    settings = await prisma.userSetting.update({
+    settings = await prisma.userSettings.update({
       where: { userId },
       data: {
         ...(emailNotifications !== undefined && { emailNotifications }),
@@ -107,11 +107,10 @@ export const updateNotifications = asyncHandler(async (req: Request, res: Respon
       },
     });
   } else {
-    settings = await prisma.userSetting.create({
+    settings = await prisma.userSettings.create({
       data: {
         userId,
         theme: 'system',
-        language: 'en',
         dateFormat: 'MM/DD/YYYY',
         notifications: {},
         emailNotifications: emailNotifications || {
