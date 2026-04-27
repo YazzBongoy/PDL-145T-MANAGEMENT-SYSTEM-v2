@@ -6,25 +6,25 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
 // Import routes
-import measurementRoutes from './routes/measurementRoutes.js';
-import validationRoutes from './routes/validationRoutes.js';
-import tasksRoutes from './routes/taskRoutes.js';
-import expensesRoutes from './routes/expensesRoutes.js';
-import resourcesRoutes from './routes/resourcesRoutes.js';
-import sprintRoutes from './routes/sprintRoutes.js';
-import auditRoutes from './routes/auditRoutes.js';
-import approvalRoutes from './routes/approvalRoutes.js';
-import reconciliationRoutes from './routes/reconciliationRoutes.js';
-import metricsRoutes from './routes/metricsRoutes.js';
-import exportRoutes from './routes/exportRoutes.js';
-import settingsRoutes from './routes/settingsRoutes.js';
-import programRoutes from './routes/programRoutes.js';
-// import projectRoutes from './routes/projectRoutes.js';
-// import reportRoutes from './routes/reportRoutes.js';
+import measurementRoutes from './routes/measurementRoutes';
+import validationRoutes from './routes/validationRoutes';
+import tasksRoutes from './routes/taskRoutes';
+import expensesRoutes from './routes/expensesRoutes';
+import resourcesRoutes from './routes/resourcesRoutes';
+import sprintRoutes from './routes/sprintRoutes';
+import auditRoutes from './routes/auditRoutes';
+import approvalRoutes from './routes/approvalRoutes';
+import reconciliationRoutes from './routes/reconciliationRoutes';
+import metricsRoutes from './routes/metricsRoutes';
+import exportRoutes from './routes/exportRoutes';
+import settingsRoutes from './routes/settingsRoutes';
+import programRoutes from './routes/programRoutes';
+// import projectRoutes from './routes/projectRoutes';
+import reportRoutes from './routes/reportRoutes';
 
 // Import middleware and types
-import { authenticateJWT, requireAdminOrSupervisor, errorHandler } from './middleware/index.js';
-import { AuthenticatedRequest } from './types/express.js';
+import { authenticateJWT, requireAdminOrSupervisor, errorHandler } from './middleware/index';
+import { AuthenticatedRequest } from './types/express';
 
 // Initialize environment variables
 dotenv.config();
@@ -36,9 +36,18 @@ const PORT = process.env.PORT || 8001;
 // Initialize Prisma client
 const prisma = new PrismaClient();
 
-// Middleware
+// Middleware - CORS configuration for Render.com and local development
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://localhost:3000',
+  'https://pdl145t-frontend.onrender.com',
+];
+if (process.env.FRONTEND_URL) {
+  allowedOrigins.push(process.env.FRONTEND_URL);
+}
+
 app.use(cors({
-  origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
+  origin: allowedOrigins,
   credentials: true,
 }));
 app.use(express.json());
@@ -77,7 +86,7 @@ app.use('/api/export', exportRoutes);
 app.use('/api/settings', settingsRoutes);
 app.use('/api/programs', programRoutes);
 // app.use('/api/projects', projectRoutes);
-// app.use('/api/reports', reportRoutes);
+app.use('/api/reports', reportRoutes);
 
 // User registration
 app.post('/auth/register', async (req, res) => {
@@ -139,9 +148,9 @@ app.get('/me', authenticateJWT, async (req: Request, res: Response) => {
 
 // Create Project
 app.post('/api/projects', authenticateJWT, requireAdminOrSupervisor, async (req, res) => {
-  const { Name, StartDate, EndDate, TotalBudget } = req.body;
-  if (!Name || !StartDate || !TotalBudget) {
-    res.status(400).json({ error: 'Name, StartDate, and TotalBudget are required.' });
+  const { Name, StartDate, EndDate, TotalBudget, ProgramID } = req.body;
+  if (!Name || !StartDate || !TotalBudget || !ProgramID) {
+    res.status(400).json({ error: 'Name, StartDate, TotalBudget, and ProgramID are required.' });
     return;
   }
   const project = await prisma.project.create({
@@ -150,6 +159,7 @@ app.post('/api/projects', authenticateJWT, requireAdminOrSupervisor, async (req,
       StartDate: new Date(StartDate),
       EndDate: EndDate ? new Date(EndDate) : null,
       TotalBudget: Number(TotalBudget),
+      ProgramID: Number(ProgramID),
     },
   });
   res.status(201).json(project);
@@ -208,15 +218,16 @@ app.delete('/api/projects/:id', authenticateJWT, requireAdminOrSupervisor, async
 // Create Task
 app.post('/api/projects/:projectId/tasks', authenticateJWT, requireAdminOrSupervisor, async (req, res) => {
   const projectId = Number(req.params.projectId);
-  const { Description, Duration, AssignedTo, CompletionStatus } = req.body;
-  if (!Description) {
-    res.status(400).json({ error: 'Description is required.' });
+  const { Name, Description, Duration, AssignedTo, CompletionStatus } = req.body;
+  if (!Name) {
+    res.status(400).json({ error: 'Name is required.' });
     return;
   }
   const task = await prisma.task.create({
     data: {
       ProjectID: projectId,
-      Description,
+      Name,
+      Description: Description || null,
       Duration: Duration ? Number(Duration) : null,
       AssignedTo: AssignedTo || null,
       CompletionStatus: CompletionStatus || 'NotStarted',
@@ -278,15 +289,24 @@ app.delete('/api/tasks/:id', authenticateJWT, requireAdminOrSupervisor, async (r
 
 // Create Resource
 app.post('/api/resources', authenticateJWT, requireAdminOrSupervisor, async (req, res) => {
-  const { Type, Quantity } = req.body;
-  if (!Type || Quantity === undefined) {
-    res.status(400).json({ error: 'Type and Quantity are required.' });
+  const { Name, Type, Quantity, Description, Location, SerialNumber, Cost, PurchaseDate, LastMaintenance, NextMaintenance, Status } = req.body;
+  if (!Name || !Type) {
+    res.status(400).json({ error: 'Name and Type are required.' });
     return;
   }
   const resource = await prisma.resource.create({
     data: {
+      Name,
       Type,
-      Quantity: Number(Quantity),
+      Quantity: Quantity !== undefined ? Number(Quantity) : 1,
+      Description: Description || null,
+      Location: Location || null,
+      SerialNumber: SerialNumber || null,
+      Cost: Cost !== undefined ? Number(Cost) : null,
+      PurchaseDate: PurchaseDate ? new Date(PurchaseDate) : null,
+      LastMaintenance: LastMaintenance ? new Date(LastMaintenance) : null,
+      NextMaintenance: NextMaintenance ? new Date(NextMaintenance) : null,
+      Status: Status || 'active',
     },
   });
   res.status(201).json(resource);
@@ -301,7 +321,7 @@ app.get('/api/resources', authenticateJWT, async (req, res) => {
 // Update Resource
 app.put('/api/resources/:id', authenticateJWT, requireAdminOrSupervisor, async (req, res) => {
   const id = Number(req.params.id);
-  const { Type, Quantity } = req.body;
+  const { Name, Type, Quantity, Description, Location, SerialNumber, Cost, PurchaseDate, LastMaintenance, NextMaintenance, Status } = req.body;
   const resource = await prisma.resource.findUnique({ where: { ResourceID: id } });
   if (!resource) {
     res.status(404).json({ error: 'Resource not found' });
@@ -310,8 +330,17 @@ app.put('/api/resources/:id', authenticateJWT, requireAdminOrSupervisor, async (
   const updated = await prisma.resource.update({
     where: { ResourceID: id },
     data: {
+      Name: Name ?? resource.Name,
       Type: Type ?? resource.Type,
       Quantity: Quantity !== undefined ? Number(Quantity) : resource.Quantity,
+      Description: Description !== undefined ? Description : resource.Description,
+      Location: Location !== undefined ? Location : resource.Location,
+      SerialNumber: SerialNumber !== undefined ? SerialNumber : resource.SerialNumber,
+      Cost: Cost !== undefined ? Number(Cost) : resource.Cost,
+      PurchaseDate: PurchaseDate !== undefined ? (PurchaseDate ? new Date(PurchaseDate) : null) : resource.PurchaseDate,
+      LastMaintenance: LastMaintenance !== undefined ? (LastMaintenance ? new Date(LastMaintenance) : null) : resource.LastMaintenance,
+      NextMaintenance: NextMaintenance !== undefined ? (NextMaintenance ? new Date(NextMaintenance) : null) : resource.NextMaintenance,
+      Status: Status ?? resource.Status,
     },
   });
   res.json(updated);

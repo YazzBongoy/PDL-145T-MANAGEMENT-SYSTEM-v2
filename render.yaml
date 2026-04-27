@@ -1,0 +1,44 @@
+# Render.com Deployment Configuration
+# PDL-145T Management System - Full Stack Deployment
+
+services:
+  # Backend API Service
+  - type: web
+    name: pdl145t-backend
+    env: node
+    buildCommand: cd backend && npm install && npx prisma generate
+    startCommand: cd backend && npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: JWT_SECRET
+        generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: pdl145t-db
+          property: connectionString
+
+  # Frontend Static Site
+  - type: static
+    name: pdl145t-frontend
+    buildCommand: cd frontend && npm install && npm run build
+    staticPublishPath: ./frontend/dist
+    envVars:
+      - key: VITE_API_URL
+        value: https://pdl145t-backend.onrender.com
+    routes:
+      - type: rewrite
+        source: /api/*
+        destination: https://pdl145t-backend.onrender.com/api/*
+      - type: rewrite
+        source: /auth/*
+        destination: https://pdl145t-backend.onrender.com/auth/*
+
+databases:
+  # PostgreSQL Database
+  - name: pdl145t-db
+    databaseName: pdl145t
+    user: pdl145t
+    plan: free

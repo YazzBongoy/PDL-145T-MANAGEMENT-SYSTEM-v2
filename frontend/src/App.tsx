@@ -4,12 +4,15 @@ import './components/ui/AppBar.css';
 import { AppBar } from './components/ui/AppBar';
 import type { User, HealthStatus, LoginCredentials, RegisterData } from './types';
 import { useApi } from './hooks/useApi';
+import { useTheme } from './hooks/useTheme';
 import { DashboardSwitcher } from './components/Dashboard/Dashboards';
 import { LoginForm, RegisterForm } from './components/Auth/AuthForms';
 import { DevicesView } from './components/Devices';
 import { ReportsView } from './components/Reports';
 import { SettingsView } from './components/Settings';
 import { ProgramsView } from './components/Programs';
+import { ProjectsView } from './components/Projects/ProjectsView';
+import { TasksView } from './components/Tasks/TasksView';
 
 function App(): React.ReactElement {
   const [authError, setAuthError] = useState<string | null>(null);
@@ -17,6 +20,7 @@ function App(): React.ReactElement {
   const [showRegister, setShowRegister] = useState(false);
   const [currentView, setCurrentView] = useState<string>('dashboard');
   const { data: healthStatus, loading, error, refetch: refreshHealth } = useApi<HealthStatus>('/api/health');
+  useTheme(); // Initialize theme
   const [token, setToken] = useState<string | null>(() => localStorage.getItem('token'));
   const [user, setUser] = useState<User | null>(() => {
     const u = localStorage.getItem('user');
@@ -83,6 +87,10 @@ function App(): React.ReactElement {
         return <SettingsView />;
       case 'programs':
         return <ProgramsView />;
+      case 'projects':
+        return <ProjectsView />;
+      case 'tasks':
+        return <TasksView />;
       case 'dashboard':
       default:
         return <DashboardSwitcher user={user} onLogout={handleLogout} token={token} />;

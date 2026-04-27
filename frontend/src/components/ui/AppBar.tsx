@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { BarChart3, Wrench, TrendingUp, Settings, X, FolderTree } from 'lucide-react';
+import { BarChart3, Wrench, TrendingUp, Settings, X, FolderTree, FolderOpen, CheckCircle, Search, Command } from 'lucide-react';
 import { Logo } from './Logo';
+import { GlobalSearch } from '../GlobalSearch';
 import type { User } from '../../types';
 
 interface AppBarProps {
@@ -13,12 +14,15 @@ interface AppBarProps {
 export function AppBar({ user, currentView = 'dashboard', onViewChange, onLogout }: AppBarProps): React.ReactElement {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
   const mobileMenuRef = useRef<HTMLDivElement>(null);
   const userMenuRef = useRef<HTMLDivElement>(null);
 
   const navItems = [
     { key: 'dashboard', label: 'Dashboard', icon: BarChart3 },
     { key: 'programs', label: 'Programs', icon: FolderTree },
+    { key: 'projects', label: 'Projects', icon: FolderOpen },
+    { key: 'tasks', label: 'Tasks', icon: CheckCircle },
     { key: 'devices', label: 'Devices', icon: Wrench },
     { key: 'reports', label: 'Reports', icon: TrendingUp },
     { key: 'settings', label: 'Settings', icon: Settings },
@@ -67,6 +71,19 @@ export function AppBar({ user, currentView = 'dashboard', onViewChange, onLogout
     };
   }, [mobileMenuOpen]);
 
+  // Global search keyboard shortcut (Cmd/Ctrl + K)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        setSearchOpen(true);
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
   return (
     <header className="app-bar">
       <div className="app-bar__container">
@@ -93,8 +110,33 @@ export function AppBar({ user, currentView = 'dashboard', onViewChange, onLogout
           ))}
         </nav>
 
-        {/* User Menu */}
+        {/* Search & User Menu */}
         <div className="app-bar__actions">
+          {/* Search Button */}
+          {user && (
+            <button
+              onClick={() => setSearchOpen(true)}
+              className="app-bar__search-button"
+              aria-label="Search (Cmd+K)"
+            >
+              <Search size={18} />
+              <span className="search-text">Search</span>
+              <kbd className="keyboard-shortcut">
+                <Command size={12} />
+                <span>K</span>
+              </kbd>
+            </button>
+          )}
+
+          {/* Global Search Modal */}
+          {user && (
+            <GlobalSearch
+              isOpen={searchOpen}
+              onClose={() => setSearchOpen(false)}
+              onNavigate={handleNavClick}
+            />
+          )}
+
           {user && (
             <div className="app-bar__user-menu" ref={userMenuRef}>
               <button
