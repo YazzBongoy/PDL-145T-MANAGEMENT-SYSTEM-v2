@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Plus, ChevronRight, Building2, FolderTree, TrendingUp, Calendar, DollarSign } from 'lucide-react';
+import { Plus, ChevronRight, Building2, FolderTree, Calendar, DollarSign } from 'lucide-react';
 import './Programs.css';
 
 interface Program {
@@ -39,7 +39,6 @@ const fetchPrograms = async (): Promise<Program[]> => {
 };
 
 export function ProgramsView() {
-  const [selectedProgram, setSelectedProgram] = useState<Program | null>(null);
   const [expandedPrograms, setExpandedPrograms] = useState<Set<number>>(new Set());
 
   const { data: programs, isLoading, error } = useQuery({
