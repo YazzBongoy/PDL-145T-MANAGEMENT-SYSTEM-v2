@@ -6,25 +6,25 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
 // Import routes
-import measurementRoutes from './routes/measurementRoutes';
-import validationRoutes from './routes/validationRoutes';
-import tasksRoutes from './routes/taskRoutes';
-import expensesRoutes from './routes/expensesRoutes';
-import resourcesRoutes from './routes/resourcesRoutes';
-import sprintRoutes from './routes/sprintRoutes';
-import auditRoutes from './routes/auditRoutes';
-import approvalRoutes from './routes/approvalRoutes';
-import reconciliationRoutes from './routes/reconciliationRoutes';
-import metricsRoutes from './routes/metricsRoutes';
-import exportRoutes from './routes/exportRoutes';
-import settingsRoutes from './routes/settingsRoutes';
-import programRoutes from './routes/programRoutes';
-// import projectRoutes from './routes/projectRoutes';
-import reportRoutes from './routes/reportRoutes';
+import measurementRoutes from './routes/measurementRoutes.js';
+import validationRoutes from './routes/validationRoutes.js';
+import tasksRoutes from './routes/taskRoutes.js';
+import expensesRoutes from './routes/expensesRoutes.js';
+import resourcesRoutes from './routes/resourcesRoutes.js';
+import sprintRoutes from './routes/sprintRoutes.js';
+import auditRoutes from './routes/auditRoutes.js';
+import approvalRoutes from './routes/approvalRoutes.js';
+import reconciliationRoutes from './routes/reconciliationRoutes.js';
+import metricsRoutes from './routes/metricsRoutes.js';
+import exportRoutes from './routes/exportRoutes.js';
+import settingsRoutes from './routes/settingsRoutes.js';
+import programRoutes from './routes/programRoutes.js';
+// import projectRoutes from './routes/projectRoutes.js';
+import reportRoutes from './routes/reportRoutes.js';
 
 // Import middleware and types
-import { authenticateJWT, requireAdminOrSupervisor, errorHandler } from './middleware/index';
-import { AuthenticatedRequest } from './types/express';
+import { authenticateJWT, requireAdminOrSupervisor, errorHandler } from './middleware/index.js';
+import { AuthenticatedRequest } from './types/express.js';
 
 // Initialize environment variables
 dotenv.config();
