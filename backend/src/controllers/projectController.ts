@@ -47,7 +47,7 @@ export async function getProjectById(req: Request, res: Response) {
           },
           include: {
             _count: {
-              select: { Subtasks: true }
+              select: { SubTasks: true }
             }
           }
         },
