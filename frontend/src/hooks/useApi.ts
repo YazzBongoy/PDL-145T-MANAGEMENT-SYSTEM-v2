@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { getApiUrl } from '../api/config';
 
 export interface ApiState<T> {
   data: T | null;
@@ -25,7 +26,8 @@ export function useApi<T>(
         headers.Authorization = `Bearer ${token}`;
       }
       
-      const response = await fetch(url, { headers });
+      const fullUrl = url.startsWith('http') ? url : getApiUrl(url);
+      const response = await fetch(fullUrl, { headers });
       
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
