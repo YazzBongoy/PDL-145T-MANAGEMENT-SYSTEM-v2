@@ -4,6 +4,7 @@ import type { Resource, ResourceForm, User } from '../../types';
 import { Card } from '../ui/Card';
 import { CardHeader } from '../ui/CardHeader';
 import '../ui/List.css';
+import { getApiUrl } from '../../api/config';
 
 interface ResourceListProps {
   user: User;
@@ -22,7 +23,7 @@ export function ResourceList({ user, token }: ResourceListProps): React.ReactEle
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch('/api/resources', {
+      const res = await fetch(getApiUrl('/api/resources'), {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!res.ok) throw new Error('Failed to fetch resources');

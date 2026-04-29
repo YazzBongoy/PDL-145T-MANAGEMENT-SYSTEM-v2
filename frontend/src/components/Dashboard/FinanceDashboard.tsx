@@ -3,6 +3,7 @@ import type { Project, Expense, Task } from '../../types';
 import { Card } from '../ui/Card';
 import { CardHeader } from '../ui/CardHeader';
 import './FinanceDashboard.css';
+import { getApiUrl } from '../../api/config';
 
 interface FinanceDashboardProps {
   user: { name: string };
@@ -36,7 +37,7 @@ export function FinanceDashboard({ user, token }: FinanceDashboardProps): React.
     setLoading(true);
     try {
       // Fetch all projects
-      const projectsRes = await fetch('/api/projects', {
+      const projectsRes = await fetch(getApiUrl('/api/projects'), {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (projectsRes.ok) {

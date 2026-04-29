@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Plus, Search, CheckCircle, Clock, AlertCircle, Loader2, Edit2, Trash2, Calendar, User } from 'lucide-react';
 import './Tasks.css';
+import { getApiUrl } from '../../api/config';
 
 interface Task {
   TaskID: number;
@@ -27,7 +28,7 @@ interface UserType {
 }
 
 const fetchTasks = async (): Promise<Task[]> => {
-  const response = await fetch('/api/tasks', {
+  const response = await fetch(getApiUrl('/api/tasks'), {
     headers: {
       'Authorization': `Bearer ${localStorage.getItem('token')}`
     }
@@ -37,7 +38,7 @@ const fetchTasks = async (): Promise<Task[]> => {
 };
 
 const fetchProjects = async (): Promise<Project[]> => {
-  const response = await fetch('/api/projects', {
+  const response = await fetch(getApiUrl('/api/projects'), {
     headers: {
       'Authorization': `Bearer ${localStorage.getItem('token')}`
     }
@@ -47,7 +48,7 @@ const fetchProjects = async (): Promise<Project[]> => {
 };
 
 const fetchUsers = async (): Promise<UserType[]> => {
-  const response = await fetch('/api/users', {
+  const response = await fetch(getApiUrl('/api/users'), {
     headers: {
       'Authorization': `Bearer ${localStorage.getItem('token')}`
     }

@@ -1,6 +1,6 @@
 import type { Task, Measurement, Validation, Sprint } from '../types';
 
-const API_BASE_URL = '';
+import { getApiUrl } from './config';
 
 function getAuthHeaders(): HeadersInit {
   const token = localStorage.getItem('token');
@@ -12,7 +12,7 @@ function getAuthHeaders(): HeadersInit {
 
 // Tasks
 export async function fetchMyTasks(): Promise<Task[]> {
-  const response = await fetch(`${API_BASE_URL}/api/tasks`, {
+  const response = await fetch(getApiUrl(`/api/tasks`), {
     headers: getAuthHeaders(),
   });
   if (!response.ok) {
@@ -22,7 +22,7 @@ export async function fetchMyTasks(): Promise<Task[]> {
 }
 
 export async function updateTaskStatus(taskId: number, status: string): Promise<Task> {
-  const response = await fetch(`${API_BASE_URL}/api/tasks/${taskId}`, {
+  const response = await fetch(getApiUrl(`/api/tasks/${taskId}`), {
     method: 'PUT',
     headers: getAuthHeaders(),
     body: JSON.stringify({ CompletionStatus: status }),
@@ -35,7 +35,7 @@ export async function updateTaskStatus(taskId: number, status: string): Promise<
 
 // Measurements
 export async function createMeasurement(taskId: number, data: Omit<Measurement, 'MeasurementID' | 'TaskID'>): Promise<Measurement> {
-  const response = await fetch(`${API_BASE_URL}/api/measurements/task/${taskId}`, {
+  const response = await fetch(getApiUrl(`/api/measurements/task/${taskId}`), {
     method: 'POST',
     headers: getAuthHeaders(),
     body: JSON.stringify(data),
@@ -47,7 +47,7 @@ export async function createMeasurement(taskId: number, data: Omit<Measurement, 
 }
 
 export async function fetchMyMeasurements(): Promise<Measurement[]> {
-  const response = await fetch(`${API_BASE_URL}/api/measurements`, {
+  const response = await fetch(getApiUrl(`/api/measurements`), {
     headers: getAuthHeaders(),
   });
   if (!response.ok) {
@@ -57,7 +57,7 @@ export async function fetchMyMeasurements(): Promise<Measurement[]> {
 }
 
 export async function deleteMeasurement(measurementId: number): Promise<void> {
-  const response = await fetch(`${API_BASE_URL}/api/measurements/${measurementId}`, {
+  const response = await fetch(getApiUrl(`/api/measurements/${measurementId}`), {
     method: 'DELETE',
     headers: getAuthHeaders(),
   });
@@ -75,7 +75,7 @@ export async function fetchSprintBoard(sprintId: number): Promise<{
     Completed: Task[];
   };
 }> {
-  const response = await fetch(`${API_BASE_URL}/api/sprints/${sprintId}/board`, {
+  const response = await fetch(getApiUrl(`/api/sprints/${sprintId}/board`), {
     headers: getAuthHeaders(),
   });
   if (!response.ok) {
@@ -85,7 +85,7 @@ export async function fetchSprintBoard(sprintId: number): Promise<{
 }
 
 export async function fetchProjectSprints(projectId: number): Promise<Sprint[]> {
-  const response = await fetch(`${API_BASE_URL}/api/projects/${projectId}/sprints`, {
+  const response = await fetch(getApiUrl(`/api/projects/${projectId}/sprints`), {
     headers: getAuthHeaders(),
   });
   if (!response.ok) {
@@ -96,7 +96,7 @@ export async function fetchProjectSprints(projectId: number): Promise<Sprint[]> 
 
 // Validations
 export async function submitValidation(taskId: number, data: { notes: string }): Promise<Validation> {
-  const response = await fetch(`${API_BASE_URL}/api/validations/task/${taskId}`, {
+  const response = await fetch(getApiUrl(`/api/validations/task/${taskId}`), {
     method: 'POST',
     headers: getAuthHeaders(),
     body: JSON.stringify({
@@ -111,7 +111,7 @@ export async function submitValidation(taskId: number, data: { notes: string }):
 }
 
 export async function fetchTaskValidations(taskId: number): Promise<Validation[]> {
-  const response = await fetch(`${API_BASE_URL}/api/validations/task/${taskId}`, {
+  const response = await fetch(getApiUrl(`/api/validations/task/${taskId}`), {
     headers: getAuthHeaders(),
   });
   if (!response.ok) {

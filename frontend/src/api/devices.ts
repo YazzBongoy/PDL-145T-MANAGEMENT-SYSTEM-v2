@@ -1,6 +1,6 @@
 import type { Device } from '../types';
 
-const API_BASE = '/api';
+import { getApiUrl } from './config';
 
 function getAuthHeaders(): HeadersInit {
   const token = localStorage.getItem('token');
@@ -36,7 +36,7 @@ export async function fetchDevices(filters?: { type?: string; status?: string; l
   if (filters?.search) queryParams.append('search', filters.search);
   
   const query = queryParams.toString();
-  const url = `${API_BASE}/resources${query ? `?${query}` : ''}`;
+  const url = getApiUrl(`/api/resources${query ? `?${query}` : ''}`);
   
   const response = await fetch(url, { headers: getAuthHeaders() });
   if (!response.ok) {
@@ -47,7 +47,7 @@ export async function fetchDevices(filters?: { type?: string; status?: string; l
 
 // Get device by ID
 export async function fetchDeviceById(id: number): Promise<Device> {
-  const response = await fetch(`${API_BASE}/resources/${id}`, { headers: getAuthHeaders() });
+  const response = await fetch(getApiUrl(`/api/resources/${id}`), { headers: getAuthHeaders() });
   if (!response.ok) {
     throw new Error('Failed to fetch device');
   }
@@ -56,7 +56,7 @@ export async function fetchDeviceById(id: number): Promise<Device> {
 
 // Create new device
 export async function createDevice(data: CreateDeviceData): Promise<Device> {
-  const response = await fetch(`${API_BASE}/resources`, {
+  const response = await fetch(getApiUrl(`/api/resources`), {
     method: 'POST',
     headers: getAuthHeaders(),
     body: JSON.stringify(data),
@@ -70,7 +70,7 @@ export async function createDevice(data: CreateDeviceData): Promise<Device> {
 
 // Update device
 export async function updateDevice(id: number, data: UpdateDeviceData): Promise<Device> {
-  const response = await fetch(`${API_BASE}/resources/${id}`, {
+  const response = await fetch(getApiUrl(`/api/resources/${id}`), {
     method: 'PUT',
     headers: getAuthHeaders(),
     body: JSON.stringify(data),
@@ -84,7 +84,7 @@ export async function updateDevice(id: number, data: UpdateDeviceData): Promise<
 
 // Delete device
 export async function deleteDevice(id: number): Promise<void> {
-  const response = await fetch(`${API_BASE}/resources/${id}`, {
+  const response = await fetch(getApiUrl(`/api/resources/${id}`), {
     method: 'DELETE',
     headers: getAuthHeaders(),
   });
@@ -95,7 +95,7 @@ export async function deleteDevice(id: number): Promise<void> {
 
 // Get devices by type
 export async function fetchDevicesByType(type: string): Promise<Device[]> {
-  const response = await fetch(`${API_BASE}/resources/type/${type}`, { headers: getAuthHeaders() });
+  const response = await fetch(getApiUrl(`/api/resources/type/${type}`), { headers: getAuthHeaders() });
   if (!response.ok) {
     throw new Error('Failed to fetch devices by type');
   }

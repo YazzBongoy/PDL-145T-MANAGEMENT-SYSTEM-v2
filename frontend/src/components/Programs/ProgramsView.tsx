@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Plus, ChevronRight, Building2, FolderTree, Calendar, DollarSign } from 'lucide-react';
+import { getApiUrl } from '../../api/config';
 import './Programs.css';
 
 interface Program {
@@ -29,7 +30,7 @@ interface Project {
 }
 
 const fetchPrograms = async (): Promise<Program[]> => {
-  const response = await fetch('/api/programs', {
+  const response = await fetch(getApiUrl('/api/programs'), {
     headers: {
       'Authorization': `Bearer ${localStorage.getItem('token')}`
     }

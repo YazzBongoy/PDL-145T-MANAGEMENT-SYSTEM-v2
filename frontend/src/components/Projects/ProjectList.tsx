@@ -10,6 +10,7 @@ import { HealthStatusBadge } from '../ui/StatusBadge';
 import { Table, type TableColumn } from '../ui/Table';
 import { Tooltip } from '../ui/Tooltip';
 import '../ui/List.css';
+import { getApiUrl } from '../../api/config';
 
 interface ProjectListProps {
   user: User;
@@ -60,7 +61,7 @@ export function ProjectList({ user, token }: ProjectListProps): React.ReactEleme
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch('/api/projects', {
+      const res = await fetch(getApiUrl('/api/projects'), {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!res.ok) throw new Error('Failed to fetch projects');

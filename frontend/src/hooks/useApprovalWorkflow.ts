@@ -15,7 +15,7 @@ export interface PendingApproval {
   };
 }
 
-const API_BASE = '/api';
+import { getApiUrl } from '../api/config';
 
 /**
  * Hook for fetching pending approvals
@@ -24,7 +24,7 @@ export function usePendingApprovals() {
   return useQuery({
     queryKey: ['approvals', 'pending'],
     queryFn: async () => {
-      const res = await fetch(`${API_BASE}/approvals/pending`, {
+      const res = await fetch(getApiUrl(`/api/approvals/pending`), {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
@@ -43,7 +43,7 @@ export function useApprovalStatus(expenseId: number) {
   return useQuery({
     queryKey: ['approvals', 'status', expenseId],
     queryFn: async () => {
-      const res = await fetch(`${API_BASE}/approvals/${expenseId}/status`, {
+      const res = await fetch(getApiUrl(`/api/approvals/${expenseId}/status`), {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
@@ -75,7 +75,7 @@ export function useSubmitApproval() {
       notes,
     }: MutationVariables) => {
       const res = await fetch(
-        `${API_BASE}/approvals/${expenseId}/level/${level}/${action}`,
+        getApiUrl(`/api/approvals/${expenseId}/level/${level}/${action}`),
         {
           method: 'PATCH',
           headers: {
@@ -110,7 +110,7 @@ export function usePaymentReady(expenseId: number) {
     queryKey: ['approvals', 'payment-ready', expenseId],
     queryFn: async () => {
       const res = await fetch(
-        `${API_BASE}/approvals/${expenseId}/payment-ready`,
+        getApiUrl(`/api/approvals/${expenseId}/payment-ready`),
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -131,7 +131,7 @@ export function useAuditTrail(entityType: string, entityId: number) {
     queryKey: ['audit', 'trail', entityType, entityId],
     queryFn: async () => {
       const res = await fetch(
-        `${API_BASE}/audit/logs/${entityType}/${entityId}`,
+        getApiUrl(`/api/audit/logs/${entityType}/${entityId}`),
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -152,7 +152,7 @@ export function useExpenseHistory(expenseId: number) {
     queryKey: ['audit', 'history', expenseId],
     queryFn: async () => {
       const res = await fetch(
-        `${API_BASE}/audit/expense/${expenseId}/history`,
+        getApiUrl(`/api/audit/expense/${expenseId}/history`),
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -173,7 +173,7 @@ export function useReconciliationStatus(expenseId: number) {
     queryKey: ['reconciliation', 'history', expenseId],
     queryFn: async () => {
       const res = await fetch(
-        `${API_BASE}/reconciliation/expense/${expenseId}/history`,
+        getApiUrl(`/api/reconciliation/expense/${expenseId}/history`),
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,

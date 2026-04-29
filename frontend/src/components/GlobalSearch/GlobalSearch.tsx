@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Search, X, FolderTree, FolderOpen, CheckCircle, Wrench, TrendingUp, Building2 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import './GlobalSearch.css';
+import { getApiUrl } from '../../api/config';
 
 interface SearchResult {
   id: number;
@@ -39,7 +40,7 @@ interface Device {
 }
 
 const fetchPrograms = async (): Promise<Program[]> => {
-  const response = await fetch('/api/programs', {
+  const response = await fetch(getApiUrl('/api/programs'), {
     headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
   });
   if (!response.ok) return [];
@@ -47,7 +48,7 @@ const fetchPrograms = async (): Promise<Program[]> => {
 };
 
 const fetchProjects = async (): Promise<Project[]> => {
-  const response = await fetch('/api/projects', {
+  const response = await fetch(getApiUrl('/api/projects'), {
     headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
   });
   if (!response.ok) return [];
@@ -55,7 +56,7 @@ const fetchProjects = async (): Promise<Project[]> => {
 };
 
 const fetchTasks = async (): Promise<Task[]> => {
-  const response = await fetch('/api/tasks', {
+  const response = await fetch(getApiUrl('/api/tasks'), {
     headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
   });
   if (!response.ok) return [];
@@ -63,7 +64,7 @@ const fetchTasks = async (): Promise<Task[]> => {
 };
 
 const fetchDevices = async (): Promise<Device[]> => {
-  const response = await fetch('/api/resources', {
+  const response = await fetch(getApiUrl('/api/resources'), {
     headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
   });
   if (!response.ok) return [];

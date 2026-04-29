@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Plus, Search, FolderOpen, Calendar, DollarSign, Loader2, AlertCircle, Edit2, Trash2, ChevronLeft, ListTodo } from 'lucide-react';
 import './Projects.css';
+import { getApiUrl } from '../../api/config';
 
 interface Project {
   ProjectID: number;
@@ -24,7 +25,7 @@ interface Program {
 }
 
 const fetchProjects = async (): Promise<Project[]> => {
-  const response = await fetch('/api/projects', {
+  const response = await fetch(getApiUrl('/api/projects'), {
     headers: {
       'Authorization': `Bearer ${localStorage.getItem('token')}`
     }
@@ -34,7 +35,7 @@ const fetchProjects = async (): Promise<Project[]> => {
 };
 
 const fetchPrograms = async (): Promise<Program[]> => {
-  const response = await fetch('/api/programs', {
+  const response = await fetch(getApiUrl('/api/programs'), {
     headers: {
       'Authorization': `Bearer ${localStorage.getItem('token')}`
     }
@@ -44,7 +45,7 @@ const fetchPrograms = async (): Promise<Program[]> => {
 };
 
 const createProject = async (data: Omit<Project, 'ProjectID' | 'CreatedAt' | 'UpdatedAt' | 'Program'>): Promise<Project> => {
-  const response = await fetch('/api/projects', {
+  const response = await fetch(getApiUrl('/api/projects'), {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

@@ -4,6 +4,7 @@ import './components/ui/AppBar.css';
 import { AppBar } from './components/ui/AppBar';
 import type { User, HealthStatus, LoginCredentials, RegisterData } from './types';
 import { useApi } from './hooks/useApi';
+import { getApiUrl } from './api/config';
 import { useTheme } from './hooks/useTheme';
 import { DashboardSwitcher } from './components/Dashboard/Dashboards';
 import { LoginForm, RegisterForm } from './components/Auth/AuthForms';
@@ -30,7 +31,7 @@ function App(): React.ReactElement {
   const handleLogin = useCallback(async (credentials: LoginCredentials): Promise<void> => {
     setAuthError(null);
     try {
-      const res = await fetch('/auth/login', {
+      const res = await fetch(getApiUrl('/auth/login'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(credentials),
@@ -100,7 +101,7 @@ function App(): React.ReactElement {
   const handleRegister = useCallback(async (data: RegisterData): Promise<void> => {
     setRegisterError(null);
     try {
-      const res = await fetch('/auth/register', {
+      const res = await fetch(getApiUrl('/auth/register'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),

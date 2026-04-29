@@ -1,4 +1,4 @@
-const API_BASE = '/api';
+import { getApiUrl } from './config';
 
 function getAuthHeaders(): HeadersInit {
   const token = localStorage.getItem('token');
@@ -35,7 +35,7 @@ export async function fetchReports(filters?: ReportFilters): Promise<Report[]> {
   
   const queryString = queryParams.toString() ? `?${queryParams.toString()}` : '';
   
-  const response = await fetch(`${API_BASE}/reports${queryString}`, {
+  const response = await fetch(getApiUrl(`/api/reports${queryString}`), {
     headers: getAuthHeaders(),
   });
 
@@ -47,7 +47,7 @@ export async function fetchReports(filters?: ReportFilters): Promise<Report[]> {
 }
 
 export async function fetchReportById(id: number): Promise<Report> {
-  const response = await fetch(`${API_BASE}/reports/${id}`, {
+  const response = await fetch(getApiUrl(`/api/reports/${id}`), {
     headers: getAuthHeaders(),
   });
 
@@ -66,7 +66,7 @@ export interface CreateReportData {
 }
 
 export async function createReport(data: CreateReportData): Promise<Report> {
-  const response = await fetch(`${API_BASE}/reports`, {
+  const response = await fetch(getApiUrl(`/api/reports`), {
     method: 'POST',
     headers: getAuthHeaders(),
     body: JSON.stringify(data),
@@ -81,7 +81,7 @@ export async function createReport(data: CreateReportData): Promise<Report> {
 }
 
 export async function deleteReport(id: number): Promise<void> {
-  const response = await fetch(`${API_BASE}/reports/${id}`, {
+  const response = await fetch(getApiUrl(`/api/reports/${id}`), {
     method: 'DELETE',
     headers: getAuthHeaders(),
   });
@@ -92,7 +92,7 @@ export async function deleteReport(id: number): Promise<void> {
 }
 
 export async function downloadReport(id: number): Promise<Blob> {
-  const response = await fetch(`${API_BASE}/reports/${id}/download`, {
+  const response = await fetch(getApiUrl(`/api/reports/${id}/download`), {
     headers: getAuthHeaders(),
   });
 
@@ -116,7 +116,7 @@ export interface ProjectMetrics {
 }
 
 export async function fetchProjectMetrics(projectId: number): Promise<ProjectMetrics> {
-  const response = await fetch(`${API_BASE}/metrics/project/${projectId}`, {
+  const response = await fetch(getApiUrl(`/api/metrics/project/${projectId}`), {
     headers: getAuthHeaders(),
   });
 
@@ -135,7 +135,7 @@ export interface DashboardMetrics {
 }
 
 export async function fetchDashboardMetrics(): Promise<DashboardMetrics> {
-  const response = await fetch(`${API_BASE}/metrics/dashboard`, {
+  const response = await fetch(getApiUrl(`/api/metrics/dashboard`), {
     headers: getAuthHeaders(),
   });
 

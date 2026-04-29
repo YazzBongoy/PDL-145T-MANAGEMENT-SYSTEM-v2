@@ -1,4 +1,4 @@
-const API_BASE = '/api';
+import { getApiUrl } from './config';
 
 function getAuthHeaders(): HeadersInit {
   const token = localStorage.getItem('token');
@@ -51,7 +51,7 @@ export interface UpdateNotificationsData {
 
 // Get user settings
 export async function fetchSettings(): Promise<UserSettings> {
-  const response = await fetch(`${API_BASE}/settings`, { headers: getAuthHeaders() });
+  const response = await fetch(getApiUrl(`/api/settings`), { headers: getAuthHeaders() });
   if (!response.ok) {
     throw new Error('Failed to fetch settings');
   }
@@ -60,7 +60,7 @@ export async function fetchSettings(): Promise<UserSettings> {
 
 // Update user settings
 export async function updateSettings(data: UpdateSettingsData): Promise<UserSettings> {
-  const response = await fetch(`${API_BASE}/settings`, {
+  const response = await fetch(getApiUrl(`/api/settings`), {
     method: 'PUT',
     headers: getAuthHeaders(),
     body: JSON.stringify(data),
@@ -74,7 +74,7 @@ export async function updateSettings(data: UpdateSettingsData): Promise<UserSett
 
 // Update notification preferences
 export async function updateNotifications(data: UpdateNotificationsData): Promise<UserSettings> {
-  const response = await fetch(`${API_BASE}/settings/notifications`, {
+  const response = await fetch(getApiUrl(`/api/settings/notifications`), {
     method: 'PATCH',
     headers: getAuthHeaders(),
     body: JSON.stringify(data),
