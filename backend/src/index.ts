@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import { execSync } from 'child_process';
 
 // Import routes
 import measurementRoutes from './routes/measurementRoutes.js';
@@ -74,8 +75,6 @@ app.get('/api/health', (req, res) => {
 // Emergency migration endpoint (for Render deployment issues)
 app.post('/api/admin/migrate', async (req, res) => {
   try {
-    const { execSync } = require('child_process');
-    
     // Run prisma migrate deploy
     const output = execSync('npx prisma migrate deploy', {
       cwd: '/opt/render/project/src/backend',
@@ -91,7 +90,6 @@ app.post('/api/admin/migrate', async (req, res) => {
   } catch (error: any) {
     // If migrate deploy fails, try db push
     try {
-      const { execSync } = require('child_process');
       const output = execSync('npx prisma db push --accept-data-loss', {
         cwd: '/opt/render/project/src/backend',
         encoding: 'utf-8',
