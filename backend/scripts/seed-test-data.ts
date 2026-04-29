@@ -96,13 +96,13 @@ async function seedTestData() {
         email: 'construction@test.com',
         name: 'Construction Test User',
         passwordHash: '$2b$10$YourHashHere',
-        role: 'CONSTRUCTION',
+        role: 'SUPERVISOR',
       },
       {
         email: 'finance@test.com',
         name: 'Finance Test User',
         passwordHash: '$2b$10$YourHashHere',
-        role: 'FINANCE',
+        role: 'USER',
       },
     ];
 
