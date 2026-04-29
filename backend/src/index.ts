@@ -71,6 +71,49 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+// Emergency migration endpoint (for Render deployment issues)
+app.post('/api/admin/migrate', async (req, res) => {
+  try {
+    const { execSync } = require('child_process');
+    
+    // Run prisma migrate deploy
+    const output = execSync('npx prisma migrate deploy', {
+      cwd: '/opt/render/project/src/backend',
+      encoding: 'utf-8',
+      stdio: 'pipe'
+    });
+    
+    res.json({
+      success: true,
+      message: 'Migrations applied successfully',
+      output: output
+    });
+  } catch (error: any) {
+    // If migrate deploy fails, try db push
+    try {
+      const { execSync } = require('child_process');
+      const output = execSync('npx prisma db push --accept-data-loss', {
+        cwd: '/opt/render/project/src/backend',
+        encoding: 'utf-8',
+        stdio: 'pipe'
+      });
+      
+      res.json({
+        success: true,
+        message: 'Database schema pushed successfully',
+        output: output
+      });
+    } catch (dbPushError: any) {
+      res.status(500).json({
+        success: false,
+        error: 'Migration failed',
+        migrateError: error?.message || 'Unknown error',
+        dbPushError: dbPushError?.message || 'Unknown error'
+      });
+    }
+  }
+});
+
 // API routes
 app.use('/api/measurements', measurementRoutes);
 app.use('/api/validations', validationRoutes);
