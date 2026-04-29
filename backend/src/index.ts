@@ -112,6 +112,45 @@ app.post('/api/admin/migrate', async (req, res) => {
   }
 });
 
+// Diagnostic endpoint - check database state
+app.get('/api/admin/diagnostic', async (req, res) => {
+  try {
+    // Check if tables exist by querying them
+    const results: any = {};
+    
+    try {
+      const programs = await prisma.$queryRaw`SELECT COUNT(*) FROM "Program"`;
+      results.programs = { exists: true, count: programs };
+    } catch (e: any) {
+      results.programs = { exists: false, error: e.message };
+    }
+    
+    try {
+      const projects = await prisma.$queryRaw`SELECT COUNT(*) FROM "Project"`;
+      results.projects = { exists: true, count: projects };
+    } catch (e: any) {
+      results.projects = { exists: false, error: e.message };
+    }
+    
+    try {
+      const users = await prisma.$queryRaw`SELECT COUNT(*) FROM "User"`;
+      results.users = { exists: true, count: users };
+    } catch (e: any) {
+      results.users = { exists: false, error: e.message };
+    }
+    
+    res.json({
+      database: 'connected',
+      tables: results
+    });
+  } catch (error: any) {
+    res.status(500).json({
+      database: 'error',
+      error: error.message
+    });
+  }
+});
+
 // API routes
 app.use('/api/measurements', measurementRoutes);
 app.use('/api/validations', validationRoutes);
