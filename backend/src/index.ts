@@ -19,7 +19,7 @@ import metricsRoutes from './routes/metricsRoutes.js';
 import exportRoutes from './routes/exportRoutes.js';
 import settingsRoutes from './routes/settingsRoutes.js';
 import programRoutes from './routes/programRoutes.js';
-// import projectRoutes from './routes/projectRoutes.js';
+import projectRoutes from './routes/projectRoutes.js';
 import reportRoutes from './routes/reportRoutes.js';
 
 // Import middleware and types
@@ -85,7 +85,7 @@ app.use('/api/metrics', metricsRoutes);
 app.use('/api/export', exportRoutes);
 app.use('/api/settings', settingsRoutes);
 app.use('/api/programs', programRoutes);
-// app.use('/api/projects', projectRoutes);
+app.use('/api/projects', projectRoutes);
 app.use('/api/reports', reportRoutes);
 
 // User registration
