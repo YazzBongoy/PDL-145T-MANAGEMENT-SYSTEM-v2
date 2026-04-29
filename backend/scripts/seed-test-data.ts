@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, UserRole } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -85,24 +85,24 @@ async function seedTestData() {
     console.log(`✅ Created ${devices.length} test devices`);
 
     // Create or update test users with settings
-    const testUsers = [
+    const testUsers: { email: string; name: string; passwordHash: string; role: UserRole }[] = [
       {
         email: 'admin@test.com',
         name: 'Admin Test User',
         passwordHash: '$2b$10$YourHashHere',
-        role: 'ADMIN',
+        role: UserRole.ADMIN,
       },
       {
         email: 'construction@test.com',
         name: 'Construction Test User',
         passwordHash: '$2b$10$YourHashHere',
-        role: 'SUPERVISOR',
+        role: UserRole.SUPERVISOR,
       },
       {
         email: 'finance@test.com',
         name: 'Finance Test User',
         passwordHash: '$2b$10$YourHashHere',
-        role: 'USER',
+        role: UserRole.USER,
       },
     ];
 
