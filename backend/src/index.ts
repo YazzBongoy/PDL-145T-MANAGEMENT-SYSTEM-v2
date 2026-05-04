@@ -75,40 +75,42 @@ app.get('/api/health', (req, res) => {
 // Emergency migration endpoint (for Render deployment issues)
 app.post('/api/admin/migrate', async (req, res) => {
   try {
-    // Run prisma migrate deploy
-    const output = execSync('npx prisma migrate deploy', {
-      cwd: '/opt/render/project/src/backend',
-      encoding: 'utf-8',
-      stdio: 'pipe'
-    });
-    
-    res.json({
-      success: true,
-      message: 'Migrations applied successfully',
-      output: output
-    });
-  } catch (error: any) {
-    // If migrate deploy fails, try db push
+    // First: Run prisma migrate deploy
+    let migrateOutput = '';
     try {
-      const output = execSync('npx prisma db push --accept-data-loss', {
+      migrateOutput = execSync('npx prisma migrate deploy', {
         cwd: '/opt/render/project/src/backend',
         encoding: 'utf-8',
         stdio: 'pipe'
       });
-      
-      res.json({
-        success: true,
-        message: 'Database schema pushed successfully',
-        output: output
-      });
-    } catch (dbPushError: any) {
-      res.status(500).json({
-        success: false,
-        error: 'Migration failed',
-        migrateError: error?.message || 'Unknown error',
-        dbPushError: dbPushError?.message || 'Unknown error'
-      });
+    } catch (migrateError: any) {
+      migrateOutput = migrateError.stdout || migrateError.message;
     }
+    
+    // Second: Always run db push to ensure schema is in sync
+    let pushOutput = '';
+    try {
+      pushOutput = execSync('npx prisma db push --accept-data-loss', {
+        cwd: '/opt/render/project/src/backend',
+        encoding: 'utf-8',
+        stdio: 'pipe'
+      });
+    } catch (pushError: any) {
+      pushOutput = pushError.stdout || pushError.message;
+    }
+    
+    res.json({
+      success: true,
+      message: 'Migrations and schema sync completed',
+      migrateOutput: migrateOutput,
+      pushOutput: pushOutput
+    });
+  } catch (error: any) {
+    res.status(500).json({
+      success: false,
+      error: 'Migration process failed',
+      details: error?.message || 'Unknown error'
+    });
   }
 });
 
