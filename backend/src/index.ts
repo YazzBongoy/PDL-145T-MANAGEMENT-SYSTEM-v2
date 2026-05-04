@@ -114,6 +114,79 @@ app.post('/api/admin/migrate', async (req, res) => {
   }
 });
 
+// FORCE RESET - Drop and recreate all tables
+app.post('/api/admin/reset-schema', async (req, res) => {
+  try {
+    const results: any = { steps: [] };
+    
+    // Step 1: Drop migration history
+    try {
+      await prisma.$executeRaw`DROP TABLE IF EXISTS "_prisma_migrations" CASCADE`;
+      results.steps.push({ step: 1, action: 'Drop _prisma_migrations', status: 'success' });
+    } catch (e: any) {
+      results.steps.push({ step: 1, action: 'Drop _prisma_migrations', status: 'skipped', error: e.message });
+    }
+    
+    // Step 2: Drop all tables in schema
+    const tables = ['Reconciliation', 'ApprovalHistory', 'ApprovalAction', 'AuditLog', 
+                    'Expense', 'Device', 'Resource', 'Measurement', 'Validation', 
+                    'SubTask', 'Task', 'Sprint', 'Report', 'ProjectResource', 
+                    'Project', 'Program', 'User', 'Session'];
+    
+    for (const table of tables) {
+      try {
+        await prisma.$executeRaw`DROP TABLE IF EXISTS "${table}" CASCADE`;
+        results.steps.push({ step: 2, action: `Drop ${table}`, status: 'success' });
+      } catch (e: any) {
+        results.steps.push({ step: 2, action: `Drop ${table}`, status: 'skipped' });
+      }
+    }
+    
+    // Step 3: Run prisma migrate reset --force
+    let resetOutput = '';
+    try {
+      resetOutput = execSync('npx prisma migrate reset --force --skip-generate', {
+        cwd: '/opt/render/project/src/backend',
+        encoding: 'utf-8',
+        stdio: 'pipe',
+        timeout: 120000
+      });
+      results.steps.push({ step: 3, action: 'prisma migrate reset', status: 'success', output: resetOutput.substring(0, 500) });
+    } catch (e: any) {
+      resetOutput = e.stdout || e.message;
+      results.steps.push({ step: 3, action: 'prisma migrate reset', status: 'error', output: resetOutput.substring(0, 500) });
+    }
+    
+    // Step 4: Run prisma db push as fallback
+    let pushOutput = '';
+    try {
+      pushOutput = execSync('npx prisma db push --accept-data-loss', {
+        cwd: '/opt/render/project/src/backend',
+        encoding: 'utf-8',
+        stdio: 'pipe',
+        timeout: 120000
+      });
+      results.steps.push({ step: 4, action: 'prisma db push', status: 'success', output: pushOutput.substring(0, 500) });
+    } catch (e: any) {
+      pushOutput = e.stdout || e.message;
+      results.steps.push({ step: 4, action: 'prisma db push', status: 'error', output: pushOutput.substring(0, 500) });
+    }
+    
+    res.json({
+      success: true,
+      message: 'Schema reset attempted - check steps for details',
+      timestamp: new Date().toISOString(),
+      results
+    });
+  } catch (error: any) {
+    res.status(500).json({
+      success: false,
+      error: 'Schema reset failed',
+      details: error?.message || 'Unknown error'
+    });
+  }
+});
+
 // Debug endpoint - capture exact errors from Prisma
 app.get('/api/admin/debug', async (req, res) => {
   const debug: any = {
