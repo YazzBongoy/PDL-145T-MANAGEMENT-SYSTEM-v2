@@ -112,6 +112,57 @@ app.post('/api/admin/migrate', async (req, res) => {
   }
 });
 
+// Debug endpoint - capture exact errors from Prisma
+app.get('/api/admin/debug', async (req, res) => {
+  const debug: any = {
+    timestamp: new Date().toISOString(),
+    tests: {}
+  };
+  
+  // Test 1: Simple query
+  try {
+    const result = await prisma.$queryRaw`SELECT 1 as test`;
+    debug.tests.rawQuery = { success: true, result };
+  } catch (e: any) {
+    debug.tests.rawQuery = { success: false, error: e.message, code: e.code };
+  }
+  
+  // Test 2: Prisma model query
+  try {
+    const result = await prisma.program.findMany({ take: 1 });
+    debug.tests.programQuery = { success: true, count: result.length };
+  } catch (e: any) {
+    debug.tests.programQuery = { 
+      success: false, 
+      error: e.message, 
+      code: e.code,
+      meta: e.meta
+    };
+  }
+  
+  // Test 3: Create without relations
+  try {
+    const testProg = await prisma.program.create({
+      data: {
+        Name: 'TEST-DEBUG',
+        Description: 'Debug test'
+      }
+    });
+    debug.tests.programCreate = { success: true, id: testProg.ProgramID };
+    // Cleanup
+    await prisma.program.delete({ where: { ProgramID: testProg.ProgramID } });
+  } catch (e: any) {
+    debug.tests.programCreate = { 
+      success: false, 
+      error: e.message, 
+      code: e.code,
+      meta: e.meta
+    };
+  }
+  
+  res.json(debug);
+});
+
 // Diagnostic endpoint - check database state
 app.get('/api/admin/diagnostic', async (req, res) => {
   try {
@@ -119,22 +170,22 @@ app.get('/api/admin/diagnostic', async (req, res) => {
     const results: any = {};
     
     try {
-      const programs = await prisma.$queryRaw`SELECT COUNT(*) FROM "Program"`;
-      results.programs = { exists: true, count: programs };
+      const programs: any = await prisma.$queryRaw`SELECT COUNT(*) as count FROM "Program"`;
+      results.programs = { exists: true, count: Number(programs[0]?.count || 0) };
     } catch (e: any) {
       results.programs = { exists: false, error: e.message };
     }
     
     try {
-      const projects = await prisma.$queryRaw`SELECT COUNT(*) FROM "Project"`;
-      results.projects = { exists: true, count: projects };
+      const projects: any = await prisma.$queryRaw`SELECT COUNT(*) as count FROM "Project"`;
+      results.projects = { exists: true, count: Number(projects[0]?.count || 0) };
     } catch (e: any) {
       results.projects = { exists: false, error: e.message };
     }
     
     try {
-      const users = await prisma.$queryRaw`SELECT COUNT(*) FROM "User"`;
-      results.users = { exists: true, count: users };
+      const users: any = await prisma.$queryRaw`SELECT COUNT(*) as count FROM "User"`;
+      results.users = { exists: true, count: Number(users[0]?.count || 0) };
     } catch (e: any) {
       results.users = { exists: false, error: e.message };
     }
