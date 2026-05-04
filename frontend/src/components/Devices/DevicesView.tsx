@@ -6,6 +6,7 @@ import { DeviceModal, type DeviceFormData } from './DeviceModal';
 import { DeleteConfirmModal } from './DeleteConfirmModal';
 import type { Device } from '../../types';
 import './Devices.css';
+import '../../styles/mobile-utilities.css';
 
 function getStatusColor(status: string): string {
   switch (status) {
@@ -90,14 +91,14 @@ export function DevicesView(): React.ReactElement {
 
   return (
     <div className="devices-view" data-testid="devices-view">
-      <div className="section-header">
+      <div className="section-header section-header-mobile">
         <div className="section-title">
           <Wrench className="section-icon" size={24} />
-          <h2 data-testid="devices-title">Devices & Equipment</h2>
+          <h2 className="section-header-mobile__title" data-testid="devices-title">Devices & Equipment</h2>
         </div>
-        <div className="section-actions">
-          <div className="search-box" data-testid="devices-search-box">
-            <Search size={16} />
+        <div className="section-header-mobile__actions">
+          <div className="search-mobile" data-testid="devices-search-box">
+            <Search className="search-mobile__icon" size={18} />
             <input 
               type="text" 
               placeholder="Search devices..."
@@ -107,7 +108,7 @@ export function DevicesView(): React.ReactElement {
             />
           </div>
           <select 
-            className="filter-select"
+            className="filter-select mobile-full-width"
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
             data-testid="devices-status-filter"
@@ -118,11 +119,11 @@ export function DevicesView(): React.ReactElement {
             <option value="inactive">Inactive</option>
           </select>
           <button 
-            className="btn btn--primary" 
+            className="btn btn--primary btn-mobile touch-target-lg" 
             onClick={handleAddClick}
             data-testid="devices-add-button"
           >
-            <Plus size={16} />
+            <Plus size={18} />
             Add Device
           </button>
         </div>
@@ -148,55 +149,55 @@ export function DevicesView(): React.ReactElement {
         </div>
       )}
 
-      <div className="devices-grid" data-testid="devices-grid">
+      <div className="devices-grid grid-mobile-1" data-testid="devices-grid">
         {devices?.map((device: Device) => (
-          <div key={device.ResourceID} className="device-card" data-testid={`device-card-${device.ResourceID}`}>
+          <div key={device.ResourceID} className="device-card card-mobile" data-testid={`device-card-${device.ResourceID}`}>
             <div className="device-header">
-              <div className="device-info">
-                <h3 className="device-name" data-testid="device-name">{device.Name}</h3>
-                <span className="device-type" data-testid="device-type">{device.Type}</span>
+              <div className="device-info" style={{ flex: 1, minWidth: 0 }}>
+                <h3 className="device-name text-mobile-xl" data-testid="device-name">{device.Name}</h3>
+                <span className="device-type text-mobile-base" data-testid="device-type">{device.Type}</span>
               </div>
-              <span className={`device-status ${getStatusColor(device.Status)}`} data-testid="device-status">
+              <span className={`device-status badge-mobile ${getStatusColor(device.Status)}`} data-testid="device-status">
                 {device.Status}
               </span>
             </div>
             
-            <div className="device-details">
+            <div className="device-details gap-mobile-md">
               {device.Location && (
-                <div className="detail-row">
-                  <span className="detail-label">Location:</span>
+                <div className="detail-row flex-mobile-col">
+                  <span className="detail-label">📍 Location:</span>
                   <span className="detail-value">{device.Location}</span>
                 </div>
               )}
               {device.LastMaintenance && (
-                <div className="detail-row">
-                  <span className="detail-label">Last Maintenance:</span>
+                <div className="detail-row flex-mobile-col">
+                  <span className="detail-label">🔧 Last Maintenance:</span>
                   <span className="detail-value">{new Date(device.LastMaintenance).toLocaleDateString()}</span>
                 </div>
               )}
               {device.SerialNumber && (
-                <div className="detail-row">
-                  <span className="detail-label">Serial Number:</span>
+                <div className="detail-row flex-mobile-col">
+                  <span className="detail-label"># Serial:</span>
                   <span className="detail-value">{device.SerialNumber}</span>
                 </div>
               )}
             </div>
 
-            <div className="device-actions">
+            <div className="device-actions btn-mobile-group">
               <button 
-                className="btn btn--secondary btn--sm"
+                className="btn btn--secondary touch-target"
                 onClick={() => handleEditClick(device)}
                 data-testid="device-edit-button"
               >
-                <Edit2 size={14} />
+                <Edit2 size={16} />
                 Edit
               </button>
               <button 
-                className="btn btn--danger btn--sm"
+                className="btn btn--danger touch-target"
                 onClick={() => handleDeleteClick(device)}
                 data-testid="device-delete-button"
               >
-                <Trash2 size={14} />
+                <Trash2 size={16} />
                 Delete
               </button>
             </div>

@@ -4,6 +4,7 @@ import type { Resource, ResourceForm, User } from '../../types';
 import { Card } from '../ui/Card';
 import { CardHeader } from '../ui/CardHeader';
 import '../ui/List.css';
+import '../../styles/mobile-utilities.css';
 import { getApiUrl } from '../../api/config';
 
 interface ResourceListProps {
@@ -140,7 +141,7 @@ export function ResourceList({ user, token }: ResourceListProps): React.ReactEle
       {loading && <p>Loading...</p>}
       {error && <p className="error" role="alert" aria-live="polite">{error}</p>}
       {showForm && (
-        <form onSubmit={handleSubmit} className="resource-form" id="resource-form" aria-labelledby="resource-form-title">
+        <form onSubmit={handleSubmit} className="resource-form form-mobile" id="resource-form" aria-labelledby="resource-form-title">
           <label htmlFor="resource-name">Resource Name *</label>
           <input 
             id="resource-name"
@@ -246,21 +247,26 @@ export function ResourceList({ user, token }: ResourceListProps): React.ReactEle
       )}
       <div className="list">
         {resources.map((r, index) => (
-          <div key={r.ResourceID} className={`list__item ${index % 2 === 0 ? 'zebra-row' : ''}`}>
-            <b>{r.Name}</b> ({r.Type})
-            <span className="resource-details">
-              {r.Type === 'HUMAIN' 
-                ? `Homme-jour: ${r.Quantity} jours`
-                : `Qté: ${r.Quantity}`
-              }
-              {r.Cost && r.Type !== 'HUMAIN' && ` | Coût: ${r.Cost} FC`}
-              {r.Location && ` | ${r.Location}`}
-            </span>
+          <div key={r.ResourceID} className={`list__item list-item-mobile ${index % 2 === 0 ? 'zebra-row' : ''}`}>
+            <div className="list-item-mobile__header">
+              <div style={{ flex: 1 }}>
+                <div className="list-item-mobile__title">{r.Name}</div>
+                <div className="list-item-mobile__subtitle">
+                  {r.Type === 'HUMAIN' 
+                    ? `Homme-jour: ${r.Quantity} jours`
+                    : `${r.Type} • Qté: ${r.Quantity}${r.Cost ? ` • ${r.Cost} FC` : ''}${r.Location ? ` • ${r.Location}` : ''}`
+                  }
+                </div>
+              </div>
+              <span className={`badge-mobile status-${r.Status?.toLowerCase() || 'available'}`}>
+                {r.Status || 'AVAILABLE'}
+              </span>
+            </div>
             {canEdit && (
-              <>
-                <button onClick={() => handleEdit(r)} className="btn btn--secondary">Edit</button>
-                <button onClick={() => handleDelete(r.ResourceID)} className="btn btn--danger">Delete</button>
-              </>
+              <div className="list-item-mobile__actions">
+                <button onClick={() => handleEdit(r)} className="btn btn--secondary touch-target">Modifier</button>
+                <button onClick={() => handleDelete(r.ResourceID)} className="btn btn--danger touch-target">Supprimer</button>
+              </div>
             )}
           </div>
         ))}
