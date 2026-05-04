@@ -16,7 +16,17 @@ export function ResourceList({ user, token }: ResourceListProps): React.ReactEle
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
-  const [form, setForm] = useState<ResourceForm>({ Type: '', Quantity: '' });
+  const [form, setForm] = useState<ResourceForm>({ 
+    Name: '', 
+    Type: 'MATERIEL', 
+    Quantity: '', 
+    Description: '',
+    Status: 'AVAILABLE',
+    Cost: '',
+    Location: '',
+    SerialNumber: '',
+    WorkDays: ''
+  });
   const [editId, setEditId] = useState<number | null>(null);
 
   const fetchResources = useCallback(async (): Promise<void> => {
@@ -59,7 +69,17 @@ export function ResourceList({ user, token }: ResourceListProps): React.ReactEle
       });
       if (!res.ok) throw new Error('Failed to save resource');
       setShowForm(false);
-      setForm({ Type: '', Quantity: '' });
+      setForm({ 
+        Name: '', 
+        Type: 'MATERIEL', 
+        Quantity: '', 
+        Description: '',
+        Status: 'AVAILABLE',
+        Cost: '',
+        Location: '',
+        SerialNumber: '',
+        WorkDays: ''
+      });
       setEditId(null);
       await fetchResources();
     } catch (err) {
@@ -68,7 +88,18 @@ export function ResourceList({ user, token }: ResourceListProps): React.ReactEle
   }, [editId, form, token, fetchResources]);
 
   const handleEdit = useCallback((resource: Resource): void => {
-    setForm({ Type: resource.Type, Quantity: resource.Quantity.toString() });
+    setForm({ 
+      Name: resource.Name || '',
+      Type: resource.Type, 
+      Quantity: resource.Quantity.toString(),
+      Description: resource.Description || '',
+      Status: resource.Status || 'AVAILABLE',
+      Cost: resource.Cost?.toString() || '',
+      Location: resource.Location || '',
+      SerialNumber: resource.SerialNumber || '',
+      // Pour ressources humaines, WorkDays = Quantity (Homme-jour)
+      WorkDays: resource.Type === 'HUMAIN' ? resource.Quantity.toString() : ''
+    });
     setEditId(resource.ResourceID);
     setShowForm(true);
   }, []);
@@ -110,27 +141,103 @@ export function ResourceList({ user, token }: ResourceListProps): React.ReactEle
       {error && <p className="error" role="alert" aria-live="polite">{error}</p>}
       {showForm && (
         <form onSubmit={handleSubmit} className="resource-form" id="resource-form" aria-labelledby="resource-form-title">
-          <label htmlFor="resource-type">Resource Type</label>
+          <label htmlFor="resource-name">Resource Name *</label>
           <input 
-            id="resource-type"
-            name="Type" 
-            placeholder="Type" 
-            value={form.Type} 
+            id="resource-name"
+            name="Name" 
+            placeholder="Ex: Excavatrice CAT 320" 
+            value={form.Name} 
             onChange={handleChange} 
             required 
             className="input"
           />
-          <label htmlFor="resource-quantity">Quantity</label>
+          
+          <label htmlFor="resource-type">Resource Type *</label>
+          <select
+            id="resource-type"
+            name="Type" 
+            value={form.Type} 
+            onChange={handleChange} 
+            required 
+            className="input"
+          >
+            <option value="EQUIPEMENT">EQUIPEMENT</option>
+            <option value="MATERIEL">MATERIEL</option>
+            <option value="HUMAIN">HUMAIN (Homme-jour)</option>
+          </select>
+          
+          <label htmlFor="resource-quantity">
+            {form.Type === 'HUMAIN' ? 'Homme-jour (jours de travail) *' : 'Quantité *'}
+          </label>
           <input 
             id="resource-quantity"
             name="Quantity" 
             type="number" 
-            placeholder="Quantity" 
+            placeholder={form.Type === 'HUMAIN' ? "Ex: 30 jours" : "Ex: 5"} 
             value={form.Quantity} 
             onChange={handleChange} 
             required 
             className="input"
           />
+          
+          <label htmlFor="resource-description">Description</label>
+          <input 
+            id="resource-description"
+            name="Description" 
+            placeholder="Description détaillée" 
+            value={form.Description} 
+            onChange={handleChange} 
+            className="input"
+          />
+          
+          <label htmlFor="resource-status">Statut</label>
+          <select
+            id="resource-status"
+            name="Status" 
+            value={form.Status} 
+            onChange={handleChange} 
+            className="input"
+          >
+            <option value="AVAILABLE">DISPONIBLE</option>
+            <option value="ASSIGNED">ASSIGNÉ</option>
+            <option value="MAINTENANCE">MAINTENANCE</option>
+          </select>
+          
+          {form.Type !== 'HUMAIN' && (
+            <>
+              <label htmlFor="resource-cost">Coût unitaire</label>
+              <input 
+                id="resource-cost"
+                name="Cost" 
+                type="number" 
+                placeholder="Coût en FC" 
+                value={form.Cost} 
+                onChange={handleChange} 
+                className="input"
+              />
+              
+              <label htmlFor="resource-location">Localisation</label>
+              <input 
+                id="resource-location"
+                name="Location" 
+                placeholder="Ex: Site Inongo" 
+                value={form.Location} 
+                onChange={handleChange} 
+                className="input"
+              />
+              
+              <label htmlFor="resource-serial">Numéro de série</label>
+              <input 
+                id="resource-serial"
+                name="SerialNumber" 
+                placeholder="Ex: CAT320-001" 
+                value={form.SerialNumber} 
+                onChange={handleChange} 
+                className="input"
+              />
+            </>
+          )}
+          
           <button type="submit" className="btn btn--primary">{editId ? 'Update' : 'Create'}</button>
           <button type="button" onClick={() => { setShowForm(false); setEditId(null); }} className="btn btn--secondary">
             Cancel
@@ -140,7 +247,15 @@ export function ResourceList({ user, token }: ResourceListProps): React.ReactEle
       <div className="list">
         {resources.map((r, index) => (
           <div key={r.ResourceID} className={`list__item ${index % 2 === 0 ? 'zebra-row' : ''}`}>
-            <b>{r.Type}</b> (Qty: {r.Quantity})
+            <b>{r.Name}</b> ({r.Type})
+            <span className="resource-details">
+              {r.Type === 'HUMAIN' 
+                ? `Homme-jour: ${r.Quantity} jours`
+                : `Qté: ${r.Quantity}`
+              }
+              {r.Cost && r.Type !== 'HUMAIN' && ` | Coût: ${r.Cost} FC`}
+              {r.Location && ` | ${r.Location}`}
+            </span>
             {canEdit && (
               <>
                 <button onClick={() => handleEdit(r)} className="btn btn--secondary">Edit</button>

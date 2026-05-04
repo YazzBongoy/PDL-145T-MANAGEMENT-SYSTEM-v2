@@ -48,8 +48,19 @@ export interface Task {
 
 export interface Resource {
   ResourceID: number;
-  Type: string;
+  Name: string;
+  Type: 'EQUIPEMENT' | 'MATERIEL' | 'HUMAIN' | string;
   Quantity: number;
+  Description?: string;
+  Status: 'AVAILABLE' | 'ASSIGNED' | 'MAINTENANCE' | string;
+  Cost?: number;
+  Location?: string;
+  SerialNumber?: string;
+  PurchaseDate?: string;
+  LastMaintenance?: string;
+  NextMaintenance?: string;
+  CreatedAt?: string;
+  UpdatedAt?: string;
 }
 
 export interface Expense {
@@ -75,8 +86,16 @@ export interface TaskForm {
 }
 
 export interface ResourceForm {
-  Type: string;
+  Name: string;
+  Type: 'EQUIPEMENT' | 'MATERIEL' | 'HUMAIN' | string;
   Quantity: string;
+  Description?: string;
+  Status?: string;
+  Cost?: string;
+  Location?: string;
+  SerialNumber?: string;
+  // Pour ressources humaines - Homme-jour (temps d'exécution)
+  WorkDays?: string;  // Nombre de jours de travail (Homme-jour)
 }
 
 export interface ExpenseForm {
