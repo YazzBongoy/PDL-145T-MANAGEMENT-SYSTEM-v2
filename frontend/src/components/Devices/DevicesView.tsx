@@ -24,10 +24,13 @@ export function DevicesView(): React.ReactElement {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [deviceToDelete, setDeviceToDelete] = useState<Device | null>(null);
   
-  const { data: devices, isLoading, error } = useDevices({
+  const { data: allDevices, isLoading, error } = useDevices({
     search: searchQuery,
     status: statusFilter,
   });
+  
+  // Filter to only show equipment-type resources (EQUIPEMENT), not human resources
+  const devices = allDevices?.filter(device => device.Type === 'EQUIPEMENT' || device.Type === 'MATERIEL') || [];
 
   const createDeviceMutation = useCreateDevice();
   const updateDeviceMutation = useUpdateDevice();
