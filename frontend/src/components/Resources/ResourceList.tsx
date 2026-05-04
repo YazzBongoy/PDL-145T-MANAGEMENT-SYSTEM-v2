@@ -50,7 +50,7 @@ export function ResourceList({ user, token }: ResourceListProps): React.ReactEle
     fetchResources();
   }, [fetchResources]);
 
-  const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>): void => {
+  const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>): void => {
     setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
   }, []);
 
