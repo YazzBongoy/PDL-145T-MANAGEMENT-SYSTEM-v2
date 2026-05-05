@@ -1,0 +1,203 @@
+{
+  "app": {
+    "title": "PDL-145T - Système de Gestion",
+    "subtitle": "Programme de Développement Local"
+  },
+  "nav": {
+    "dashboard": "Tableau de bord",
+    "programs": "Programmes",
+    "projects": "Projets",
+    "tasks": "Tâches",
+    "devices": "Équipements",
+    "reports": "Rapports",
+    "settings": "Paramètres",
+    "logout": "Déconnexion",
+    "profile": "Profil",
+    "preferences": "Préférences"
+  },
+  "common": {
+    "add": "Ajouter",
+    "edit": "Modifier",
+    "delete": "Supprimer",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "close": "Fermer",
+    "search": "Rechercher",
+    "filter": "Filtrer",
+    "export": "Exporter",
+    "import": "Importer",
+    "loading": "Chargement...",
+    "error": "Erreur",
+    "success": "Succès",
+    "warning": "Attention",
+    "info": "Information",
+    "confirm": "Confirmer",
+    "yes": "Oui",
+    "no": "Non",
+    "back": "Retour",
+    "next": "Suivant",
+    "previous": "Précédent",
+    "submit": "Soumettre",
+    "create": "Créer",
+    "update": "Mettre à jour",
+    "remove": "Retirer",
+    "view": "Voir",
+    "details": "Détails",
+    "actions": "Actions"
+  },
+  "auth": {
+    "login": "Connexion",
+    "register": "Inscription",
+    "email": "Email",
+    "password": "Mot de passe",
+    "name": "Nom",
+    "role": "Rôle",
+    "forgotPassword": "Mot de passe oublié ?",
+    "loginButton": "Se connecter",
+    "registerButton": "S'inscrire",
+    "noAccount": "Pas de compte ?",
+    "hasAccount": "Déjà un compte ?",
+    "signUp": "S'inscrire",
+    "signIn": "Se connecter",
+    "logoutSuccess": "Déconnexion réussie",
+    "loginError": "Erreur de connexion",
+    "registerError": "Erreur d'inscription"
+  },
+  "dashboard": {
+    "title": "Tableau de bord",
+    "welcome": "Bienvenue",
+    "stats": {
+      "programs": "Programmes",
+      "projects": "Projets",
+      "tasks": "Tâches",
+      "resources": "Ressources",
+      "budget": "Budget",
+      "progress": "Progression"
+    }
+  },
+  "programs": {
+    "title": "Programmes PDL 145 Territoires",
+    "subtitle": "Programme de Développement Local",
+    "addProgram": "Nouveau Programme",
+    "name": "Nom",
+    "description": "Description",
+    "budget": "Budget",
+    "status": "Statut",
+    "startDate": "Date de début",
+    "endDate": "Date de fin",
+    "projects": "Projets",
+    "active": "Actif",
+    "suspended": "Suspendu",
+    "completed": "Terminé",
+    "cancelled": "Annulé"
+  },
+  "projects": {
+    "title": "Projets",
+    "addProject": "Ajouter un projet",
+    "editProject": "Modifier le projet",
+    "deleteProject": "Supprimer le projet",
+    "name": "Nom",
+    "description": "Description",
+    "budget": "Budget total",
+    "program": "Programme",
+    "tasks": "Tâches",
+    "dates": "Dates",
+    "noProjects": "Aucun projet trouvé"
+  },
+  "tasks": {
+    "title": "Tâches",
+    "addTask": "Ajouter une tâche",
+    "editTask": "Modifier la tâche",
+    "deleteTask": "Supprimer la tâche",
+    "name": "Nom",
+    "description": "Description",
+    "status": "Statut",
+    "priority": "Priorité",
+    "assignedTo": "Assigné à",
+    "duration": "Durée (jours)",
+    "project": "Projet",
+    "ouvrageType": "Type d'ouvrage",
+    "constructionSteps": "Étapes de construction",
+    "statusValues": {
+      "notStarted": "Non commencé",
+      "inProgress": "En cours",
+      "completed": "Terminé",
+      "blocked": "Bloqué"
+    },
+    "ouvrageTypes": {
+      "ecole": "École",
+      "centreSante": "Centre de santé",
+      "batimentAdmin": "Bâtiment administratif"
+    },
+    "noTasks": "Aucune tâche trouvée"
+  },
+  "construction": {
+    "steps": "Étapes de construction",
+    "addStep": "Ajouter une étape",
+    "editStep": "Modifier l'étape",
+    "progress": "Progression",
+    "photos": "Photos",
+    "uploadPhoto": "Télécharger une photo",
+    "stepTypes": {
+      "installationChantier": "Installation chantier",
+      "fouilles": "Fouilles",
+      "maconnerie": "Maçonnerie fondation",
+      "socles": "Socles et colonnes",
+      "remblais": "Remblais",
+      "sousPavement": "Sous pavement",
+      "structure": "Structure et charpente",
+      "toiture": "Toiture",
+      "electricite": "Installation électrique",
+      "sanitaire": "Installation sanitaire",
+      "menuiseries": "Menuiseries",
+      "finitionsInt": "Finitions intérieures",
+      "finitionsExt": "Finitions extérieures",
+      "amenagement": "Aménagement accès",
+      "clotures": "Clôtures",
+      "reception": "Réception"
+    },
+    "stepStatus": {
+      "notStarted": "Non commencé",
+      "inProgress": "En cours",
+      "completed": "Terminé",
+      "blocked": "Bloqué"
+    }
+  },
+  "devices": {
+    "title": "Équipements",
+    "addDevice": "Ajouter un équipement",
+    "editDevice": "Modifier l'équipement",
+    "name": "Nom",
+    "type": "Type",
+    "status": "Statut",
+    "location": "Emplacement",
+    "serialNumber": "Numéro de série"
+  },
+  "reports": {
+    "title": "Rapports et Analyses",
+    "generate": "Générer un rapport",
+    "export": "Exporter",
+    "type": "Type de rapport",
+    "progress": "Rapport de progression",
+    "financial": "Rapport financier",
+    "resource": "Rapport des ressources",
+    "quality": "Rapport qualité"
+  },
+  "settings": {
+    "title": "Paramètres",
+    "profile": "Profil",
+    "notifications": "Notifications",
+    "security": "Sécurité",
+    "appearance": "Apparence",
+    "language": "Langue",
+    "theme": "Thème",
+    "save": "Enregistrer les paramètres"
+  },
+  "errors": {
+    "generic": "Une erreur s'est produite",
+    "notFound": "Non trouvé",
+    "unauthorized": "Non autorisé",
+    "validation": "Erreur de validation",
+    "server": "Erreur serveur"
+  }
+}

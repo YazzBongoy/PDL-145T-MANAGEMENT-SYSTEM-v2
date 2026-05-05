@@ -54,6 +54,7 @@ model Task {
   progressPercentage Int                  @default(0)
   statusReason       String?
   Level              Int                  @default(1) // Niveau 1, 2 ou 3
+  ouvrageType        OuvrageType?         // Type d'ouvrage pour les tâches de construction
   Expenses           Expense[]
   Measurements       Measurement[]
   Project            Project              @relation(fields: [ProjectID], references: [ProjectID])
@@ -62,6 +63,7 @@ model Task {
   Validations        Validation[]
   ParentTask         Task?                @relation("TaskHierarchy", fields: [ParentTaskID], references: [TaskID])
   SubTasks           Task[]               @relation("TaskHierarchy")
+  ConstructionSteps  ConstructionStep[]   // Étapes de construction de l'ouvrage
 }
 
 model Expense {
@@ -315,6 +317,51 @@ model ReconciliationAudit {
   @@index([auditDate])
 }
 
+model ConstructionStep {
+  StepID          Int                 @id @default(autoincrement())
+  TaskID          Int
+  StepType        ConstructionStepType
+  Name            String
+  Description     String?
+  Order           Int                 @default(0) // Ordre d'exécution
+  ProgressPercent Int                 @default(0) // 0-100
+  Status          StepStatus          @default(NOT_STARTED)
+  StartDate       DateTime?
+  EndDate         DateTime?
+  ActualCost      Decimal?            @default(0)
+  EstimatedCost   Decimal?            @default(0)
+  CreatedAt       DateTime            @default(now())
+  UpdatedAt       DateTime            @updatedAt
+  Task            Task                @relation(fields: [TaskID], references: [TaskID], onDelete: Cascade)
+  Photos          ConstructionPhoto[]
+
+  @@index([TaskID])
+  @@index([StepType])
+  @@index([Status])
+}
+
+model ConstructionPhoto {
+  PhotoID     Int              @id @default(autoincrement())
+  StepID      Int
+  URL         String
+  Caption     String?
+  TakenAt     DateTime         @default(now())
+  TakenBy     String?
+  Latitude    Float?
+  Longitude   Float?
+  CreatedAt   DateTime         @default(now())
+  ConstructionStep ConstructionStep @relation(fields: [StepID], references: [StepID], onDelete: Cascade)
+
+  @@index([StepID])
+}
+
+enum StepStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  COMPLETED
+  BLOCKED
+}
+
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 model spatial_ref_sys {
   srid      Int     @id
@@ -354,6 +401,31 @@ enum SiteType {
   CENTRE_DE_SANTE
   ECOLE_PRIMAIRE
   BATIMENT_ADMINISTRATIF
+}
+
+enum OuvrageType {
+  ECOLE
+  CENTRE_SANTE
+  BATIMENT_ADMINISTRATIF
+}
+
+enum ConstructionStepType {
+  INSTALLATION_CHANTIER
+  FOUILLES
+  MACONNERIE_FONDATION
+  SOCLES_COLONNES
+  REMBLAIS
+  SOUS_PAVEMENT
+  STRUCTURE_CHARPENTE
+  TOITURE
+  INSTALLATION_ELECTRIQUE
+  INSTALLATION_SANITAIRE
+  MENUISERIES
+  FINITIONS_INTERIEURES
+  FINITIONS_EXTERIEURES
+  AMENAGEMENT_ACCES
+  CLOTURES
+  RECEPTION
 }
 
 enum UserRole {

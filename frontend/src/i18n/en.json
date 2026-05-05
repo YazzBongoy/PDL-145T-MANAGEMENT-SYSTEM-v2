@@ -1,0 +1,203 @@
+{
+  "app": {
+    "title": "PDL-145T - Management System",
+    "subtitle": "Local Development Program"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "programs": "Programs",
+    "projects": "Projects",
+    "tasks": "Tasks",
+    "devices": "Devices",
+    "reports": "Reports",
+    "settings": "Settings",
+    "logout": "Logout",
+    "profile": "Profile",
+    "preferences": "Preferences"
+  },
+  "common": {
+    "add": "Add",
+    "edit": "Edit",
+    "delete": "Delete",
+    "save": "Save",
+    "cancel": "Cancel",
+    "close": "Close",
+    "search": "Search",
+    "filter": "Filter",
+    "export": "Export",
+    "import": "Import",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "warning": "Warning",
+    "info": "Information",
+    "confirm": "Confirm",
+    "yes": "Yes",
+    "no": "No",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "submit": "Submit",
+    "create": "Create",
+    "update": "Update",
+    "remove": "Remove",
+    "view": "View",
+    "details": "Details",
+    "actions": "Actions"
+  },
+  "auth": {
+    "login": "Login",
+    "register": "Register",
+    "email": "Email",
+    "password": "Password",
+    "name": "Name",
+    "role": "Role",
+    "forgotPassword": "Forgot password?",
+    "loginButton": "Sign in",
+    "registerButton": "Sign up",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?",
+    "signUp": "Sign up",
+    "signIn": "Sign in",
+    "logoutSuccess": "Logout successful",
+    "loginError": "Login error",
+    "registerError": "Registration error"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Welcome",
+    "stats": {
+      "programs": "Programs",
+      "projects": "Projects",
+      "tasks": "Tasks",
+      "resources": "Resources",
+      "budget": "Budget",
+      "progress": "Progress"
+    }
+  },
+  "programs": {
+    "title": "PDL 145 Territories Programs",
+    "subtitle": "Local Development Program",
+    "addProgram": "New Program",
+    "name": "Name",
+    "description": "Description",
+    "budget": "Budget",
+    "status": "Status",
+    "startDate": "Start date",
+    "endDate": "End date",
+    "projects": "Projects",
+    "active": "Active",
+    "suspended": "Suspended",
+    "completed": "Completed",
+    "cancelled": "Cancelled"
+  },
+  "projects": {
+    "title": "Projects",
+    "addProject": "Add project",
+    "editProject": "Edit project",
+    "deleteProject": "Delete project",
+    "name": "Name",
+    "description": "Description",
+    "budget": "Total budget",
+    "program": "Program",
+    "tasks": "Tasks",
+    "dates": "Dates",
+    "noProjects": "No projects found"
+  },
+  "tasks": {
+    "title": "Tasks",
+    "addTask": "Add task",
+    "editTask": "Edit task",
+    "deleteTask": "Delete task",
+    "name": "Name",
+    "description": "Description",
+    "status": "Status",
+    "priority": "Priority",
+    "assignedTo": "Assigned to",
+    "duration": "Duration (days)",
+    "project": "Project",
+    "ouvrageType": "Ouvrage type",
+    "constructionSteps": "Construction steps",
+    "statusValues": {
+      "notStarted": "Not started",
+      "inProgress": "In progress",
+      "completed": "Completed",
+      "blocked": "Blocked"
+    },
+    "ouvrageTypes": {
+      "ecole": "School",
+      "centreSante": "Health center",
+      "batimentAdmin": "Administrative building"
+    },
+    "noTasks": "No tasks found"
+  },
+  "construction": {
+    "steps": "Construction steps",
+    "addStep": "Add step",
+    "editStep": "Edit step",
+    "progress": "Progress",
+    "photos": "Photos",
+    "uploadPhoto": "Upload photo",
+    "stepTypes": {
+      "installationChantier": "Site installation",
+      "fouilles": "Excavations",
+      "maconnerie": "Foundation masonry",
+      "socles": "Bases and columns",
+      "remblais": "Backfilling",
+      "sousPavement": "Sub-floor preparation",
+      "structure": "Structure and framework",
+      "toiture": "Roofing",
+      "electricite": "Electrical installation",
+      "sanitaire": "Plumbing installation",
+      "menuiseries": "Joinery",
+      "finitionsInt": "Interior finishing",
+      "finitionsExt": "Exterior finishing",
+      "amenagement": "Access development",
+      "clotures": "Fencing",
+      "reception": "Acceptance"
+    },
+    "stepStatus": {
+      "notStarted": "Not started",
+      "inProgress": "In progress",
+      "completed": "Completed",
+      "blocked": "Blocked"
+    }
+  },
+  "devices": {
+    "title": "Devices",
+    "addDevice": "Add device",
+    "editDevice": "Edit device",
+    "name": "Name",
+    "type": "Type",
+    "status": "Status",
+    "location": "Location",
+    "serialNumber": "Serial number"
+  },
+  "reports": {
+    "title": "Reports and Analytics",
+    "generate": "Generate report",
+    "export": "Export",
+    "type": "Report type",
+    "progress": "Progress report",
+    "financial": "Financial report",
+    "resource": "Resource report",
+    "quality": "Quality report"
+  },
+  "settings": {
+    "title": "Settings",
+    "profile": "Profile",
+    "notifications": "Notifications",
+    "security": "Security",
+    "appearance": "Appearance",
+    "language": "Language",
+    "theme": "Theme",
+    "save": "Save settings"
+  },
+  "errors": {
+    "generic": "An error occurred",
+    "notFound": "Not found",
+    "unauthorized": "Unauthorized",
+    "validation": "Validation error",
+    "server": "Server error"
+  }
+}

@@ -2,8 +2,7 @@ import React, { useState, useCallback } from 'react';
 import './App.css';
 import './components/ui/AppBar.css';
 import { AppBar } from './components/ui/AppBar';
-import type { User, HealthStatus, LoginCredentials, RegisterData } from './types';
-import { useApi } from './hooks/useApi';
+import type { User, LoginCredentials, RegisterData } from './types';
 import { getApiUrl } from './api/config';
 import { useTheme } from './hooks/useTheme';
 import { DashboardSwitcher } from './components/Dashboard/Dashboards';
@@ -20,7 +19,6 @@ function App(): React.ReactElement {
   const [registerError, setRegisterError] = useState<string | null>(null);
   const [showRegister, setShowRegister] = useState(false);
   const [currentView, setCurrentView] = useState<string>('dashboard');
-  const { data: healthStatus, loading, error, refetch: refreshHealth } = useApi<HealthStatus>('/api/health');
   useTheme(); // Initialize theme
   const [token, setToken] = useState<string | null>(() => localStorage.getItem('token'));
   const [user, setUser] = useState<User | null>(() => {
@@ -130,27 +128,6 @@ function App(): React.ReactElement {
       <main className="app__main">
         <section className="auth-section">
           {renderContent()}
-        </section>
-        
-        <section className="health-check">
-          <h2>Backend Health Status</h2>
-          {loading && <p>Loading health status...</p>}
-          {error && (
-            <div className="error" role="alert" aria-live="polite">
-              <p>Error: {error}</p>
-              <button onClick={refreshHealth} className="btn btn--primary">Retry</button>
-            </div>
-          )}
-          {healthStatus && (
-            <div className="health-status" aria-live="polite">
-              <div className={`status-indicator ${healthStatus.status.toLowerCase()}`}>
-                Status: {healthStatus.status}
-              </div>
-              <p>Timestamp: {new Date(healthStatus.timestamp).toLocaleString()}</p>
-              <p>Uptime: {Math.floor(healthStatus.uptime)} seconds</p>
-              <button onClick={refreshHealth} className="btn btn--primary">Refresh</button>
-            </div>
-          )}
         </section>
       </main>
     </div>

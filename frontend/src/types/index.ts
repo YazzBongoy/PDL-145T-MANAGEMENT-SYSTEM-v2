@@ -22,6 +22,14 @@ export const TaskStatus = {
 
 export type TaskStatus = typeof TaskStatus[keyof typeof TaskStatus];
 
+export const OuvrageType = {
+  ECOLE: 'ECOLE',
+  CENTRE_SANTE: 'CENTRE_SANTE',
+  BATIMENT_ADMINISTRATIF: 'BATIMENT_ADMINISTRATIF'
+} as const;
+
+export type OuvrageType = typeof OuvrageType[keyof typeof OuvrageType];
+
 export interface User {
   id: number;
   name: string;
@@ -40,10 +48,14 @@ export interface Project {
 export interface Task {
   TaskID: number;
   ProjectID: number;
+  Name: string;
   Description: string;
   Duration?: number;
   AssignedTo?: string;
   CompletionStatus: TaskStatus;
+  ouvrageType?: OuvrageType;
+  progressPercentage?: number;
+  SubTasks?: Task[];
 }
 
 export interface Resource {
@@ -154,6 +166,53 @@ export interface RegisterData {
   email: string;
   password: string;
   role: UserRole;
+}
+
+export type ConstructionStepType =
+  | 'INSTALLATION_CHANTIER'
+  | 'FOUILLES'
+  | 'MACONNERIE_FONDATION'
+  | 'SOCLES_COLONNES'
+  | 'REMBLAIS'
+  | 'SOUS_PAVEMENT'
+  | 'STRUCTURE_CHARPENTE'
+  | 'TOITURE'
+  | 'INSTALLATION_ELECTRIQUE'
+  | 'INSTALLATION_SANITAIRE'
+  | 'MENUISERIES'
+  | 'FINITIONS_INTERIEURES'
+  | 'FINITIONS_EXTERIEURES'
+  | 'AMENAGEMENT_ACCES'
+  | 'CLOTURES'
+  | 'RECEPTION';
+
+export type StepStatus = 'NOT_STARTED' | 'IN_PROGRESS' | 'COMPLETED' | 'BLOCKED';
+
+export interface ConstructionStep {
+  StepID: number;
+  TaskID: number;
+  StepType: ConstructionStepType;
+  Name: string;
+  Description?: string;
+  Order: number;
+  ProgressPercent: number;
+  Status: StepStatus;
+  StartDate?: string;
+  EndDate?: string;
+  ActualCost?: number;
+  EstimatedCost?: number;
+  Photos?: ConstructionPhoto[];
+}
+
+export interface ConstructionPhoto {
+  PhotoID: number;
+  StepID: number;
+  URL: string;
+  Caption?: string;
+  TakenAt: string;
+  TakenBy?: string;
+  Latitude?: number;
+  Longitude?: number;
 }
 
 export interface Device {

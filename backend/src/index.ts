@@ -22,6 +22,7 @@ import settingsRoutes from './routes/settingsRoutes.js';
 import programRoutes from './routes/programRoutes.js';
 import projectRoutes from './routes/projectRoutes.js';
 import reportRoutes from './routes/reportRoutes.js';
+import constructionStepsRoutes from './routes/constructionStepsRoutes.js';
 
 // Import middleware and types
 import { authenticateJWT, requireAdminOrSupervisor, errorHandler } from './middleware/index.js';
@@ -293,6 +294,7 @@ app.use('/api/settings', settingsRoutes);
 app.use('/api/programs', programRoutes);
 app.use('/api/projects', projectRoutes);
 app.use('/api/reports', reportRoutes);
+app.use('/api/construction-steps', constructionStepsRoutes);
 
 // User registration
 app.post('/auth/register', async (req, res) => {
