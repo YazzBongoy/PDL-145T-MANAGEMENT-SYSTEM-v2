@@ -5,6 +5,7 @@ import { ProjectList } from '../Projects/ProjectList';
 import { ResourceList } from '../Resources/ResourceList';
 import { FinanceDashboard as FinanceDashboardFull } from './FinanceDashboard';
 import { ConstructionDashboard } from '../Construction/ConstructionDashboard';
+import { ProgrammaticKPIs } from '../KPIs/ProgrammaticKPIs';
 import './Dashboard.css';
 
 interface DashboardProps {
@@ -19,6 +20,7 @@ export function AdminDashboard({ user, onLogout, token }: DashboardProps): React
       <div className="dashboard-header">
         <h2>Admin Dashboard</h2>
       </div>
+      <ProgrammaticKPIs />
       <div className="dashboard-grid">
         <div className="dashboard-card">
           <ProjectList user={user} token={token} />
@@ -40,6 +42,7 @@ export function SupervisorDashboard({ user, onLogout, token }: DashboardProps): 
       <div className="dashboard-header">
         <h2>Supervisor Dashboard</h2>
       </div>
+      <ProgrammaticKPIs />
       <div className="dashboard-grid">
         <div className="dashboard-card">
           <ProjectList user={user} token={token} />

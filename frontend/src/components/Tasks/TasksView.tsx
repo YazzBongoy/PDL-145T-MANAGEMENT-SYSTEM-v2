@@ -1,8 +1,10 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Plus, Search, CheckCircle, Clock, AlertCircle, Loader2, Edit2, Trash2, Calendar, User } from 'lucide-react';
+import { Plus, Search, CheckCircle, Clock, AlertCircle, Loader2, Edit2, Trash2, Calendar, User, Building2 } from 'lucide-react';
 import './Tasks.css';
 import { getApiUrl } from '../../api/config';
+import { ConstructionStepsView } from './ConstructionStepsView';
 
 interface Task {
   TaskID: number;
@@ -11,9 +13,11 @@ interface Task {
   Description: string | null;
   Duration: number | null;
   AssignedTo: string | null;
-  CompletionStatus: string;
+  CompletionStatus: 'NotStarted' | 'InProgress' | 'Completed' | 'Blocked';
   CreatedAt: string;
   UpdatedAt: string;
+  ouvrageType?: 'ECOLE' | 'CENTRE_SANTE' | 'BATIMENT_ADMINISTRATIF';
+  progressPercentage?: number;
 }
 
 interface Project {
@@ -125,11 +129,13 @@ const statusLabels: Record<string, string> = {
 };
 
 export function TasksView() {
+  const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('');
   const [projectFilter, setProjectFilter] = useState<string>('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
+  const [viewingTaskSteps, setViewingTaskSteps] = useState<Task | null>(null);
   
   const queryClient = useQueryClient();
 
@@ -183,13 +189,14 @@ export function TasksView() {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
-    const data = {
+    const data: Omit<Task, 'TaskID' | 'CreatedAt' | 'UpdatedAt'> = {
       Name: formData.get('name') as string,
       Description: formData.get('description') as string || null,
       Duration: formData.get('duration') ? Number(formData.get('duration')) : null,
       AssignedTo: formData.get('assignedTo') as string || null,
-      CompletionStatus: formData.get('status') as string,
-      ProjectID: Number(formData.get('projectId'))
+      CompletionStatus: formData.get('status') as Task['CompletionStatus'],
+      ProjectID: Number(formData.get('projectId')),
+      ouvrageType: formData.get('ouvrageType') as Task['ouvrageType']
     };
 
     if (editingTask) {
@@ -219,7 +226,7 @@ export function TasksView() {
       <div className="section-header">
         <div className="section-title">
           <CheckCircle className="section-icon" size={24} />
-          <h2>Tasks</h2>
+          <h2>{t('tasks.title')}</h2>
         </div>
         <div className="section-actions">
           <div className="filters-row">
@@ -227,7 +234,7 @@ export function TasksView() {
               <Search size={16} />
               <input
                 type="text"
-                placeholder="Search tasks..."
+                placeholder={t('common.search') + '...'}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
@@ -237,18 +244,18 @@ export function TasksView() {
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
             >
-              <option value="">All Status</option>
-              <option value="NotStarted">Not Started</option>
-              <option value="InProgress">In Progress</option>
-              <option value="Completed">Completed</option>
-              <option value="Blocked">Blocked</option>
+              <option value="">{t('tasks.status')}</option>
+              <option value="NotStarted">{t('tasks.statusValues.notStarted')}</option>
+              <option value="InProgress">{t('tasks.statusValues.inProgress')}</option>
+              <option value="Completed">{t('tasks.statusValues.completed')}</option>
+              <option value="Blocked">{t('tasks.statusValues.blocked')}</option>
             </select>
             <select 
               className="filter-select"
               value={projectFilter}
               onChange={(e) => setProjectFilter(e.target.value)}
             >
-              <option value="">All Projects</option>
+              <option value="">{t('projects.title')}</option>
               {projects?.map(p => (
                 <option key={p.ProjectID} value={p.ProjectID}>{p.Name}</option>
               ))}
@@ -256,7 +263,7 @@ export function TasksView() {
           </div>
           <button className="btn btn--primary" onClick={() => { setEditingTask(null); setIsModalOpen(true); }}>
             <Plus size={16} />
-            Add Task
+            {t('tasks.addTask')}
           </button>
         </div>
       </div>
@@ -264,20 +271,20 @@ export function TasksView() {
       {isLoading && (
         <div className="loading-state">
           <Loader2 className="animate-spin" size={24} />
-          <p>Loading tasks...</p>
+          <p>{t('common.loading')}</p>
         </div>
       )}
 
       {error && (
         <div className="error-state">
           <AlertCircle size={24} />
-          <p>Error loading tasks: {error.message}</p>
+          <p>{t('errors.generic')}: {error.message}</p>
         </div>
       )}
 
       {!isLoading && !error && filteredTasks.length === 0 && (
         <div className="empty-state">
-          <p>No tasks found. Create your first task!</p>
+          <p>{t('tasks.noTasks')}</p>
         </div>
       )}
 
@@ -287,11 +294,28 @@ export function TasksView() {
             <div className="task-header">
               <div className="task-info">
                 <h3 className="task-name">{task.Name}</h3>
-                <span className={`task-status ${statusColors[task.CompletionStatus] || 'status-default'}`}>
-                  {statusLabels[task.CompletionStatus] || task.CompletionStatus}
-                </span>
+                <div className="task-badges">
+                  <span className={`task-status ${statusColors[task.CompletionStatus] || 'status-default'}`}>
+                    {statusLabels[task.CompletionStatus] || task.CompletionStatus}
+                  </span>
+                  {task.ouvrageType && (
+                    <span className="ouvrage-badge">
+                      <Building2 size={12} />
+                      {t(`tasks.ouvrageTypes.${task.ouvrageType.toLowerCase().replace('_', '')}`)}
+                    </span>
+                  )}
+                </div>
               </div>
               <div className="task-actions">
+                {task.ouvrageType && (
+                  <button 
+                    className="btn btn--primary btn--sm" 
+                    onClick={() => setViewingTaskSteps(task)}
+                    title={t('construction.steps')}
+                  >
+                    {task.progressPercentage || 0}%
+                  </button>
+                )}
                 <button className="btn btn--secondary btn--sm" onClick={() => handleEdit(task)}>
                   <Edit2 size={14} />
                 </button>
@@ -327,64 +351,80 @@ export function TasksView() {
         ))}
       </div>
 
+      {viewingTaskSteps && (
+        <ConstructionStepsView 
+          task={viewingTaskSteps} 
+          onClose={() => setViewingTaskSteps(null)} 
+        />
+      )}
+
       {isModalOpen && (
         <div className="modal-overlay" onClick={() => setIsModalOpen(false)}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <h3>{editingTask ? 'Edit Task' : 'Create New Task'}</h3>
+            <h3>{editingTask ? t('tasks.editTask') : t('tasks.addTask')}</h3>
             <form onSubmit={handleSubmit}>
               <div className="form-group">
-                <label>Name *</label>
+                <label>{t('tasks.name')} *</label>
                 <input name="name" defaultValue={editingTask?.Name} required />
               </div>
               <div className="form-group">
-                <label>Description</label>
+                <label>{t('tasks.description')}</label>
                 <textarea name="description" defaultValue={editingTask?.Description || ''} />
               </div>
               <div className="form-row">
                 <div className="form-group">
-                  <label>Project *</label>
+                  <label>{t('tasks.project')} *</label>
                   <select name="projectId" defaultValue={editingTask?.ProjectID} required>
-                    <option value="">Select Project</option>
+                    <option value="">{t('common.select')} {t('tasks.project').toLowerCase()}</option>
                     {projects?.map(p => (
                       <option key={p.ProjectID} value={p.ProjectID}>{p.Name}</option>
                     ))}
                   </select>
                 </div>
                 <div className="form-group">
-                  <label>Status</label>
+                  <label>{t('tasks.status')}</label>
                   <select name="status" defaultValue={editingTask?.CompletionStatus || 'NotStarted'}>
-                    <option value="NotStarted">Not Started</option>
-                    <option value="InProgress">In Progress</option>
-                    <option value="Completed">Completed</option>
-                    <option value="Blocked">Blocked</option>
+                    <option value="NotStarted">{t('tasks.statusValues.notStarted')}</option>
+                    <option value="InProgress">{t('tasks.statusValues.inProgress')}</option>
+                    <option value="Completed">{t('tasks.statusValues.completed')}</option>
+                    <option value="Blocked">{t('tasks.statusValues.blocked')}</option>
                   </select>
                 </div>
               </div>
               <div className="form-row">
                 <div className="form-group">
-                  <label>Duration (days)</label>
+                  <label>{t('tasks.duration')}</label>
                   <input name="duration" type="number" defaultValue={editingTask?.Duration || ''} />
                 </div>
                 <div className="form-group">
-                  <label>Assigned To</label>
+                  <label>{t('tasks.assignedTo')}</label>
                   <select name="assignedTo" defaultValue={editingTask?.AssignedTo || ''}>
-                    <option value="">Unassigned</option>
+                    <option value="">{t('common.unassigned')}</option>
                     {users?.map(u => (
                       <option key={u.id} value={u.email}>{u.name}</option>
                     ))}
                   </select>
                 </div>
               </div>
+              <div className="form-group">
+                <label>{t('tasks.ouvrageType')}</label>
+                <select name="ouvrageType" defaultValue={editingTask?.ouvrageType || ''}>
+                  <option value="">{t('common.none')}</option>
+                  <option value="ECOLE">{t('tasks.ouvrageTypes.ecole')}</option>
+                  <option value="CENTRE_SANTE">{t('tasks.ouvrageTypes.centreSante')}</option>
+                  <option value="BATIMENT_ADMINISTRATIF">{t('tasks.ouvrageTypes.batimentAdmin')}</option>
+                </select>
+              </div>
               <div className="modal-actions">
                 <button type="button" className="btn btn--secondary" onClick={() => setIsModalOpen(false)}>
-                  Cancel
+                  {t('common.cancel')}
                 </button>
                 <button 
                   type="submit" 
                   className="btn btn--primary"
                   disabled={createMutation.isPending || updateMutation.isPending}
                 >
-                  {createMutation.isPending || updateMutation.isPending ? 'Saving...' : 'Save'}
+                  {createMutation.isPending || updateMutation.isPending ? t('common.loading') : t('common.save')}
                 </button>
               </div>
             </form>

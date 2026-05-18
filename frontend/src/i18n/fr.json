@@ -43,7 +43,13 @@
     "remove": "Retirer",
     "view": "Voir",
     "details": "Détails",
-    "actions": "Actions"
+    "actions": "Actions",
+    "unassigned": "Non assigné",
+    "none": "Aucun",
+    "select": "Sélectionner",
+    "start": "Début",
+    "end": "Fin",
+    "budget": "Budget"
   },
   "auth": {
     "login": "Connexion",
@@ -138,6 +144,14 @@
     "progress": "Progression",
     "photos": "Photos",
     "uploadPhoto": "Télécharger une photo",
+    "addDefaultSteps": "Créer les étapes par défaut",
+    "noSteps": "Aucune étape définie pour cet ouvrage.",
+    "stepStatus": {
+      "notStarted": "Non commencé",
+      "inProgress": "En cours",
+      "completed": "Terminé",
+      "blocked": "Bloqué"
+    },
     "stepTypes": {
       "installationChantier": "Installation chantier",
       "fouilles": "Fouilles",
@@ -155,12 +169,71 @@
       "amenagement": "Aménagement accès",
       "clotures": "Clôtures",
       "reception": "Réception"
+    }
+  },
+  "enterprises": {
+    "title": "Entreprises",
+    "addEnterprise": "Ajouter une entreprise",
+    "editEnterprise": "Modifier l'entreprise",
+    "name": "Nom",
+    "type": "Type",
+    "role": "Rôle",
+    "contact": "Contact",
+    "types": {
+      "ASCAT_SARL": "ASCAT SARL",
+      "SPPE_SARL": "SPPE SARL",
+      "CFEF": "CFEF",
+      "OTHER": "Autre"
     },
-    "stepStatus": {
-      "notStarted": "Non commencé",
-      "inProgress": "En cours",
-      "completed": "Terminé",
-      "blocked": "Bloqué"
+    "roles": {
+      "CHEF_FILE": "Chef de file",
+      "MEMBRE_GROUPEMENT": "Membre du groupement",
+      "CFEF_CONTRACTANT": "Contractant CFEF",
+      "SOUS_TRAITANT": "Sous-traitant"
+    }
+  },
+  "contracts": {
+    "title": "Contrats",
+    "addContract": "Ajouter un contrat",
+    "editContract": "Modifier le contrat",
+    "contractNumber": "N° Contrat",
+    "totalAmount": "Montant total",
+    "startDate": "Date début",
+    "endDate": "Date fin",
+    "advancePayment": "Avance 30%",
+    "retention": "Retenue 5%",
+    "penalty": "Pénalité 1/1000",
+    "status": "Statut",
+    "paymentSchedules": "Échéancier de paiement",
+    "addPayment": "Ajouter un paiement",
+    "statusValues": {
+      "DRAFT": "Brouillon",
+      "PENDING_APPROVAL": "En attente",
+      "ACTIVE": "Actif",
+      "SUSPENDED": "Suspendu",
+      "COMPLETED": "Terminé",
+      "TERMINATED": "Résilié"
+    },
+    "paymentStatus": {
+      "PENDING": "En attente",
+      "PARTIAL": "Partiel",
+      "PAID": "Payé",
+      "OVERDUE": "En retard"
+    }
+  },
+  "documents": {
+    "title": "Documents",
+    "addDocument": "Ajouter un document",
+    "upload": "Téléverser",
+    "types": {
+      "PLAN": "Plan",
+      "CONTRAT": "Contrat",
+      "PV_RECEPTION": "PV de réception",
+      "RAPPORT_AVANCEMENT": "Rapport d'avancement",
+      "FACTURE": "Facture",
+      "DECOMPTE": "Décompte",
+      "GARANTIE": "Garantie",
+      "AUTRE": "Autre"
     }
   },
   "devices": {
@@ -199,5 +272,28 @@
     "unauthorized": "Non autorisé",
     "validation": "Erreur de validation",
     "server": "Erreur serveur"
+  },
+  "kpis": {
+    "overview": "Vue d'ensemble",
+    "progress": "Progression",
+    "alerts": "Alertes",
+    "projects": "Projets",
+    "tasks": "Tâches",
+    "budgetExecution": "Exécution budgétaire",
+    "averageProgress": "Progression moyenne",
+    "active": "actifs",
+    "completed": "terminé(e)s",
+    "inProgress": "en cours",
+    "ofTotal": "du total",
+    "perProject": "par projet",
+    "projectCompletion": "Achèvement des projets",
+    "taskCompletion": "Achèvement des tâches",
+    "budgetUsed": "Budget utilisé",
+    "taskStatusDistribution": "Répartition des statuts de tâches",
+    "notStarted": "Non commencées",
+    "delayed": "Retardées",
+    "delayedTasks": "Tâches retardées",
+    "completionRate": "Taux d'achèvement",
+    "budgetSpent": "Budget dépensé"
   }
 }

@@ -26,8 +26,8 @@ test.describe('PDL-145T Management System', () => {
     // Click on register link/button
     await page.locator('button:has-text("Create Account")').click();
     // Check if register form elements are visible
-    await expect(page.locator('input[placeholder*="email"]')).toBeVisible();
-    await expect(page.locator('input[placeholder*="password"]')).toBeVisible();
+    await expect(page.locator('#email')).toBeVisible();
+    await expect(page.locator('#password')).toBeVisible();
     await expect(page.locator('button:has-text("Create Account")')).toBeVisible();
   });
 
@@ -51,7 +51,7 @@ test.describe('PDL-145T Management System', () => {
     await page.reload();
 
     // Check if dashboard elements are visible (this might need adjustment based on actual dashboard)
-    await expect(page.locator('text=Dashboard')).toBeVisible();
+    await expect(page.locator('[data-testid="nav-dashboard"]').first()).toBeVisible();
   });
 
   test('should handle login error', async ({ page }) => {

@@ -18,7 +18,8 @@ interface GanttChartProps {
 const statusColors: Record<TaskStatus, string> = {
   NotStarted: '#94a3b8',
   InProgress: '#3b82f6',
-  Completed: '#22c55e'
+  Completed: '#22c55e',
+  Blocked: '#ef4444'
 };
 
 export function GanttChart({ projectName, projectStart, projectEnd, tasks }: GanttChartProps): React.ReactElement {

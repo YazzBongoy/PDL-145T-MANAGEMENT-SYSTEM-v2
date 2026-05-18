@@ -118,7 +118,7 @@ export function MeasurementForm({ userId, onMeasurementCreated }: MeasurementFor
             <option value="">Select a task...</option>
             {tasks.map((task) => (
               <option key={task.TaskID} value={task.TaskID}>
-                #{task.TaskID} - {task.Description.substring(0, 50)}...
+                #{task.TaskID} - {task.Description?.substring(0, 50) || 'No description'}...
               </option>
             ))}
           </select>

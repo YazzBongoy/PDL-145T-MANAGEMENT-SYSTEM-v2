@@ -1,0 +1,187 @@
+.phase3-view {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+}
+
+.phase3-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.phase3-title-block h1 {
+  margin: 0;
+  font-size: 1.75rem;
+  color: var(--text-primary, #0f172a);
+}
+
+.phase3-title-block p {
+  margin: 0.35rem 0 0;
+  color: var(--text-secondary, #64748b);
+}
+
+.phase3-toolbar {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.phase3-input,
+.phase3-select,
+.phase3-textarea {
+  border: 1px solid var(--border-color, #d1d5db);
+  border-radius: 0.75rem;
+  padding: 0.7rem 0.9rem;
+  background: var(--surface-color, #ffffff);
+  color: var(--text-primary, #111827);
+  min-width: 180px;
+}
+
+.phase3-textarea {
+  min-height: 90px;
+  resize: vertical;
+}
+
+.phase3-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  border: 0;
+  border-radius: 0.75rem;
+  padding: 0.72rem 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  background: #2563eb;
+  color: white;
+}
+
+.phase3-button--secondary {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+.phase3-button--danger {
+  background: #dc2626;
+}
+
+.phase3-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1rem;
+}
+
+.phase3-card {
+  border: 1px solid var(--border-color, #e5e7eb);
+  border-radius: 1rem;
+  background: var(--surface-color, #ffffff);
+  padding: 1rem;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+}
+
+.phase3-card__header {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  align-items: flex-start;
+  margin-bottom: 0.75rem;
+}
+
+.phase3-card h3 {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--text-primary, #0f172a);
+}
+
+.phase3-card p {
+  color: var(--text-secondary, #64748b);
+  margin: 0.4rem 0;
+}
+
+.phase3-badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 0.25rem 0.65rem;
+  font-size: 0.75rem;
+  font-weight: 800;
+  background: #e0f2fe;
+  color: #0369a1;
+  white-space: nowrap;
+}
+
+.phase3-badge--success {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.phase3-badge--warning {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.phase3-badge--danger {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.phase3-badge--muted {
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.phase3-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-top: 0.75rem;
+}
+
+.phase3-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.85rem;
+  align-items: end;
+}
+
+.phase3-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-weight: 700;
+  color: var(--text-primary, #111827);
+}
+
+.phase3-empty,
+.phase3-error,
+.phase3-loading {
+  border: 1px dashed var(--border-color, #cbd5e1);
+  border-radius: 1rem;
+  padding: 2rem;
+  text-align: center;
+  color: var(--text-secondary, #64748b);
+}
+
+.phase3-error {
+  border-color: #fecaca;
+  color: #991b1b;
+  background: #fef2f2;
+}
+
+@media (max-width: 768px) {
+  .phase3-header {
+    flex-direction: column;
+  }
+
+  .phase3-toolbar,
+  .phase3-input,
+  .phase3-select,
+  .phase3-button {
+    width: 100%;
+  }
+}

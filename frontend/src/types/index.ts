@@ -17,7 +17,8 @@ export type UserRole = typeof UserRole[keyof typeof UserRole];
 export const TaskStatus = {
   NOT_STARTED: 'NotStarted',
   IN_PROGRESS: 'InProgress',
-  COMPLETED: 'Completed'
+  COMPLETED: 'Completed',
+  BLOCKED: 'Blocked'
 } as const;
 
 export type TaskStatus = typeof TaskStatus[keyof typeof TaskStatus];
@@ -49,9 +50,9 @@ export interface Task {
   TaskID: number;
   ProjectID: number;
   Name: string;
-  Description: string;
-  Duration?: number;
-  AssignedTo?: string;
+  Description: string | null;
+  Duration?: number | null;
+  AssignedTo?: string | null;
   CompletionStatus: TaskStatus;
   ouvrageType?: OuvrageType;
   progressPercentage?: number;
@@ -230,4 +231,211 @@ export interface Device {
   Cost?: number;
   CreatedAt: string;
   UpdatedAt: string;
+}
+
+// Phase 2: Enterprise Types
+export const EnterpriseType = {
+  ASCAT_SARL: 'ASCAT_SARL',
+  SPPE_SARL: 'SPPE_SARL',
+  CFEF: 'CFEF',
+  OTHER: 'OTHER'
+} as const;
+export type EnterpriseType = typeof EnterpriseType[keyof typeof EnterpriseType];
+
+export const EnterpriseRole = {
+  CHEF_FILE: 'CHEF_FILE',
+  MEMBRE_GROUPEMENT: 'MEMBRE_GROUPEMENT',
+  CFEF_CONTRACTANT: 'CFEF_CONTRACTANT',
+  SOUS_TRAITANT: 'SOUS_TRAITANT'
+} as const;
+export type EnterpriseRole = typeof EnterpriseRole[keyof typeof EnterpriseRole];
+
+export interface Enterprise {
+  EnterpriseID: number;
+  Name: string;
+  Type: EnterpriseType;
+  Role: EnterpriseRole;
+  ContactEmail?: string;
+  ContactPhone?: string;
+  Address?: string;
+  TaxID?: string;
+  CreatedAt: string;
+  UpdatedAt: string;
+}
+
+export interface ProjectEnterprise {
+  ProjectID: number;
+  EnterpriseID: number;
+  Role: EnterpriseRole;
+  JoinedAt: string;
+  Enterprise: Enterprise;
+}
+
+// Phase 2: Contract Types
+export const ContractStatus = {
+  DRAFT: 'DRAFT',
+  PENDING_APPROVAL: 'PENDING_APPROVAL',
+  ACTIVE: 'ACTIVE',
+  SUSPENDED: 'SUSPENDED',
+  COMPLETED: 'COMPLETED',
+  TERMINATED: 'TERMINATED'
+} as const;
+export type ContractStatus = typeof ContractStatus[keyof typeof ContractStatus];
+
+export const PaymentStatus = {
+  PENDING: 'PENDING',
+  PARTIAL: 'PARTIAL',
+  PAID: 'PAID',
+  OVERDUE: 'OVERDUE'
+} as const;
+export type PaymentStatus = typeof PaymentStatus[keyof typeof PaymentStatus];
+
+export interface Contract {
+  ContractID: number;
+  ContractNumber: string;
+  ProjectID: number;
+  EnterpriseID: number;
+  Title: string;
+  TotalAmount: number;
+  StartDate: string;
+  EndDate?: string;
+  Status: ContractStatus;
+  AdvancePayment?: number;
+  RetentionRate?: number;
+  PenaltyRate?: number;
+  Description?: string;
+  CreatedAt: string;
+  UpdatedAt: string;
+  Enterprise?: Enterprise;
+  Project?: Project;
+  PaymentSchedules?: PaymentSchedule[];
+  Documents?: Document[];
+}
+
+export interface PaymentSchedule {
+  ScheduleID: number;
+  ContractID: number;
+  Description?: string;
+  Amount: number;
+  DueDate: string;
+  PaidAmount?: number;
+  PaidDate?: string;
+  Status: PaymentStatus;
+  CreatedAt: string;
+}
+
+// Phase 2: Document Types
+export const DocumentType = {
+  PLAN: 'PLAN',
+  CONTRAT: 'CONTRAT',
+  PV_RECEPTION: 'PV_RECEPTION',
+  RAPPORT_AVANCEMENT: 'RAPPORT_AVANCEMENT',
+  FACTURE: 'FACTURE',
+  DECOMPTE: 'DECOMPTE',
+  GARANTIE: 'GARANTIE',
+  AUTRE: 'AUTRE'
+} as const;
+export type DocumentType = typeof DocumentType[keyof typeof DocumentType];
+
+export interface Document {
+  DocumentID: number;
+  ContractID?: number;
+  ProjectID?: number;
+  Name: string;
+  Type: DocumentType;
+  URL: string;
+  Version: number;
+  Size?: number;
+  MimeType?: string;
+  UploadedBy: number;
+  UploadedAt: string;
+  UpdatedAt: string;
+}
+
+export const UserStatus = {
+  ACTIVE: 'ACTIVE',
+  INACTIVE: 'INACTIVE',
+  SUSPENDED: 'SUSPENDED',
+  DELETED: 'DELETED'
+} as const;
+export type UserStatus = typeof UserStatus[keyof typeof UserStatus];
+
+export const NotificationType = {
+  INFO: 'INFO',
+  SUCCESS: 'SUCCESS',
+  WARNING: 'WARNING',
+  ERROR: 'ERROR',
+  TASK_ASSIGNED: 'TASK_ASSIGNED',
+  TASK_COMPLETED: 'TASK_COMPLETED',
+  APPROVAL_REQUIRED: 'APPROVAL_REQUIRED',
+  APPROVAL_GRANTED: 'APPROVAL_GRANTED',
+  APPROVAL_REJECTED: 'APPROVAL_REJECTED',
+  REPORT_GENERATED: 'REPORT_GENERATED',
+  SYSTEM: 'SYSTEM'
+} as const;
+export type NotificationType = typeof NotificationType[keyof typeof NotificationType];
+
+export interface ManagedUser extends User {
+  status: UserStatus;
+  avatar?: string;
+  lastLoginAt?: string;
+  createdAt: string;
+  updatedAt?: string;
+}
+
+export interface UserActivity {
+  id: number;
+  userId: number;
+  action: string;
+  entityType?: string;
+  entityId?: number;
+  ipAddress?: string;
+  userAgent?: string;
+  metadata?: Record<string, unknown>;
+  createdAt: string;
+}
+
+export interface Notification {
+  id: number;
+  userId: number;
+  type: NotificationType;
+  title: string;
+  message: string;
+  isRead: boolean;
+  readAt?: string;
+  metadata?: Record<string, unknown>;
+  createdAt: string;
+  expiresAt?: string;
+}
+
+export interface Permission {
+  id: number;
+  name: string;
+  description?: string;
+  module: string;
+  action: string;
+  createdAt: string;
+  updatedAt?: string;
+}
+
+export interface UserPermission {
+  userId: number;
+  permissionId: number;
+  grantedBy?: number;
+  grantedAt: string;
+  revokedAt?: string;
+  permission?: Permission;
+  user?: Pick<ManagedUser, 'id' | 'name' | 'email'>;
+}
+
+export interface ReportTemplate {
+  id: number;
+  name: string;
+  description?: string;
+  module: string;
+  config: Record<string, unknown>;
+  isPublic: boolean;
+  createdBy: number;
+  createdAt: string;
+  updatedAt?: string;
 }

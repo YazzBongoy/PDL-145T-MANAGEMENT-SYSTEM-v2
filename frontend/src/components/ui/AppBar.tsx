@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { BarChart3, Wrench, TrendingUp, Settings, X, FolderTree, FolderOpen, CheckCircle, Search, Command } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { BarChart3, Wrench, TrendingUp, Settings, X, FolderTree, FolderOpen, CheckCircle, Search, Command, Building2, FileText, Clipboard, Users, Bell, KeyRound, FileBarChart } from 'lucide-react';
 import { Logo } from './Logo';
 import { GlobalSearch } from '../GlobalSearch';
 import type { User } from '../../types';
@@ -12,6 +13,7 @@ interface AppBarProps {
 }
 
 export function AppBar({ user, currentView = 'dashboard', onViewChange, onLogout }: AppBarProps): React.ReactElement {
+  const { t } = useTranslation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -19,13 +21,20 @@ export function AppBar({ user, currentView = 'dashboard', onViewChange, onLogout
   const userMenuRef = useRef<HTMLDivElement>(null);
 
   const navItems = [
-    { key: 'dashboard', label: 'Dashboard', icon: BarChart3 },
-    { key: 'programs', label: 'Programs', icon: FolderTree },
-    { key: 'projects', label: 'Projects', icon: FolderOpen },
-    { key: 'tasks', label: 'Tasks', icon: CheckCircle },
-    { key: 'devices', label: 'Devices', icon: Wrench },
-    { key: 'reports', label: 'Reports', icon: TrendingUp },
-    { key: 'settings', label: 'Settings', icon: Settings },
+    { key: 'dashboard', label: t('nav.dashboard'), icon: BarChart3 },
+    { key: 'programs', label: t('nav.programs'), icon: FolderTree },
+    { key: 'projects', label: t('nav.projects'), icon: FolderOpen },
+    { key: 'tasks', label: t('nav.tasks'), icon: CheckCircle },
+    { key: 'enterprises', label: t('enterprises.title'), icon: Building2 },
+    { key: 'contracts', label: t('contracts.title'), icon: Clipboard },
+    { key: 'documents', label: t('documents.title'), icon: FileText },
+    { key: 'users', label: 'Users', icon: Users },
+    { key: 'notifications', label: 'Notifications', icon: Bell },
+    { key: 'permissions', label: 'Permissions', icon: KeyRound },
+    { key: 'advanced-reports', label: 'Advanced Reports', icon: FileBarChart },
+    { key: 'devices', label: t('nav.devices'), icon: Wrench },
+    { key: 'reports', label: t('nav.reports'), icon: TrendingUp },
+    { key: 'settings', label: t('nav.settings'), icon: Settings },
   ];
 
   const handleNavClick = (view: string): void => {
@@ -117,10 +126,10 @@ export function AppBar({ user, currentView = 'dashboard', onViewChange, onLogout
             <button
               onClick={() => setSearchOpen(true)}
               className="app-bar__search-button"
-              aria-label="Search (Cmd+K)"
+              aria-label={`${t('common.search')} (Cmd+K)`}
             >
               <Search size={18} />
-              <span className="search-text">Search</span>
+              <span className="search-text">{t('common.search')}</span>
               <kbd className="keyboard-shortcut">
                 <Command size={12} />
                 <span>K</span>
@@ -165,11 +174,11 @@ export function AppBar({ user, currentView = 'dashboard', onViewChange, onLogout
                     <span className="app-bar__user-email">{user.email}</span>
                   </div>
                   <div className="app-bar__user-actions">
-                    <button className="app-bar__user-action">Profile</button>
-                    <button className="app-bar__user-action">Preferences</button>
+                    <button className="app-bar__user-action">{t('nav.profile')}</button>
+                    <button className="app-bar__user-action">{t('nav.preferences')}</button>
                     <hr className="app-bar__separator" />
                     <button onClick={onLogout} className="app-bar__user-action app-bar__user-action--danger">
-                      Sign Out
+                      {t('nav.logout')}
                     </button>
                   </div>
                 </div>
@@ -182,7 +191,7 @@ export function AppBar({ user, currentView = 'dashboard', onViewChange, onLogout
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             className="app-bar__mobile-menu-button"
             aria-expanded={mobileMenuOpen}
-            aria-label="Toggle menu"
+            aria-label={t('common.actions')}
           >
             <svg className="app-bar__hamburger" viewBox="0 0 24 24" fill="none" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
@@ -208,7 +217,7 @@ export function AppBar({ user, currentView = 'dashboard', onViewChange, onLogout
               <button
                 onClick={() => setMobileMenuOpen(false)}
                 className="app-bar__mobile-close"
-                aria-label="Close menu"
+                aria-label={t('common.close')}
               >
                 <X size={24} />
               </button>
@@ -244,10 +253,10 @@ export function AppBar({ user, currentView = 'dashboard', onViewChange, onLogout
                   </div>
                 </div>
                 <div className="app-bar__mobile-user-actions">
-                  <button className="app-bar__mobile-user-action">Profile</button>
-                  <button className="app-bar__mobile-user-action">Preferences</button>
+                  <button className="app-bar__mobile-user-action">{t('nav.profile')}</button>
+                  <button className="app-bar__mobile-user-action">{t('nav.preferences')}</button>
                   <button onClick={onLogout} className="app-bar__mobile-user-action app-bar__mobile-user-action--danger">
-                    Sign Out
+                    {t('nav.logout')}
                   </button>
                 </div>
               </div>

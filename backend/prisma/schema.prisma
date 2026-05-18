@@ -35,6 +35,9 @@ model Project {
   Sprints          Sprint[]
   Tasks            Task[]
   Program          Program           @relation(fields: [ProgramID], references: [ProgramID])
+  Documents        Document[]
+  Contracts        Contract[]
+  ProjectEnterprises ProjectEnterprise[]
 }
 
 model Task {
@@ -185,6 +188,9 @@ model User {
   email                String                @unique
   passwordHash         String
   role                 UserRole              @default(USER)
+  status               UserStatus            @default(ACTIVE)
+  avatar               String?
+  lastLoginAt          DateTime?
   createdAt            DateTime              @default(now())
   updatedAt            DateTime              @updatedAt
   level1Approvals      ApprovalWorkflow[]    @relation("level1Approver")
@@ -195,6 +201,10 @@ model User {
   expenseHistories     ExpenseHistory[]
   reconciliationAudits ReconciliationAudit[]
   settings             UserSettings?
+  activities           UserActivity[]
+  notifications        Notification[]
+  userPermissions      UserPermission[]
+  reportTemplates      ReportTemplate[]
 }
 
 model UserSettings {
@@ -397,6 +407,225 @@ enum ValidationStatus {
   Rejected
 }
 
+// Phase 2: Enterprise Management
+model Enterprise {
+  EnterpriseID    Int               @id @default(autoincrement())
+  Name            String
+  Type            EnterpriseType
+  Role            EnterpriseRole
+  ContactEmail    String?
+  ContactPhone    String?
+  Address         String?
+  TaxID           String?           @unique
+  CreatedAt       DateTime          @default(now())
+  UpdatedAt       DateTime          @updatedAt
+  Contracts       Contract[]
+  ProjectEnterprises ProjectEnterprise[]
+}
+
+model ProjectEnterprise {
+  ProjectID    Int
+  EnterpriseID Int
+  Role         EnterpriseRole
+  JoinedAt     DateTime       @default(now())
+  Project      Project        @relation(fields: [ProjectID], references: [ProjectID], onDelete: Cascade)
+  Enterprise   Enterprise     @relation(fields: [EnterpriseID], references: [EnterpriseID], onDelete: Cascade)
+
+  @@id([ProjectID, EnterpriseID])
+  @@index([ProjectID])
+  @@index([EnterpriseID])
+}
+
+// Phase 2: Contract Management
+model Contract {
+  ContractID       Int             @id @default(autoincrement())
+  ContractNumber   String          @unique
+  ProjectID        Int
+  EnterpriseID     Int
+  Title            String
+  TotalAmount      Decimal
+  StartDate        DateTime
+  EndDate          DateTime?
+  Status           ContractStatus  @default(DRAFT)
+  AdvancePayment   Decimal?        @default(0) // Avance 30%
+  RetentionRate    Decimal?        @default(5) // Retenue 5%
+  PenaltyRate      Decimal?        @default(0.1) // Pénalité 1/1000
+  Description      String?
+  CreatedAt        DateTime        @default(now())
+  UpdatedAt        DateTime        @updatedAt
+  Project          Project         @relation(fields: [ProjectID], references: [ProjectID])
+  Enterprise       Enterprise      @relation(fields: [EnterpriseID], references: [EnterpriseID])
+  Documents        Document[]
+  PaymentSchedules PaymentSchedule[]
+
+  @@index([ProjectID])
+  @@index([EnterpriseID])
+  @@index([Status])
+}
+
+model PaymentSchedule {
+  ScheduleID    Int             @id @default(autoincrement())
+  ContractID    Int
+  Description   String?
+  Amount        Decimal
+  DueDate       DateTime
+  PaidAmount    Decimal?        @default(0)
+  PaidDate      DateTime?
+  Status        PaymentStatus   @default(PENDING)
+  CreatedAt     DateTime        @default(now())
+  Contract      Contract        @relation(fields: [ContractID], references: [ContractID], onDelete: Cascade)
+
+  @@index([ContractID])
+  @@index([DueDate])
+}
+
+// Phase 2: Document Management
+model Document {
+  DocumentID   Int            @id @default(autoincrement())
+  ContractID   Int?
+  ProjectID    Int?
+  Name         String
+  Type         DocumentType
+  URL          String
+  Version      Int            @default(1)
+  Size         Int?
+  MimeType     String?
+  UploadedBy   Int
+  UploadedAt   DateTime       @default(now())
+  UpdatedAt    DateTime       @updatedAt
+  Contract     Contract?      @relation(fields: [ContractID], references: [ContractID])
+  Project      Project?       @relation(fields: [ProjectID], references: [ProjectID])
+
+  @@index([ContractID])
+  @@index([ProjectID])
+  @@index([Type])
+}
+
+// Phase 3: User Activity Tracking
+model UserActivity {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  action      String
+  entityType  String?
+  entityId    Int?
+  ipAddress   String?
+  userAgent   String?
+  metadata    Json?
+  createdAt   DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([createdAt])
+  @@index([entityType, entityId])
+}
+
+// Phase 3: Notifications
+model Notification {
+  id          Int              @id @default(autoincrement())
+  userId      Int
+  type        NotificationType
+  title       String
+  message     String
+  isRead      Boolean          @default(false)
+  readAt      DateTime?
+  metadata    Json?
+  createdAt   DateTime         @default(now())
+  expiresAt   DateTime?
+  user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([isRead])
+  @@index([createdAt])
+}
+
+// Phase 3: Permissions
+model Permission {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  description String?
+  module      String
+  action      String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  userPermissions UserPermission[]
+
+  @@index([module])
+}
+
+model UserPermission {
+  userId       Int
+  permissionId Int
+  grantedBy    Int?
+  grantedAt    DateTime @default(now())
+  revokedAt    DateTime?
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@id([userId, permissionId])
+  @@index([userId])
+  @@index([permissionId])
+}
+
+// Phase 3: Report Templates
+model ReportTemplate {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String?
+  module      String
+  config      Json
+  isPublic    Boolean  @default(false)
+  createdBy   Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  creator     User     @relation(fields: [createdBy], references: [id])
+
+  @@index([module])
+  @@index([isPublic])
+  @@index([createdBy])
+}
+
+// Enums for Phase 2
+enum EnterpriseType {
+  ASCAT_SARL
+  SPPE_SARL
+  CFEF
+  OTHER
+}
+
+enum EnterpriseRole {
+  CHEF_FILE
+  MEMBRE_GROUPEMENT
+  CFEF_CONTRACTANT
+  SOUS_TRAITANT
+}
+
+enum ContractStatus {
+  DRAFT
+  PENDING_APPROVAL
+  ACTIVE
+  SUSPENDED
+  COMPLETED
+  TERMINATED
+}
+
+enum PaymentStatus {
+  PENDING
+  PARTIAL
+  PAID
+  OVERDUE
+}
+
+enum DocumentType {
+  PLAN
+  CONTRAT
+  PV_RECEPTION
+  RAPPORT_AVANCEMENT
+  FACTURE
+  DECOMPTE
+  GARANTIE
+  AUTRE
+}
+
 enum SiteType {
   CENTRE_DE_SANTE
   ECOLE_PRIMAIRE
@@ -454,4 +683,26 @@ enum ReconciliationStatus {
   Discrepancy
   Pending
   Resolved
+}
+
+// Phase 3 Enums
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+  DELETED
+}
+
+enum NotificationType {
+  INFO
+  SUCCESS
+  WARNING
+  ERROR
+  TASK_ASSIGNED
+  TASK_COMPLETED
+  APPROVAL_REQUIRED
+  APPROVAL_GRANTED
+  APPROVAL_REJECTED
+  REPORT_GENERATED
+  SYSTEM
 }

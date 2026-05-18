@@ -13,6 +13,10 @@ import { SettingsView } from './components/Settings';
 import { ProgramsView } from './components/Programs';
 import { ProjectsView } from './components/Projects/ProjectsView';
 import { TasksView } from './components/Tasks/TasksView';
+import { EnterprisesView } from './components/Enterprises/EnterprisesView';
+import { ContractsView } from './components/Contracts/ContractsView';
+import { DocumentsView } from './components/Documents/DocumentsView';
+import { AdvancedReportsView, NotificationsView, PermissionsView, UserManagementView } from './components/Phase3';
 
 function App(): React.ReactElement {
   const [authError, setAuthError] = useState<string | null>(null);
@@ -90,6 +94,20 @@ function App(): React.ReactElement {
         return <ProjectsView />;
       case 'tasks':
         return <TasksView />;
+      case 'enterprises':
+        return <EnterprisesView />;
+      case 'contracts':
+        return <ContractsView />;
+      case 'documents':
+        return <DocumentsView />;
+      case 'users':
+        return <UserManagementView />;
+      case 'notifications':
+        return <NotificationsView />;
+      case 'permissions':
+        return <PermissionsView />;
+      case 'advanced-reports':
+        return <AdvancedReportsView />;
       case 'dashboard':
       default:
         return <DashboardSwitcher user={user} onLogout={handleLogout} token={token} />;

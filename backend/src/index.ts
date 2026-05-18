@@ -23,6 +23,13 @@ import programRoutes from './routes/programRoutes.js';
 import projectRoutes from './routes/projectRoutes.js';
 import reportRoutes from './routes/reportRoutes.js';
 import constructionStepsRoutes from './routes/constructionStepsRoutes.js';
+import enterpriseRoutes from './routes/enterpriseRoutes.js';
+import contractRoutes from './routes/contractRoutes.js';
+import documentRoutes from './routes/documentRoutes.js';
+import userRoutes from './routes/userRoutes.js';
+import notificationRoutes from './routes/notificationRoutes.js';
+import permissionRoutes from './routes/permissionRoutes.js';
+import reportTemplateRoutes from './routes/reportTemplateRoutes.js';
 
 // Import middleware and types
 import { authenticateJWT, requireAdminOrSupervisor, errorHandler } from './middleware/index.js';
@@ -295,6 +302,13 @@ app.use('/api/programs', programRoutes);
 app.use('/api/projects', projectRoutes);
 app.use('/api/reports', reportRoutes);
 app.use('/api/construction-steps', constructionStepsRoutes);
+app.use('/api/enterprises', enterpriseRoutes);
+app.use('/api/contracts', contractRoutes);
+app.use('/api/documents', documentRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/notifications', notificationRoutes);
+app.use('/api/permissions', permissionRoutes);
+app.use('/api/report-templates', reportTemplateRoutes);
 
 // User registration
 app.post('/auth/register', async (req, res) => {

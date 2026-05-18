@@ -314,6 +314,36 @@
   cursor: not-allowed;
 }
 
+/* Task Badges */
+.task-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.ouvrage-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  background: #dbeafe;
+  color: #1e40af;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.ouvrage-badge svg {
+  flex-shrink: 0;
+}
+
+/* Progress button in task actions */
+.task-actions .btn--primary.btn--sm {
+  min-width: 48px;
+  font-weight: 600;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .tasks-view {

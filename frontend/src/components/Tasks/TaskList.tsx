@@ -78,7 +78,7 @@ export function TaskList({ projectId, user, token }: TaskListProps): React.React
 
   const handleEdit = useCallback((task: Task): void => {
     setForm({
-      Description: task.Description,
+      Description: task.Description || '',
       Duration: task.Duration?.toString() || '',
       AssignedTo: task.AssignedTo || '',
       CompletionStatus: task.CompletionStatus || TaskStatus.NOT_STARTED,

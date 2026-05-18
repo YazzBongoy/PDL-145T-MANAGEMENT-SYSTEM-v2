@@ -138,7 +138,7 @@ export function ValidationSubmission({ userId }: ValidationSubmissionProps): Rea
               <option value="">Choose a completed task...</option>
               {completedTasks.map((task) => (
                 <option key={task.TaskID} value={task.TaskID}>
-                  #{task.TaskID} - {task.Description.substring(0, 50)}...
+                  #{task.TaskID} - {task.Description?.substring(0, 50) || 'No description'}...
                 </option>
               ))}
             </select>
