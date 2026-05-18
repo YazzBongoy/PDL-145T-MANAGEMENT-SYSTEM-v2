@@ -178,22 +178,22 @@ export async function getProgramStats(req: Request, res: Response) {
 
     // Calculate statistics
     const totalProjects = program.Projects.length;
-    const totalTasks = program.Projects.reduce((acc, p) => acc + p.Tasks.length, 0);
+    const totalTasks = program.Projects.reduce((acc: number, p: any) => acc + p.Tasks.length, 0);
     const completedTasks = program.Projects.reduce(
-      (acc, p) => acc + p.Tasks.filter(t => t.CompletionStatus === 'Completed').length, 
+      (acc: number, p: any) => acc + p.Tasks.filter((t: any) => t.CompletionStatus === 'Completed').length, 
       0
     );
     const inProgressTasks = program.Projects.reduce(
-      (acc, p) => acc + p.Tasks.filter(t => t.CompletionStatus === 'InProgress').length,
+      (acc: number, p: any) => acc + p.Tasks.filter((t: any) => t.CompletionStatus === 'InProgress').length,
       0
     );
     const notStartedTasks = totalTasks - completedTasks - inProgressTasks;
 
-    const totalBudget = program.Projects.reduce((acc, p) => acc + Number(p.TotalBudget), 0);
+    const totalBudget = program.Projects.reduce((acc: number, p: any) => acc + Number(p.TotalBudget), 0);
 
     const avgProgress = totalTasks > 0 
-      ? program.Projects.reduce((acc, p) => 
-          acc + p.Tasks.reduce((tacc, t) => tacc + t.progressPercentage, 0), 0) / totalTasks
+      ? program.Projects.reduce((acc: number, p: any) => 
+          acc + p.Tasks.reduce((tacc: number, t: any) => tacc + t.progressPercentage, 0), 0) / totalTasks
       : 0;
 
     res.json({
