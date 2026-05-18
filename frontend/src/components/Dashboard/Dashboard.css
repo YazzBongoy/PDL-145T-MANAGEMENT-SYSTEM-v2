@@ -17,11 +17,9 @@
 
 .dashboard-header h2 {
   margin: 0;
-  font-size: var(--font-size-6);
-  font-weight: var(--font-weight-extrabold);
-  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
 }
 
 /* Dashboard Grid - Responsive Layout */
@@ -35,18 +33,17 @@
 .dashboard-card {
   background-color: var(--color-bg-surface);
   border-radius: var(--radius-md);
-  padding: var(--space-5);
-  box-shadow: var(--shadow-lg);
-  border: none;
+  padding: var(--space-6);
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--color-gray-200);
   width: 100%;
   box-sizing: border-box;
   text-align: center;
 }
 
 .dashboard-card:hover {
-  box-shadow: var(--shadow-xl);
-  transform: translateY(-2px);
-  transition: box-shadow var(--transition-fast), transform var(--transition-fast);
+  border-color: var(--color-gray-300);
+  transition: border-color var(--transition-base);
 }
 
 .dashboard-actions {
@@ -197,14 +194,14 @@
 
 /* Card content styling */
 .dashboard-card h3 {
-  font-size: var(--font-size-5);
-  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-medium);
   margin-bottom: var(--space-3);
   color: var(--color-text-primary);
 }
 
 .dashboard-card p {
-  font-size: var(--font-size-3);
+  font-size: var(--font-size-base);
   color: var(--color-text-secondary);
   line-height: var(--line-height-relaxed);
   margin-bottom: var(--space-3);
@@ -213,12 +210,10 @@
 /* Card icons or status indicators */
 .dashboard-card .status-badge {
   display: inline-block;
-  padding: var(--space-1) var(--space-3);
-  border-radius: var(--radius-full);
-  font-size: var(--font-size-2);
-  font-weight: var(--font-weight-semibold);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
   margin-top: var(--space-2);
 }
 

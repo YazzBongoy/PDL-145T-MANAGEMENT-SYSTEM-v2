@@ -15,13 +15,14 @@
 
 .phase3-title-block h1 {
   margin: 0;
-  font-size: 1.75rem;
-  color: var(--text-primary, #0f172a);
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
 }
 
 .phase3-title-block p {
-  margin: 0.35rem 0 0;
-  color: var(--text-secondary, #64748b);
+  margin: var(--space-2) 0 0;
+  color: var(--color-text-secondary);
 }
 
 .phase3-toolbar {
@@ -34,12 +35,13 @@
 .phase3-input,
 .phase3-select,
 .phase3-textarea {
-  border: 1px solid var(--border-color, #d1d5db);
-  border-radius: 0.75rem;
-  padding: 0.7rem 0.9rem;
-  background: var(--surface-color, #ffffff);
-  color: var(--text-primary, #111827);
+  border: 1px solid var(--color-gray-300);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  background: var(--color-white);
+  color: var(--color-text-primary);
   min-width: 180px;
+  transition: border-color var(--transition-base);
 }
 
 .phase3-textarea {
@@ -51,23 +53,24 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.45rem;
+  gap: var(--space-2);
   border: 0;
-  border-radius: 0.75rem;
-  padding: 0.72rem 1rem;
-  font-weight: 700;
+  border-radius: var(--radius-md);
+  padding: var(--space-4) var(--space-6);
+  font-weight: var(--font-weight-medium);
   cursor: pointer;
-  background: #2563eb;
+  background: var(--color-button-primary);
   color: white;
+  transition: background-color var(--transition-base);
 }
 
 .phase3-button--secondary {
-  background: #e2e8f0;
-  color: #0f172a;
+  background: var(--color-button-secondary);
+  color: var(--color-white);
 }
 
 .phase3-button--danger {
-  background: #dc2626;
+  background: var(--color-button-danger);
 }
 
 .phase3-grid {
@@ -77,11 +80,11 @@
 }
 
 .phase3-card {
-  border: 1px solid var(--border-color, #e5e7eb);
-  border-radius: 1rem;
-  background: var(--surface-color, #ffffff);
-  padding: 1rem;
-  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+  border: 1px solid var(--color-gray-200);
+  border-radius: var(--radius-md);
+  background: var(--color-white);
+  padding: var(--space-6);
+  box-shadow: var(--shadow-md);
 }
 
 .phase3-card__header {
@@ -94,45 +97,46 @@
 
 .phase3-card h3 {
   margin: 0;
-  font-size: 1rem;
-  color: var(--text-primary, #0f172a);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
 }
 
 .phase3-card p {
-  color: var(--text-secondary, #64748b);
-  margin: 0.4rem 0;
+  color: var(--color-text-secondary);
+  margin: var(--space-2) 0;
 }
 
 .phase3-badge {
   display: inline-flex;
   align-items: center;
-  border-radius: 999px;
-  padding: 0.25rem 0.65rem;
-  font-size: 0.75rem;
-  font-weight: 800;
-  background: #e0f2fe;
-  color: #0369a1;
+  border-radius: var(--radius-sm);
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  background: var(--color-gray-100);
+  color: var(--color-gray-700);
   white-space: nowrap;
 }
 
 .phase3-badge--success {
-  background: #dcfce7;
-  color: #166534;
+  background: var(--color-success-bg);
+  color: var(--color-success);
 }
 
 .phase3-badge--warning {
-  background: #fef3c7;
-  color: #92400e;
+  background: var(--color-warning-bg);
+  color: var(--color-warning);
 }
 
 .phase3-badge--danger {
-  background: #fee2e2;
-  color: #991b1b;
+  background: var(--color-error-bg);
+  color: var(--color-error);
 }
 
 .phase3-badge--muted {
-  background: #f1f5f9;
-  color: #475569;
+  background: var(--color-gray-100);
+  color: var(--color-gray-600);
 }
 
 .phase3-actions {
@@ -152,9 +156,9 @@
 .phase3-form label {
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
-  font-weight: 700;
-  color: var(--text-primary, #111827);
+  gap: var(--space-2);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
 }
 
 .phase3-empty,

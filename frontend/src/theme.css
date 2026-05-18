@@ -3,71 +3,59 @@
 
 :root {
   /* Modern Professional Color Palette */
-  /* Primary - Modern Blue (Trust, Innovation, Technology) */
-  --color-primary: #2563eb; /* Blue-600 */
-  --color-primary-50: #eff6ff;
-  --color-primary-100: #dbeafe;
-  --color-primary-200: #bfdbfe;
-  --color-primary-300: #93c5fd;
-  --color-primary-400: #60a5fa;
-  --color-primary-500: #3b82f6;
-  --color-primary-600: #2563eb;
-  --color-primary-700: #1d4ed8;
-  --color-primary-800: #1e40af;
-  --color-primary-900: #1e3a8a;
-  --color-primary-950: #172554;
+  /* Primary - Muted Slate (Professional, Clean, Minimal) */
+  --color-primary: #475569; /* Slate-600 */
+  --color-primary-50: #f8fafc;
+  --color-primary-100: #f1f5f9;
+  --color-primary-200: #e2e8f0;
+  --color-primary-300: #cbd5e1;
+  --color-primary-400: #94a3b8;
+  --color-primary-500: #64748b;
+  --color-primary-600: #475569;
+  --color-primary-700: #334155;
+  --color-primary-800: #1e293b;
+  --color-primary-900: #0f172a;
+  --color-primary-950: #020617;
   
-  /* Secondary - Emerald Green (Success, Growth, Reliability) */
-  --color-secondary: #059669; /* Emerald-600 */
-  --color-secondary-50: #ecfdf5;
-  --color-secondary-100: #d1fae5;
-  --color-secondary-200: #a7f3d0;
-  --color-secondary-300: #6ee7b7;
-  --color-secondary-400: #34d399;
-  --color-secondary-500: #10b981;
-  --color-secondary-600: #059669;
-  --color-secondary-700: #047857;
-  --color-secondary-800: #065f46;
-  --color-secondary-900: #064e3b;
-  --color-secondary-950: #022c22;
+  /* Secondary - Muted Slate (Consistent, Professional) */
+  --color-secondary: #64748b; /* Slate-500 */
+  --color-secondary-50: #f8fafc;
+  --color-secondary-100: #f1f5f9;
+  --color-secondary-200: #e2e8f0;
+  --color-secondary-300: #cbd5e1;
+  --color-secondary-400: #94a3b8;
+  --color-secondary-500: #64748b;
+  --color-secondary-600: #475569;
+  --color-secondary-700: #334155;
+  --color-secondary-800: #1e293b;
+  --color-secondary-900: #0f172a;
+  --color-secondary-950: #020617;
   
-  /* Accent - Violet Purple (Premium, Innovation, Creativity) */
-  --color-accent: #7c3aed; /* Violet-600 */
-  --color-accent-50: #f5f3ff;
-  --color-accent-100: #ede9fe;
-  --color-accent-200: #ddd6fe;
-  --color-accent-300: #c4b5fd;
-  --color-accent-400: #a78bfa;
-  --color-accent-500: #8b5cf6;
-  --color-accent-600: #7c3aed;
-  --color-accent-700: #6d28d9;
-  --color-accent-800: #5b21b6;
-  --color-accent-900: #4c1d95;
-  --color-accent-950: #2e1065;
+  /* Accent - Removed for minimal design */
   
   --color-bg: #f9fafb; /* Refined light background */
   --color-surface: #f8fafc; /* Slightly cooler white */
   --color-bg-surface: #ffffff; /* Pure white for cards */
   
-  /* Status Colors - Enhanced for better visibility */
-  --color-error: #ef4444; /* Vibrant red */
-  --color-error-dark: #dc2626; /* Darker error red for hover */
-  --color-error-bg: #fee2e2;
+  /* Status Colors - Muted for professional appearance */
+  --color-error: #b91c1c; /* Darker red */
+  --color-error-dark: #991b1b; /* Darker error red for hover */
+  --color-error-bg: #fef2f2;
   --color-error-border: #fecaca;
   
-  --color-success: #22c55e; /* Vibrant green */
-  --color-success-dark: #16a34a;
-  --color-success-bg: #dcfce7;
+  --color-success: #15803d; /* Darker green */
+  --color-success-dark: #166534;
+  --color-success-bg: #f0fdf4;
   --color-success-border: #bbf7d0;
   
-  --color-warning: #f59e0b; /* Vibrant amber */
-  --color-warning-dark: #d97706;
-  --color-warning-bg: #fef3c7;
+  --color-warning: #b45309; /* Darker amber */
+  --color-warning-dark: #92400e;
+  --color-warning-bg: #fffbeb;
   --color-warning-border: #fde68a;
   
-  --color-info: #0ea5e9; /* Sky blue */
-  --color-info-dark: #0284c7;
-  --color-info-bg: #e0f2fe;
+  --color-info: #0369a1; /* Darker sky blue */
+  --color-info-dark: #075985;
+  --color-info-bg: #f0f9ff;
   --color-info-border: #bae6fd;
   
   /* Neutral Colors - Refined slate greys */
@@ -99,16 +87,16 @@
   --color-text-light: rgba(255, 255, 255, 0.95);
   --color-text-dark: #0f172a;
   
-  /* Button Colors - Modern theme */
-  --color-button-primary: #3b82f6;
-  --color-button-primary-hover: #2563eb;
-  --color-button-primary-active: #1d4ed8;
-  --color-button-secondary: #64748b;
-  --color-button-secondary-hover: #475569;
-  --color-button-secondary-active: #334155;
-  --color-button-danger: #ef4444;
-  --color-button-danger-hover: #dc2626;
-  --color-button-danger-active: #b91c1c;
+  /* Button Colors - Muted theme */
+  --color-button-primary: #475569;
+  --color-button-primary-hover: #334155;
+  --color-button-primary-active: #1e293b;
+  --color-button-secondary: #94a3b8;
+  --color-button-secondary-hover: #64748b;
+  --color-button-secondary-active: #475569;
+  --color-button-danger: #b91c1c;
+  --color-button-danger-hover: #991b1b;
+  --color-button-danger-active: #7f1d1d;
   
   /* Typography - Enhanced with Inter font */
   --font-sans: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
@@ -126,13 +114,10 @@
   --font-size-4xl: 2.25rem;    /* 36px */
   --font-size-5xl: 3rem;       /* 48px */
   
-  /* Font Weights - Standard scale */
-  --font-weight-light: 300;
+  /* Font Weights - Simplified scale */
   --font-weight-normal: 400;
   --font-weight-medium: 500;
   --font-weight-semibold: 600;
-  --font-weight-bold: 700;
-  --font-weight-extrabold: 800;
   
   /* Line Heights - Refined for better readability */
   --line-height-none: 1;
@@ -177,16 +162,11 @@
   --radius-3xl: 1.5rem;    /* 24px */
   --radius-full: 9999px;
   
-  /* Shadows - Enhanced for depth perception */
-  --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-  --shadow-base: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-  --shadow-xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-  --shadow-2xl: 0 35px 60px -15px rgba(0, 0, 0, 0.3);
+  /* Shadows - Simplified for minimal design */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   --shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
-  --shadow-outline: 0 0 0 3px rgba(59, 130, 246, 0.5);
+  --shadow-outline: 0 0 0 3px rgba(71, 85, 105, 0.5);
   
   /* Transitions */
   --transition-fast: 0.1s ease;
@@ -251,6 +231,8 @@
   --color-button-primary: var(--color-primary-600);
   --color-button-primary-hover: var(--color-primary-700);
   --color-button-primary-active: var(--color-primary-800);
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
 /* Dark Theme Override - Enhanced */
@@ -267,4 +249,6 @@
   --color-button-secondary: var(--color-gray-600);
   --color-button-secondary-hover: var(--color-gray-500);
   --color-button-secondary-active: var(--color-gray-700);
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3), 0 1px 2px 0 rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
 }

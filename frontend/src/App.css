@@ -51,9 +51,9 @@
 .app__main {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-4); /* Smaller gap on mobile */
-  padding: var(--spacing-3); /* Smaller padding on mobile */
-  max-width: 100%; /* Full width on mobile */
+  gap: var(--space-4);
+  padding: var(--space-4);
+  max-width: 100%;
   margin: 0 auto;
   width: 100%;
   box-sizing: border-box;
@@ -82,10 +82,10 @@
 
 /* Auth section - Mobile-first responsive */
 .auth-section {
-  max-width: 100%; /* Full width on mobile */
+  max-width: 100%;
   margin: 0 auto;
   width: 100%;
-  padding: var(--spacing-4);
+  padding: var(--space-6);
 }
 
 /* Login/Register forms - Mobile-optimized */
@@ -93,7 +93,7 @@
 .register-form {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-4);
+  gap: var(--space-4);
   max-width: 100%;
 }
 
@@ -101,16 +101,16 @@
 .register-form h2 {
   text-align: center;
   margin-bottom: var(--space-6);
-  color: var(--color-primary);
+  color: var(--color-text-primary);
 }
 
 /* Health check section - Mobile-first responsive */
 .health-check {
   background-color: var(--color-bg-primary);
-  border-radius: var(--radius-lg); /* Smaller radius on mobile */
-  padding: var(--spacing-4); /* Smaller padding on mobile */
-  box-shadow: var(--elevation-2);
-  margin-top: var(--spacing-4);
+  border-radius: var(--radius-md);
+  padding: var(--space-6);
+  box-shadow: var(--shadow-md);
+  margin-top: var(--space-4);
 }
 
 .health-check h2 {
@@ -123,18 +123,17 @@
 
 /* Status indicator component - Mobile-first responsive */
 .status-indicator {
-  padding: var(--spacing-3); /* Smaller padding on mobile */
+  padding: var(--space-4);
   border-radius: var(--radius-md);
-  font-weight: var(--font-weight-semibold);
-  font-size: var(--font-size-sm); /* Smaller text on mobile */
-  margin-bottom: var(--spacing-3);
+  font-weight: var(--font-weight-medium);
+  font-size: var(--font-size-sm);
+  margin-bottom: var(--space-4);
   text-align: center;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: var(--spacing-2);
-  box-shadow: var(--elevation-1);
-  /* Better touch targets on mobile */
+  gap: var(--space-2);
+  box-shadow: var(--shadow-sm);
   min-height: 44px;
 }
 
@@ -185,7 +184,7 @@
 .health-status {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-3); /* Smaller gap on mobile */
+  gap: var(--space-4);
   align-items: center;
 }
 
@@ -199,12 +198,11 @@
 .error {
   background-color: var(--color-error-bg);
   color: var(--color-error-dark);
-  padding: var(--spacing-3); /* Smaller padding on mobile */
+  padding: var(--space-4);
   border-radius: var(--radius-md);
   border: 1px solid var(--color-error-border);
-  margin-bottom: var(--spacing-3);
+  margin-bottom: var(--space-4);
   text-align: center;
-  /* Better readability on mobile */
   font-size: var(--font-size-sm);
 }
 

@@ -26,21 +26,19 @@ label {
 .input {
   display: block;
   width: 100%;
-  padding: var(--space-3) var(--space-4);
+  padding: var(--space-4);
   background-color: var(--color-white);
   border: 1px solid var(--color-gray-300);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-md);
   font-size: var(--font-size-base);
   color: var(--color-text-primary);
-  transition: all var(--transition-base);
+  transition: border-color var(--transition-base);
   line-height: var(--line-height-normal);
-  box-shadow: var(--shadow-xs);
 }
 
 .input:focus {
   outline: none;
-  border-color: var(--color-primary);
-  box-shadow: var(--shadow-outline);
+  border-color: var(--color-primary-600);
 }
 
 .input:hover:not(:focus) {
@@ -73,27 +71,25 @@ label {
 .select {
   display: block;
   width: 100%;
-  padding: var(--space-3) var(--space-4);
+  padding: var(--space-4);
   background-color: var(--color-white);
   border: 1px solid var(--color-gray-300);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-md);
   font-size: var(--font-size-base);
   color: var(--color-text-primary);
-  transition: all var(--transition-base);
+  transition: border-color var(--transition-base);
   line-height: var(--line-height-normal);
   appearance: none;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
   background-repeat: no-repeat;
-  background-position: right var(--space-3) center;
-  background-size: var(--space-5) var(--space-5);
+  background-position: right var(--space-4) center;
+  background-size: var(--space-4) var(--space-4);
   padding-right: var(--space-10);
-  box-shadow: var(--shadow-xs);
 }
 
 .select:focus {
   outline: none;
-  border-color: var(--color-primary);
-  box-shadow: var(--shadow-outline);
+  border-color: var(--color-primary-600);
 }
 
 .select:hover:not(:focus) {
@@ -104,23 +100,21 @@ label {
 .textarea {
   display: block;
   width: 100%;
-  padding: var(--space-3) var(--space-4);
+  padding: var(--space-4);
   background-color: var(--color-white);
   border: 1px solid var(--color-gray-300);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-md);
   font-size: var(--font-size-base);
   color: var(--color-text-primary);
-  transition: all var(--transition-base);
+  transition: border-color var(--transition-base);
   line-height: var(--line-height-normal);
   min-height: 120px;
   resize: vertical;
-  box-shadow: var(--shadow-xs);
 }
 
 .textarea:focus {
   outline: none;
-  border-color: var(--color-primary);
-  box-shadow: var(--shadow-outline);
+  border-color: var(--color-primary-600);
 }
 
 .textarea:hover:not(:focus) {
@@ -172,52 +166,16 @@ label {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: var(--space-3) var(--space-6);
-  border-radius: var(--radius-lg);
+  padding: var(--space-4) var(--space-6);
+  border-radius: var(--radius-md);
   font-weight: var(--font-weight-medium);
   font-size: var(--font-size-base);
   line-height: var(--line-height-normal);
   text-align: center;
   cursor: pointer;
-  transition: all var(--transition-base);
+  transition: background-color var(--transition-base), color var(--transition-base);
   border: none;
-  box-shadow: var(--shadow-sm);
   gap: var(--space-2);
-  position: relative;
-  overflow: hidden;
-}
-
-.btn::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 5px;
-  height: 5px;
-  background: rgba(255, 255, 255, 0.4);
-  opacity: 0;
-  border-radius: 100%;
-  transform: scale(1, 1) translate(-50%, -50%);
-  transform-origin: 50% 50%;
-}
-
-.btn:active::after {
-  animation: ripple 0.6s ease-out;
-}
-
-@keyframes ripple {
-  0% {
-    transform: scale(0, 0);
-    opacity: 0.5;
-  }
-  20% {
-    transform: scale(25, 25);
-    opacity: 0.3;
-  }
-  100% {
-    opacity: 0;
-    transform: scale(40, 40);
-  }
 }
 
 /* Button variants */
@@ -228,14 +186,10 @@ label {
 
 .btn--primary:hover {
   background-color: var(--color-button-primary-hover);
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
 }
 
 .btn--primary:active {
   background-color: var(--color-button-primary-active);
-  transform: translateY(0);
-  box-shadow: var(--shadow-sm);
 }
 
 .btn--secondary {
@@ -245,31 +199,24 @@ label {
 
 .btn--secondary:hover {
   background-color: var(--color-button-secondary-hover);
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
 }
 
 .btn--secondary:active {
   background-color: var(--color-button-secondary-active);
-  transform: translateY(0);
-  box-shadow: var(--shadow-sm);
 }
 
 .btn--outline {
   background-color: transparent;
   color: var(--color-button-primary);
   border: 1px solid var(--color-button-primary);
-  box-shadow: none;
 }
 
 .btn--outline:hover {
-  background-color: var(--color-primary-50);
-  transform: translateY(-1px);
+  background-color: var(--color-primary-100);
 }
 
 .btn--outline:active {
-  background-color: var(--color-primary-100);
-  transform: translateY(0);
+  background-color: var(--color-primary-200);
 }
 
 .btn--danger {
@@ -279,14 +226,10 @@ label {
 
 .btn--danger:hover {
   background-color: var(--color-button-danger-hover);
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
 }
 
 .btn--danger:active {
   background-color: var(--color-button-danger-active);
-  transform: translateY(0);
-  box-shadow: var(--shadow-sm);
 }
 
 /* Button sizes */
