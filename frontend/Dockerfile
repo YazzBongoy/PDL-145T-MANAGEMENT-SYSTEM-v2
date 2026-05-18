@@ -14,7 +14,9 @@ RUN npm install
 # Copy source code
 COPY . .
 
-# Build the application
+# Build the application with environment variable support
+ARG VITE_API_URL
+ENV VITE_API_URL=$VITE_API_URL
 RUN npm run build
 
 # Stage 2: Production stage with nginx

@@ -53,12 +53,12 @@ RUN npx prisma generate
 RUN chown -R nodejs:nodejs /app
 USER nodejs
 
-# Expose port
+# Expose port (Railway sets PORT dynamically)
 EXPOSE 3010
 
-# Health check
+# Health check (uses PORT environment variable)
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD node -e "require('http').get('http://localhost:3010/api/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) })"
+  CMD node -e "require('http').get('http://localhost:' + (process.env.PORT || 3010) + '/api/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) })"
 
-# Start the application
+# Start the application (uses PORT environment variable)
 CMD ["node", "dist/index.js"]
