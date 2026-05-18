@@ -170,9 +170,9 @@ router.get('/sprints/:id/board', authenticateJWT, async (req, res) => {
     const board = {
       sprint,
       columns: {
-        'NotStarted': sprint.Tasks.filter(t => t.CompletionStatus === 'NotStarted'),
-        'InProgress': sprint.Tasks.filter(t => t.CompletionStatus === 'InProgress'),
-        'Completed': sprint.Tasks.filter(t => t.CompletionStatus === 'Completed')
+        'NotStarted': sprint.Tasks.filter((t: any) => t.CompletionStatus === 'NotStarted'),
+        'InProgress': sprint.Tasks.filter((t: any) => t.CompletionStatus === 'InProgress'),
+        'Completed': sprint.Tasks.filter((t: any) => t.CompletionStatus === 'Completed')
       }
     };
 
