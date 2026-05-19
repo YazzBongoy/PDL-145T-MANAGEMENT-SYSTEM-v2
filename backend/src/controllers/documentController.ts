@@ -66,8 +66,8 @@ export async function getDocumentById(req: Request, res: Response) {
 // Create document
 export async function createDocument(req: Request, res: Response) {
   try {
-    const { name, type, url, projectid, contractid, size, mimetype } = normalizeBody(req.body);
-    const projectId = projectid; const contractId = contractid; const mimeType = mimetype;
+    const { name, type, url, projectID, contractID, size, mimeType } = normalizeBody(req.body);
+    const projectId = projectID; const contractId = contractID;
     const userId = (req as any).user?.id || 1;
 
     const document = await prisma.document.create({

@@ -83,8 +83,8 @@ export async function createContract(req: Request, res: Response) {
   try {
     const {
       contractNumber,
-      projectId,
-      enterpriseId,
+      projectID,
+      enterpriseID,
       title,
       totalAmount,
       startDate,
@@ -93,7 +93,8 @@ export async function createContract(req: Request, res: Response) {
       retentionRate,
       penaltyRate,
       description
-    } = req.body;
+    } = normalizeBody(req.body);
+    const projectId = projectID; const enterpriseId = enterpriseID;
 
     const contract = await prisma.contract.create({
       data: {
@@ -140,7 +141,7 @@ export async function updateContract(req: Request, res: Response) {
       retentionRate,
       penaltyRate,
       description
-    } = req.body;
+    } = normalizeBody(req.body);
 
     const updateData: any = {};
     if (title !== undefined) updateData.Title = title;
@@ -235,8 +236,7 @@ export async function getContractPaymentSchedules(req: Request, res: Response) {
 export async function createPaymentSchedule(req: Request, res: Response) {
   try {
     const { id } = req.params;
-    const { description, amount, duedate } = normalizeBody(req.body);
-    const dueDate = duedate;
+    const { description, amount, dueDate } = normalizeBody(req.body);
 
     const schedule = await prisma.paymentSchedule.create({
       data: {
@@ -258,8 +258,7 @@ export async function createPaymentSchedule(req: Request, res: Response) {
 export async function updatePaymentSchedule(req: Request, res: Response) {
   try {
     const { scheduleId } = req.params;
-    const { description, amount, duedate, paidamount, paiddate, status } = normalizeBody(req.body);
-    const dueDate = duedate; const paidAmount = paidamount; const paidDate = paiddate;
+    const { description, amount, dueDate, paidAmount, paidDate, status } = normalizeBody(req.body);
 
     const updateData: any = {};
     if (description !== undefined) updateData.Description = description;

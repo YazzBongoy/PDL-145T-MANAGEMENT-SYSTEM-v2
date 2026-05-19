@@ -79,8 +79,8 @@ export async function getEnterpriseById(req: Request, res: Response) {
 // Create enterprise
 export async function createEnterprise(req: Request, res: Response) {
   try {
-    const { name, type, role, contactemail, contactphone, address, taxid } = normalizeBody(req.body);
-    const contactEmail = contactemail; const contactPhone = contactphone; const taxId = taxid;
+    const { name, type, role, contactEmail, contactPhone, address, taxID } = normalizeBody(req.body);
+    const taxId = taxID;
 
     if (!name) { res.status(400).json({ error: 'Name is required' }); return; }
 
@@ -107,8 +107,8 @@ export async function createEnterprise(req: Request, res: Response) {
 export async function updateEnterprise(req: Request, res: Response) {
   try {
     const { id } = req.params;
-    const { name, type, role, contactemail, contactphone, address, taxid } = normalizeBody(req.body);
-    const contactEmail = contactemail; const contactPhone = contactphone; const taxId = taxid;
+    const { name, type, role, contactEmail, contactPhone, address, taxID } = normalizeBody(req.body);
+    const taxId = taxID;
 
     const enterprise = await prisma.enterprise.update({
       where: { EnterpriseID: parseInt(id) },

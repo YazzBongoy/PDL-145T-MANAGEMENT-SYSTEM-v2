@@ -84,8 +84,8 @@ export async function getStepById(req: Request, res: Response) {
 // Create a new step
 export async function createStep(req: Request, res: Response) {
   try {
-    const { taskid, steptype, name, description, order, estimatedcost } = normalizeBody(req.body);
-    const taskId = taskid; const stepType = steptype; const estimatedCost = estimatedcost;
+    const { taskID, stepType, name, description, order, estimatedCost } = normalizeBody(req.body);
+    const taskId = taskID;
     
     const step = await prisma.constructionStep.create({
       data: {
@@ -162,9 +162,7 @@ export async function createDefaultSteps(req: Request, res: Response) {
 export async function updateStep(req: Request, res: Response) {
   try {
     const { id } = req.params;
-    const { name, description, status, progresspercent, startdate, enddate, actualcost, estimatedcost } = normalizeBody(req.body);
-    const progressPercent = progresspercent; const startDate = startdate; const endDate = enddate;
-    const actualCost = actualcost; const estimatedCost = estimatedcost;
+    const { name, description, status, progressPercent, startDate, endDate, actualCost, estimatedCost } = normalizeBody(req.body);
     
     const step = await prisma.constructionStep.update({
       where: { StepID: parseInt(id) },
@@ -194,8 +192,7 @@ export async function updateStep(req: Request, res: Response) {
 export async function updateStepProgress(req: Request, res: Response) {
   try {
     const { id } = req.params;
-    const { progresspercent, status } = normalizeBody(req.body);
-    const progressPercent = progresspercent;
+    const { progressPercent, status } = normalizeBody(req.body);
     
     const step = await prisma.constructionStep.update({
       where: { StepID: parseInt(id) },
@@ -237,8 +234,7 @@ export async function deleteStep(req: Request, res: Response) {
 export async function addPhotoToStep(req: Request, res: Response) {
   try {
     const { id } = req.params;
-    const { url, caption, takenby, latitude, longitude } = normalizeBody(req.body);
-    const takenBy = takenby;
+    const { url, caption, takenBy, latitude, longitude } = normalizeBody(req.body);
     
     const photo = await prisma.constructionPhoto.create({
       data: {

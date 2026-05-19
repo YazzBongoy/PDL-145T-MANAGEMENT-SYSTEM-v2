@@ -1,9 +1,11 @@
 import { PrismaClient } from '@prisma/client';
 import { asyncHandler } from '../middleware/index.js';
+import { normalizeBody } from '../utils/normalizeBody.js';
 const prisma = new PrismaClient();
 // Create a new expense
 export const createExpense = asyncHandler(async (req, res) => {
-    const { taskId, description, cost, date } = req.body;
+    const { taskid, description, cost, date } = normalizeBody(req.body);
+    const taskId = taskid;
     if (!taskId || !description || cost === undefined) {
         res.status(400).json({ error: 'taskId, description, and cost are required' });
         return;
@@ -75,7 +77,7 @@ export const getExpensesByDateRange = asyncHandler(async (req, res) => {
 // Update expense
 export const updateExpense = asyncHandler(async (req, res) => {
     const { id } = req.params;
-    const { description, cost, date } = req.body;
+    const { description, cost, date } = normalizeBody(req.body);
     if (cost !== undefined && cost < 0) {
         res.status(400).json({ error: 'Cost cannot be negative' });
         return;

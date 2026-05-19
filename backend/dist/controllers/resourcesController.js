@@ -1,9 +1,12 @@
 import { PrismaClient } from '@prisma/client';
 import { asyncHandler } from '../middleware/index.js';
+import { normalizeBody } from '../utils/normalizeBody.js';
 const prisma = new PrismaClient();
 // Create a new resource (Device)
 export const createResource = asyncHandler(async (req, res) => {
-    const { name, type, quantity, description, status, location, serialNumber, purchaseDate, cost } = req.body;
+    const { name, type, quantity, description, status, location, serialnumber, purchasedate, cost } = normalizeBody(req.body);
+    const serialNumber = serialnumber;
+    const purchaseDate = purchasedate;
     if (!name || !type) {
         res.status(400).json({ error: 'name and type are required' });
         return;
@@ -73,7 +76,11 @@ export const getResourcesByType = asyncHandler(async (req, res) => {
 // Update resource (Device)
 export const updateResource = asyncHandler(async (req, res) => {
     const { id } = req.params;
-    const { name, type, quantity, description, status, location, serialNumber, purchaseDate, lastMaintenance, nextMaintenance, cost } = req.body;
+    const { name, type, quantity, description, status, location, serialnumber, purchasedate, lastmaintenance, nextmaintenance, cost } = normalizeBody(req.body);
+    const serialNumber = serialnumber;
+    const purchaseDate = purchasedate;
+    const lastMaintenance = lastmaintenance;
+    const nextMaintenance = nextmaintenance;
     if (quantity !== undefined && quantity < 0) {
         res.status(400).json({ error: 'Quantity cannot be negative' });
         return;
