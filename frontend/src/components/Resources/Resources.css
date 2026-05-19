@@ -17,6 +17,34 @@
   color: var(--color-text-secondary);
 }
 
+.resource-task-link-view .tabs {
+  display: flex;
+  gap: 1rem;
+  border-bottom: 2px solid var(--color-gray-200);
+}
+
+.resource-task-link-view .tab {
+  padding: 0.75rem 1.5rem;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-bottom: -2px;
+}
+
+.resource-task-link-view .tab:hover {
+  color: var(--color-text-primary);
+}
+
+.resource-task-link-view .tab.active {
+  color: var(--color-primary);
+  border-bottom-color: var(--color-primary);
+}
+
 .link-form {
   background: var(--color-bg-secondary);
   border: 1px solid var(--color-gray-200);
@@ -143,5 +171,14 @@
   
   .link-form .form-group {
     width: 100%;
+  }
+  
+  .resource-task-link-view .tabs {
+    flex-direction: column;
+  }
+  
+  .resource-task-link-view .tab {
+    width: 100%;
+    text-align: center;
   }
 }
