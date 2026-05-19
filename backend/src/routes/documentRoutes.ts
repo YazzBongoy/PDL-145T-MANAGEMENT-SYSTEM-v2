@@ -1,4 +1,5 @@
-import { Router } from 'express';
+import { Router, Request, Response, NextFunction } from 'express';
+import multer from 'multer';
 import {
   getDocuments,
   getDocumentById,
@@ -30,6 +31,21 @@ router.get('/project/:projectId', getProjectDocuments);
 router.get('/contract/:contractId', getContractDocuments);
 
 // Upload endpoint (multipart/form-data)
-router.post('/upload', upload.single('file'), uploadDocument);
+router.post('/upload',
+  (req: Request, res: Response, next: NextFunction) => {
+    upload.single('file')(req, res, (err) => {
+      if (err instanceof multer.MulterError) {
+        res.status(400).json({ error: `Fichier trop volumineux (max 500 MB)` });
+        return;
+      }
+      if (err) {
+        res.status(400).json({ error: err.message || 'Erreur upload' });
+        return;
+      }
+      next();
+    });
+  },
+  uploadDocument
+);
 
 export default router;
