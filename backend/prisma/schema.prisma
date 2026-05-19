@@ -100,9 +100,10 @@ model Resource {
   ResourceID       Int               @id @default(autoincrement())
   Type             String
   Quantity         Decimal           @default(1)
+  Unit             String?           // Unité de la ressource (m³, m², pce, H/J, etc.)
   CreatedAt        DateTime          @default(now())
   UpdatedAt        DateTime          @updatedAt
-  Cost             Decimal?
+  Cost             Decimal?          // Prix unitaire
   Description      String?
   LastMaintenance  DateTime?
   Location         String?
@@ -111,6 +112,7 @@ model Resource {
   PurchaseDate     DateTime?
   SerialNumber     String?           @unique
   Status           String            @default("active")
+  PurchaseType     String?           // Pour équipement: "LOUER" ou "ACHETER"
   ProjectResources ProjectResource[]
   TaskResources    TaskResource[]
   SiteResources    SiteResource[]
