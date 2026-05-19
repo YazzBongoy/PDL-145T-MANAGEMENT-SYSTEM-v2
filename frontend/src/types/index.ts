@@ -49,6 +49,7 @@ export interface Project {
 export interface Task {
   TaskID: number;
   ProjectID: number;
+  SiteID?: string | null;
   Name: string;
   Description: string | null;
   Duration?: number | null;
