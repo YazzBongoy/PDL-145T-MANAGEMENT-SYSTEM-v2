@@ -158,9 +158,9 @@ export function ResourceList({ user, token }: ResourceListProps): React.ReactEle
             required
             className="input"
           >
-            <option value="EQUIPEMENT">EQUIPEMENT (École / Centre de santé / Bâtiment administratif)</option>
-            <option value="PERSONNE">PERSONNE (Responsable du projet)</option>
-            <option value="ENTREPRISE">ENTREPRISE (Sous-traitant)</option>
+            <option value="PERSONNE">PERSONNE (Ressource Humaine - H/J)</option>
+            <option value="EQUIPEMENT">EQUIPEMENT (Matériel/Équipement)</option>
+            <option value="MATÉRIEL">MATÉRIEL (Manufacturé ou Local)</option>
           </select>
           
           <label htmlFor="resource-quantity">Quantité *</label>
