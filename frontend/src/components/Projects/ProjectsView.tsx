@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Plus, Search, FolderOpen, Calendar, DollarSign, Loader2, AlertCircle, Edit2, Trash2, ChevronLeft, ListTodo } from 'lucide-react';
+import { Plus, Search, FolderOpen, Calendar, DollarSign, Loader2, AlertCircle, Edit2, Trash2, ListTodo } from 'lucide-react';
 import './Projects.css';
 import { getApiUrl } from '../../api/config';
 
@@ -89,11 +89,10 @@ const deleteProject = async (id: number): Promise<void> => {
   }
 };
 
-export function ProjectsView() {
+export function ProjectsView({ onNavigateToTasks }: { onNavigateToTasks?: (projectId: number) => void } = {}) {
   const [searchQuery, setSearchQuery] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProject, setEditingProject] = useState<Project | null>(null);
-  const [viewingProject, setViewingProject] = useState<Project | null>(null);
   
   const queryClient = useQueryClient();
 
@@ -167,27 +166,10 @@ export function ProjectsView() {
   };
 
   const handleViewTasks = (project: Project) => {
-    setViewingProject(project);
+    if (onNavigateToTasks) {
+      onNavigateToTasks(project.ProjectID);
+    }
   };
-
-  if (viewingProject) {
-    return (
-      <div className="projects-view">
-        <div className="section-header">
-          <button className="btn btn--secondary" onClick={() => setViewingProject(null)}>
-            <ChevronLeft size={16} />
-            Back to Projects
-          </button>
-          <h2>{viewingProject.Name}</h2>
-        </div>
-        <div className="project-detail">
-          <p>Project details and task management would be displayed here.</p>
-          <p>Program: {viewingProject.Program?.Name || 'N/A'}</p>
-          <p>Budget: ${viewingProject.TotalBudget}</p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="projects-view">

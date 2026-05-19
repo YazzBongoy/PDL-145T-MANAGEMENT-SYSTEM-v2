@@ -24,6 +24,7 @@ function App(): React.ReactElement {
   const [registerError, setRegisterError] = useState<string | null>(null);
   const [showRegister, setShowRegister] = useState(false);
   const [currentView, setCurrentView] = useState<string>('dashboard');
+  const [selectedProjectId, setSelectedProjectId] = useState<number | undefined>(undefined);
   useTheme(); // Initialize theme
   const [token, setToken] = useState<string | null>(() => localStorage.getItem('token'));
   const [user, setUser] = useState<User | null>(() => {
@@ -92,9 +93,9 @@ function App(): React.ReactElement {
       case 'programs':
         return <ProgramsView />;
       case 'projects':
-        return <ProjectsView />;
+        return <ProjectsView onNavigateToTasks={(projectId) => { setSelectedProjectId(projectId); setCurrentView('tasks'); }} />;
       case 'tasks':
-        return <TasksView />;
+        return <TasksView initialProjectId={selectedProjectId} />;
       case 'enterprises':
         return <EnterprisesView />;
       case 'contracts':

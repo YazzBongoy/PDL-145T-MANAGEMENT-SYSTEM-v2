@@ -246,8 +246,8 @@ function SiteBlock({ site, projectId, statusFilter }: { site: Site; projectId: n
 
 // ─── TasksView (main) ─────────────────────────────────────────────────────────
 
-export function TasksView() {
-  const [selectedProjectId, setSelectedProjectId] = useState<number | null>(null);
+export function TasksView({ initialProjectId }: { initialProjectId?: number } = {}) {
+  const [selectedProjectId, setSelectedProjectId] = useState<number | null>(initialProjectId ?? null);
   const [statusFilter, setStatusFilter] = useState('');
   const [typeFilter, setTypeFilter] = useState('');
 
