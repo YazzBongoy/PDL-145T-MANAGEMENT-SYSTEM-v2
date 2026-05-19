@@ -96,9 +96,15 @@ model Expense {
   ReconciliationAudits ReconciliationAudit[]
 }
 
+enum ResourceType {
+  PERSONNE
+  EQUIPEMENT
+  MATÉRIEL
+}
+
 model Resource {
   ResourceID       Int               @id @default(autoincrement())
-  Type             String
+  Type             ResourceType
   Quantity         Decimal           @default(1)
   Unit             String?           // Unité de la ressource (m³, m², pce, H/J, etc.)
   CreatedAt        DateTime          @default(now())
