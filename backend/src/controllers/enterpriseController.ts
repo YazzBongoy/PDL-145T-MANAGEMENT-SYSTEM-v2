@@ -78,17 +78,26 @@ export async function getEnterpriseById(req: Request, res: Response) {
 // Create enterprise
 export async function createEnterprise(req: Request, res: Response) {
   try {
-    const { name, type, role, contactEmail, contactPhone, address, taxId } = req.body;
+    const b = req.body;
+    const name = b.name ?? b.Name;
+    const type = b.type ?? b.Type;
+    const role = b.role ?? b.Role;
+    const contactEmail = b.contactEmail ?? b.ContactEmail;
+    const contactPhone = b.contactPhone ?? b.ContactPhone;
+    const address = b.address ?? b.Address;
+    const taxId = b.taxId ?? b.TaxID;
+
+    if (!name) { res.status(400).json({ error: 'Name is required' }); return; }
 
     const enterprise = await prisma.enterprise.create({
       data: {
         Name: name,
         Type: type,
         Role: role,
-        ContactEmail: contactEmail,
-        ContactPhone: contactPhone,
-        Address: address,
-        TaxID: taxId
+        ContactEmail: contactEmail || null,
+        ContactPhone: contactPhone || null,
+        Address: address || null,
+        TaxID: taxId || null
       }
     });
 
@@ -103,18 +112,25 @@ export async function createEnterprise(req: Request, res: Response) {
 export async function updateEnterprise(req: Request, res: Response) {
   try {
     const { id } = req.params;
-    const { name, type, role, contactEmail, contactPhone, address, taxId } = req.body;
+    const b = req.body;
+    const name = b.name ?? b.Name;
+    const type = b.type ?? b.Type;
+    const role = b.role ?? b.Role;
+    const contactEmail = b.contactEmail ?? b.ContactEmail;
+    const contactPhone = b.contactPhone ?? b.ContactPhone;
+    const address = b.address ?? b.Address;
+    const taxId = b.taxId ?? b.TaxID;
 
     const enterprise = await prisma.enterprise.update({
       where: { EnterpriseID: parseInt(id) },
       data: {
-        Name: name,
-        Type: type,
-        Role: role,
-        ContactEmail: contactEmail,
-        ContactPhone: contactPhone,
-        Address: address,
-        TaxID: taxId
+        ...(name !== undefined && { Name: name }),
+        ...(type !== undefined && { Type: type }),
+        ...(role !== undefined && { Role: role }),
+        ...(contactEmail !== undefined && { ContactEmail: contactEmail || null }),
+        ...(contactPhone !== undefined && { ContactPhone: contactPhone || null }),
+        ...(address !== undefined && { Address: address || null }),
+        ...(taxId !== undefined && { TaxID: taxId || null }),
       }
     });
 
