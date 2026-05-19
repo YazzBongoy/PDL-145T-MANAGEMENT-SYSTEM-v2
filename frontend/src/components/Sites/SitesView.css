@@ -268,6 +268,128 @@
   animation: spin 1s linear infinite;
 }
 
+/* Resource management */
+.site-resource-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  margin-left: 8px;
+  color: #64748b;
+  transition: color 0.2s;
+}
+
+.site-resource-btn:hover {
+  color: #3b82f6;
+}
+
+.site-resource-section {
+  padding: 1rem;
+  border-left: 4px solid #3b82f6;
+  background: #f8fafc;
+  margin-bottom: 1rem;
+}
+
+.site-resource-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.site-resource-header h4 {
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.site-resource-header button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  color: #64748b;
+}
+
+.site-resource-form {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.site-resource-form select,
+.site-resource-form input {
+  padding: 0.5rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+  font-size: 0.875rem;
+}
+
+.site-resource-form select {
+  flex: 1;
+  min-width: 200px;
+}
+
+.site-resource-form input {
+  width: 80px;
+}
+
+.site-btn {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.site-btn--primary {
+  background: #3b82f6;
+  color: white;
+}
+
+.site-btn--primary:disabled {
+  background: #94a3b8;
+  cursor: not-allowed;
+}
+
+.site-btn--danger {
+  background: #ef4444;
+  color: white;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+}
+
+.site-resource-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.site-resource-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+  font-size: 0.875rem;
+}
+
+.site-resource-item span {
+  color: #475569;
+}
+
+.site-empty-resources {
+  color: #94a3b8;
+  font-style: italic;
+  font-size: 0.875rem;
+  margin: 0;
+}
+
 .task-row--calc td { opacity: 0.85; }
 .status-calc {
   font-size: 0.78rem;

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { CheckCircle, Clock, AlertCircle, Loader2, ChevronDown, ChevronRight, MapPin, Filter } from 'lucide-react';
+import { CheckCircle, Clock, AlertCircle, Loader2, ChevronDown, ChevronRight, MapPin, Filter, Box, X } from 'lucide-react';
 import './Tasks.css';
 import { getApiUrl } from '../../api/config';
 
@@ -11,6 +11,22 @@ interface Site {
   Name: string;
   Type: string;
   Province: string;
+}
+
+interface Resource {
+  ResourceID: number;
+  Name: string;
+  Type: string;
+  Quantity: number;
+}
+
+interface TaskResource {
+  TaskID: number;
+  ResourceID: number;
+  AllocatedQuantity: number;
+  ActualQuantity?: number | null;
+  UsageDate: string;
+  Resource?: Resource;
 }
 
 interface Task {
@@ -101,9 +117,69 @@ function TaskRow({ task, depth, onUpdate }: {
   const [open, setOpen] = useState(depth < 1);
   const [localProgress, setLocalProgress] = useState(task.progressPercentage);
   const [localStatus, setLocalStatus] = useState(task.CompletionStatus);
+  const [showResources, setShowResources] = useState(false);
   const hasChildren = (task.children?.length || 0) > 0;
   const isLeaf = task.Level === 3;
   const isCalc = !isLeaf;
+
+  const qc = useQueryClient();
+
+  const { data: taskResources, isLoading: loadingResources } = useQuery({
+    queryKey: ['task-resources', task.TaskID],
+    queryFn: async () => {
+      const r = await fetch(getApiUrl('/api/task-resources'), { headers: auth() });
+      const all = await r.json() as TaskResource[];
+      return all.filter((tr: TaskResource) => tr.TaskID === task.TaskID);
+    },
+    enabled: showResources,
+  });
+
+  const { data: allResources } = useQuery({
+    queryKey: ['resources'],
+    queryFn: async () => {
+      const r = await fetch(getApiUrl('/api/resources'), { headers: auth() });
+      return (await r.json()) as Resource[];
+    },
+    enabled: showResources,
+  });
+
+  const linkResourceMut = useMutation({
+    mutationFn: async (data: { TaskID: number; ResourceID: number; AllocatedQuantity: number }) => {
+      const r = await fetch(getApiUrl('/api/task-resources'), {
+        method: 'POST',
+        headers: auth(),
+        body: JSON.stringify(data),
+      });
+      return r.json();
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['task-resources', task.TaskID] }),
+  });
+
+  const unlinkResourceMut = useMutation({
+    mutationFn: async ({ taskId, resourceId }: { taskId: number; resourceId: number }) => {
+      const r = await fetch(getApiUrl(`/api/task-resources/${taskId}/${resourceId}`), {
+        method: 'DELETE',
+        headers: auth(),
+      });
+      return r.json();
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['task-resources', task.TaskID] }),
+  });
+
+  const [selectedResourceId, setSelectedResourceId] = useState<number | null>(null);
+  const [allocatedQuantity, setAllocatedQuantity] = useState<number>(1);
+
+  const handleLinkResource = () => {
+    if (selectedResourceId) {
+      linkResourceMut.mutate({
+        TaskID: task.TaskID,
+        ResourceID: selectedResourceId,
+        AllocatedQuantity: allocatedQuantity,
+      });
+      setSelectedResourceId(null);
+      setAllocatedQuantity(1);
+    }
+  };
 
   return (
     <>
@@ -121,6 +197,15 @@ function TaskRow({ task, depth, onUpdate }: {
             {task.CompletionStatus === 'NotStarted' && <Clock size={13} color="#94a3b8" />}
             <span className={depth === 0 ? 'tv-name tv-name--l1' : depth === 1 ? 'tv-name tv-name--l2' : 'tv-name'}>{task.Name}</span>
             {isLeaf && task.Weight > 0 && <span className="tv-weight">{task.Weight}%</span>}
+            {isLeaf && (
+              <button 
+                className="tv-resource-btn" 
+                onClick={() => setShowResources(!showResources)}
+                title="Gérer les ressources"
+              >
+                <Box size={14} />
+              </button>
+            )}
           </div>
         </td>
         <td>
@@ -176,6 +261,69 @@ function TaskRow({ task, depth, onUpdate }: {
           </div>
         </td>
       </tr>
+      {showResources && isLeaf && (
+        <tr className="tv-resource-row">
+          <td colSpan={3}>
+            <div className="tv-resource-section">
+              <div className="tv-resource-header">
+                <h4>Ressources associées</h4>
+                <button onClick={() => setShowResources(false)}><X size={16} /></button>
+              </div>
+              {loadingResources ? (
+                <div className="tv-loading"><Loader2 className="animate-spin" size={16} /> Chargement...</div>
+              ) : (
+                <>
+                  <div className="tv-resource-form">
+                    <select 
+                      value={selectedResourceId || ''} 
+                      onChange={(e) => setSelectedResourceId(Number(e.target.value))}
+                    >
+                      <option value="">Sélectionner une ressource</option>
+                      {allResources?.map(r => (
+                        <option key={r.ResourceID} value={r.ResourceID}>
+                          {r.Name} ({r.Type}) - Qté: {r.Quantity}
+                        </option>
+                      ))}
+                    </select>
+                    <input 
+                      type="number" 
+                      min="1" 
+                      value={allocatedQuantity}
+                      onChange={(e) => setAllocatedQuantity(Number(e.target.value))}
+                      placeholder="Qté"
+                    />
+                    <button 
+                      onClick={handleLinkResource}
+                      disabled={!selectedResourceId}
+                      className="tv-btn tv-btn--primary"
+                    >
+                      Lier
+                    </button>
+                  </div>
+                  <div className="tv-resource-list">
+                    {taskResources && taskResources.length > 0 ? (
+                      taskResources.map(tr => (
+                        <div key={`${tr.TaskID}-${tr.ResourceID}`} className="tv-resource-item">
+                          <span>{tr.Resource?.Name} ({tr.Resource?.Type})</span>
+                          <span>Qté: {tr.AllocatedQuantity}</span>
+                          <button 
+                            onClick={() => unlinkResourceMut.mutate({ taskId: tr.TaskID, resourceId: tr.ResourceID })}
+                            className="tv-btn tv-btn--danger"
+                          >
+                            Dissocier
+                          </button>
+                        </div>
+                      ))
+                    ) : (
+                      <p className="tv-empty-resources">Aucune ressource associée</p>
+                    )}
+                  </div>
+                </>
+              )}
+            </div>
+          </td>
+        </tr>
+      )}
       {open && hasChildren && task.children!.map(c => (
         <TaskRow key={c.TaskID} task={c} depth={depth + 1} onUpdate={onUpdate} />
       ))}

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { MapPin, ChevronDown, ChevronRight, CheckCircle, Clock, AlertCircle, Loader2, Building2, BookOpen } from 'lucide-react';
+import { MapPin, ChevronDown, ChevronRight, CheckCircle, Clock, AlertCircle, Loader2, Building2, BookOpen, Box, X } from 'lucide-react';
 import { getApiUrl } from '../../api/config';
 import './SitesView.css';
 
@@ -20,6 +20,22 @@ interface Site {
   Name: string;
   Type: string;
   Province: string;
+}
+
+interface Resource {
+  ResourceID: number;
+  Name: string;
+  Type: string;
+  Quantity: number;
+}
+
+interface SiteResource {
+  SiteID: string;
+  ResourceID: number;
+  AllocatedQuantity: number;
+  ActualQuantity?: number | null;
+  UsageDate: string;
+  Resource?: Resource;
 }
 
 interface Task {
@@ -169,6 +185,7 @@ function TaskRow({ task, depth, onUpdate }: {
 
 function SiteTaskPanel({ site, projectId }: { site: Site; projectId: number }) {
   const qc = useQueryClient();
+  const [showResources, setShowResources] = useState(false);
 
   const { data: tasks, isLoading } = useQuery({
     queryKey: ['site-tasks', site.SiteID],
@@ -181,6 +198,63 @@ function SiteTaskPanel({ site, projectId }: { site: Site; projectId: number }) {
       return res.json() as Promise<Task[]>;
     },
   });
+
+  const { data: siteResources, isLoading: loadingResources } = useQuery({
+    queryKey: ['site-resources', site.SiteID],
+    queryFn: async () => {
+      const r = await fetch(getApiUrl('/api/site-resources'), { headers: authHeaders() });
+      const all = await r.json() as SiteResource[];
+      return all.filter((sr: SiteResource) => sr.SiteID === site.SiteID);
+    },
+    enabled: showResources,
+  });
+
+  const { data: allResources } = useQuery({
+    queryKey: ['resources'],
+    queryFn: async () => {
+      const r = await fetch(getApiUrl('/api/resources'), { headers: authHeaders() });
+      return (await r.json()) as Resource[];
+    },
+    enabled: showResources,
+  });
+
+  const linkResourceMut = useMutation({
+    mutationFn: async (data: { SiteID: string; ResourceID: number; AllocatedQuantity: number }) => {
+      const r = await fetch(getApiUrl('/api/site-resources'), {
+        method: 'POST',
+        headers: authHeaders(),
+        body: JSON.stringify(data),
+      });
+      return r.json();
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['site-resources', site.SiteID] }),
+  });
+
+  const unlinkResourceMut = useMutation({
+    mutationFn: async ({ siteId, resourceId }: { siteId: string; resourceId: number }) => {
+      const r = await fetch(getApiUrl(`/api/site-resources/${siteId}/${resourceId}`), {
+        method: 'DELETE',
+        headers: authHeaders(),
+      });
+      return r.json();
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['site-resources', site.SiteID] }),
+  });
+
+  const [selectedResourceId, setSelectedResourceId] = useState<number | null>(null);
+  const [allocatedQuantity, setAllocatedQuantity] = useState<number>(1);
+
+  const handleLinkResource = () => {
+    if (selectedResourceId) {
+      linkResourceMut.mutate({
+        SiteID: site.SiteID,
+        ResourceID: selectedResourceId,
+        AllocatedQuantity: allocatedQuantity,
+      });
+      setSelectedResourceId(null);
+      setAllocatedQuantity(1);
+    }
+  };
 
   const updateMut = useMutation({
     mutationFn: async ({ id, status, progress, level }: { id: number; status: string; progress: number; level: number }) => {
@@ -220,11 +294,77 @@ function SiteTaskPanel({ site, projectId }: { site: Site; projectId: number }) {
         {typeIcon}
         <span className="site-panel__name">{site.Name}</span>
         <span className="site-type-badge">{typeLabel}</span>
+        <button 
+          className="site-resource-btn" 
+          onClick={() => setShowResources(!showResources)}
+          title="Gérer les ressources"
+        >
+          <Box size={16} />
+        </button>
         <span className="site-stats">{done}/{total} tâches · {avgProgress}% avancement</span>
         <div className="site-progress-bar">
           <div className="site-progress-fill" style={{ width: `${avgProgress}%` }} />
         </div>
       </div>
+      {showResources && (
+        <div className="site-resource-section">
+          <div className="site-resource-header">
+            <h4>Ressources associées</h4>
+            <button onClick={() => setShowResources(false)}><X size={16} /></button>
+          </div>
+          {loadingResources ? (
+            <div className="site-panel__loading"><Loader2 className="animate-spin" size={16} /> Chargement...</div>
+          ) : (
+            <>
+              <div className="site-resource-form">
+                <select 
+                  value={selectedResourceId || ''} 
+                  onChange={(e) => setSelectedResourceId(Number(e.target.value))}
+                >
+                  <option value="">Sélectionner une ressource</option>
+                  {allResources?.map(r => (
+                    <option key={r.ResourceID} value={r.ResourceID}>
+                      {r.Name} ({r.Type}) - Qté: {r.Quantity}
+                    </option>
+                  ))}
+                </select>
+                <input 
+                  type="number" 
+                  min="1" 
+                  value={allocatedQuantity}
+                  onChange={(e) => setAllocatedQuantity(Number(e.target.value))}
+                  placeholder="Qté"
+                />
+                <button 
+                  onClick={handleLinkResource}
+                  disabled={!selectedResourceId}
+                  className="site-btn site-btn--primary"
+                >
+                  Lier
+                </button>
+              </div>
+              <div className="site-resource-list">
+                {siteResources && siteResources.length > 0 ? (
+                  siteResources.map(sr => (
+                    <div key={`${sr.SiteID}-${sr.ResourceID}`} className="site-resource-item">
+                      <span>{sr.Resource?.Name} ({sr.Resource?.Type})</span>
+                      <span>Qté: {sr.AllocatedQuantity}</span>
+                      <button 
+                        onClick={() => unlinkResourceMut.mutate({ siteId: sr.SiteID, resourceId: sr.ResourceID })}
+                        className="site-btn site-btn--danger"
+                      >
+                        Dissocier
+                      </button>
+                    </div>
+                  ))
+                ) : (
+                  <p className="site-empty-resources">Aucune ressource associée</p>
+                )}
+              </div>
+            </>
+          )}
+        </div>
+      )}
       {tree.length === 0 ? (
         <p className="site-panel__empty">Aucune tâche pour ce site.</p>
       ) : (

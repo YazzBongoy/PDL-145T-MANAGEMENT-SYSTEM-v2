@@ -4,8 +4,8 @@ import { normalizeBody } from '../utils/normalizeBody.js';
 const prisma = new PrismaClient();
 // Create a new expense
 export const createExpense = asyncHandler(async (req, res) => {
-    const { taskid, description, cost, date } = normalizeBody(req.body);
-    const taskId = taskid;
+    const { taskID, description, cost, date } = normalizeBody(req.body);
+    const taskId = taskID;
     if (!taskId || !description || cost === undefined) {
         res.status(400).json({ error: 'taskId, description, and cost are required' });
         return;

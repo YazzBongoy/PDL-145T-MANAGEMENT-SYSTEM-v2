@@ -18,7 +18,7 @@ import { ContractsView } from './components/Contracts/ContractsView';
 import { DocumentsView } from './components/Documents/DocumentsView';
 import { AdvancedReportsView, NotificationsView, PermissionsView, UserManagementView } from './components/Phase3';
 import { SitesView } from './components/Sites/SitesView';
-import { ResourceTaskLinkView } from './components/Resources/ResourceTaskLinkView';
+import { ResourceList } from './components/Resources/ResourceList';
 
 function App(): React.ReactElement {
   const [authError, setAuthError] = useState<string | null>(null);
@@ -114,7 +114,7 @@ function App(): React.ReactElement {
       case 'measurements':
         return <SitesView />;
       case 'resources':
-        return <ResourceTaskLinkView />;
+        return <ResourceList user={user} token={token} />;
       case 'dashboard':
       default:
         return <DashboardSwitcher user={user} onLogout={handleLogout} token={token} />;
