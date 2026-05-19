@@ -14,6 +14,11 @@ const fetchContracts = async (): Promise<Contract[]> => {
   return response.json();
 };
 
+const fetchProjects = async () => {
+  const r = await fetch(getApiUrl('/api/projects'), { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } });
+  return r.json() as Promise<{ ProjectID: number; Name: string }[]>;
+};
+
 const fetchEnterprises = async (): Promise<Enterprise[]> => {
   const response = await fetch(getApiUrl('/api/enterprises'), {
     headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
@@ -82,6 +87,11 @@ export function ContractsView() {
     queryFn: fetchEnterprises
   });
 
+  const { data: projects } = useQuery({
+    queryKey: ['projects'],
+    queryFn: fetchProjects
+  });
+
   const createMutation = useMutation({
     mutationFn: createContract,
     onSuccess: () => {
@@ -114,7 +124,7 @@ export function ContractsView() {
     const formData = new FormData(e.currentTarget);
     const data = {
       ContractNumber: formData.get('contractNumber') as string,
-      ProjectID: parseInt(formData.get('projectId') as string) || 1,
+      ProjectID: parseInt(formData.get('projectId') as string),
       EnterpriseID: parseInt(formData.get('enterpriseId') as string),
       Title: formData.get('title') as string,
       TotalAmount: parseFloat(formData.get('totalAmount') as string),
@@ -285,6 +295,15 @@ export function ContractsView() {
                 <input name="title" defaultValue={editingContract?.Title} required />
               </div>
               <div className="form-row">
+                <div className="form-group">
+                  <label>{t('projects.title')} *</label>
+                  <select name="projectId" defaultValue={editingContract?.ProjectID} required>
+                    <option value="">{t('common.select')}</option>
+                    {projects?.map(p => (
+                      <option key={p.ProjectID} value={p.ProjectID}>{p.Name}</option>
+                    ))}
+                  </select>
+                </div>
                 <div className="form-group">
                   <label>{t('enterprises.title')} *</label>
                   <select name="enterpriseId" defaultValue={editingContract?.EnterpriseID} required>
