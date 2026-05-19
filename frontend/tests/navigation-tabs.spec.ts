@@ -159,7 +159,7 @@ test.describe('Navigation Tabs Feature', () => {
     await page.reload({ waitUntil: 'networkidle' });
 
     // Look for mobile menu button
-    const mobileMenuButton = page.locator('button[aria-label*="menu"], button[aria-label*="toggle"], .app-bar__mobile-menu-button');
+    const mobileMenuButton = page.locator('.app-bar__mobile-menu-button').first();
     
     if (await mobileMenuButton.isVisible().catch(() => false)) {
       // Click to open mobile menu

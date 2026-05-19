@@ -45,11 +45,11 @@ const PORT = process.env.PORT || 8001;
 // Initialize Prisma client
 const prisma = new PrismaClient();
 
-// Middleware - CORS configuration for Render.com and local development
+// Middleware - CORS configuration for Railway and local development
 const allowedOrigins = [
   'http://localhost:5173',
   'http://localhost:3000',
-  'https://pdl145t-frontend.onrender.com',
+  'http://localhost:80',
 ];
 if (process.env.FRONTEND_URL) {
   allowedOrigins.push(process.env.FRONTEND_URL);
@@ -64,6 +64,10 @@ app.use(express.json());
 // Store prisma client in app locals for route access
 app.locals.prisma = prisma;
 
+if (!process.env.JWT_SECRET && process.env.NODE_ENV === 'production') {
+  console.error('FATAL: JWT_SECRET environment variable is not set in production.');
+  process.exit(1);
+}
 const JWT_SECRET = process.env.JWT_SECRET || 'dev_secret';
 
 // Test route

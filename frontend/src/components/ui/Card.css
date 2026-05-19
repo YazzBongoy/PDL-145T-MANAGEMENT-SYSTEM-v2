@@ -1,15 +1,10 @@
 /* Card component styles - Enhanced with modern styling */
 .card {
   background-color: var(--color-bg-primary);
-  border-radius: var(--radius-xl);
-  transition: all var(--transition-base);
+  border-radius: var(--radius-md);
   overflow: hidden;
   position: relative;
   width: 100%;
-}
-
-.card:hover {
-  transform: translateY(-2px);
 }
 
 /* Card header styling */
@@ -55,14 +50,14 @@
 /* Nested and deeply nested card styles - Enhanced */
 .nested-card {
   margin: var(--space-4);
-  border-left: 4px solid var(--color-primary-200);
-  border-radius: var(--radius-lg);
+  border-left: 3px solid var(--color-gray-200);
+  border-radius: var(--radius-md);
 }
 
 .deeply-nested-card {
   margin: var(--space-4) var(--space-6);
-  border-left: 4px solid var(--color-primary-300);
-  border-radius: var(--radius-lg);
+  border-left: 3px solid var(--color-gray-300);
+  border-radius: var(--radius-md);
 }
 
 /* Card variants - Enhanced with better visual hierarchy */
@@ -72,7 +67,7 @@
 }
 
 .card--default:hover {
-  box-shadow: var(--shadow-base);
+  border-color: var(--color-gray-300);
 }
 
 .card--outlined {
@@ -81,38 +76,14 @@
 }
 
 .card--outlined:hover {
-  border-color: var(--color-primary-300);
+  border-color: var(--color-gray-400);
 }
 
 .card--elevated {
   box-shadow: var(--shadow-md);
-  border: none;
+  border: 1px solid var(--color-gray-200);
 }
 
-.card--elevated:hover {
-  box-shadow: var(--shadow-lg);
-}
-
-/* New card variants */
-.card--primary {
-  border-top: 4px solid var(--color-primary);
-}
-
-.card--success {
-  border-top: 4px solid var(--color-success);
-}
-
-.card--warning {
-  border-top: 4px solid var(--color-warning);
-}
-
-.card--danger {
-  border-top: 4px solid var(--color-error);
-}
-
-.card--info {
-  border-top: 4px solid var(--color-info);
-}
 
 /* Padding variants - Enhanced with better spacing */
 .card--padding-sm {

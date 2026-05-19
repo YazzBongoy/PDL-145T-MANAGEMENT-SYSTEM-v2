@@ -91,9 +91,7 @@
 }
 
 .btn:hover {
-  background-color: var(--color-gray-50);
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
+  background-color: var(--color-gray-100);
 }
 
 .btn:focus {
@@ -113,15 +111,13 @@
 }
 
 .btn--primary {
-  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+  background-color: var(--color-button-primary);
   color: var(--color-white);
   border: none;
 }
 
 .btn--primary:hover {
-  background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 100%);
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-lg);
+  background-color: var(--color-button-primary-hover);
 }
 
 .btn--primary:disabled:hover {
@@ -130,15 +126,13 @@
 }
 
 .btn--secondary {
-  background: linear-gradient(135deg, var(--color-gray-600) 0%, var(--color-gray-700) 100%);
+  background-color: var(--color-button-secondary);
   color: var(--color-white);
   border: none;
 }
 
 .btn--secondary:hover {
-  background: linear-gradient(135deg, var(--color-gray-700) 0%, var(--color-gray-800) 100%);
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-lg);
+  background-color: var(--color-button-secondary-hover);
 }
 
 .btn--secondary:disabled:hover {

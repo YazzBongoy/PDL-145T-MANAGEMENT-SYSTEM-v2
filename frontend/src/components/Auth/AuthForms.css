@@ -81,25 +81,15 @@
 
 /* Card enhancements for auth forms */
 .card.card--primary {
-  border-top: 4px solid var(--color-primary);
-  box-shadow: var(--shadow-lg);
-  border-radius: var(--radius-xl);
-  transition: box-shadow var(--transition-base);
-}
-
-.card.card--primary:hover {
-  box-shadow: var(--shadow-xl);
+  box-shadow: var(--shadow-md);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-gray-200);
 }
 
 .card.card--secondary {
-  border-top: 4px solid var(--color-secondary);
-  box-shadow: var(--shadow-lg);
-  border-radius: var(--radius-xl);
-  transition: box-shadow var(--transition-base);
-}
-
-.card.card--secondary:hover {
-  box-shadow: var(--shadow-xl);
+  box-shadow: var(--shadow-md);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-gray-200);
 }
 
 /* Input field enhancements */

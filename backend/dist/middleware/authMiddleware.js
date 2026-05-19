@@ -1,17 +1,29 @@
+import jwt from 'jsonwebtoken';
+const JWT_SECRET = process.env.JWT_SECRET || 'dev_secret';
 /**
- * Middleware to verify user is authenticated
+ * Middleware to verify user is authenticated via JWT
  */
 export function requireAuth(req, res, next) {
-    // In a real app, this would verify JWT token
-    // For now, we'll check if user data exists in request
-    const user = req.user;
-    if (!user || !user.id) {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
         return res.status(401).json({
             success: false,
             error: 'Authentication required',
         });
     }
-    next();
+    try {
+        const token = authHeader.split(' ')[1];
+        const payload = jwt.verify(token, JWT_SECRET);
+        // Attach user data to request
+        req.user = payload;
+        next();
+    }
+    catch {
+        return res.status(401).json({
+            success: false,
+            error: 'Invalid or expired token',
+        });
+    }
 }
 /**
  * Middleware to verify user has required role(s)

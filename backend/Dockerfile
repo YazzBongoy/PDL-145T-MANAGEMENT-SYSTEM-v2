@@ -60,5 +60,5 @@ EXPOSE 3010
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
   CMD node -e "require('http').get('http://localhost:' + (process.env.PORT || 3010) + '/api/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) })"
 
-# Start the application (uses PORT environment variable)
-CMD ["node", "dist/index.js"]
+# Start the application: run migrations then start server
+CMD ["sh", "-c", "npx prisma migrate deploy && node dist/index.js"]

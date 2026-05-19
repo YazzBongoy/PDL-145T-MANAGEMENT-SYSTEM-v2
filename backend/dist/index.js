@@ -4,10 +4,11 @@ import dotenv from 'dotenv';
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import { execSync } from 'child_process';
 // Import routes
 import measurementRoutes from './routes/measurementRoutes.js';
 import validationRoutes from './routes/validationRoutes.js';
-import tasksRoutes from './routes/tasksRoutes.js';
+import tasksRoutes from './routes/taskRoutes.js';
 import expensesRoutes from './routes/expensesRoutes.js';
 import resourcesRoutes from './routes/resourcesRoutes.js';
 import sprintRoutes from './routes/sprintRoutes.js';
@@ -16,8 +17,18 @@ import approvalRoutes from './routes/approvalRoutes.js';
 import reconciliationRoutes from './routes/reconciliationRoutes.js';
 import metricsRoutes from './routes/metricsRoutes.js';
 import exportRoutes from './routes/exportRoutes.js';
-// import projectRoutes from './routes/projectRoutes.js';
-// import reportRoutes from './routes/reportRoutes.js';
+import settingsRoutes from './routes/settingsRoutes.js';
+import programRoutes from './routes/programRoutes.js';
+import projectRoutes from './routes/projectRoutes.js';
+import reportRoutes from './routes/reportRoutes.js';
+import constructionStepsRoutes from './routes/constructionStepsRoutes.js';
+import enterpriseRoutes from './routes/enterpriseRoutes.js';
+import contractRoutes from './routes/contractRoutes.js';
+import documentRoutes from './routes/documentRoutes.js';
+import userRoutes from './routes/userRoutes.js';
+import notificationRoutes from './routes/notificationRoutes.js';
+import permissionRoutes from './routes/permissionRoutes.js';
+import reportTemplateRoutes from './routes/reportTemplateRoutes.js';
 // Import middleware and types
 import { authenticateJWT, requireAdminOrSupervisor, errorHandler } from './middleware/index.js';
 // Initialize environment variables
@@ -27,9 +38,17 @@ const app = express();
 const PORT = process.env.PORT || 8001;
 // Initialize Prisma client
 const prisma = new PrismaClient();
-// Middleware
+// Middleware - CORS configuration for Render.com and local development
+const allowedOrigins = [
+    'http://localhost:5173',
+    'http://localhost:3000',
+    'https://pdl145t-frontend.onrender.com',
+];
+if (process.env.FRONTEND_URL) {
+    allowedOrigins.push(process.env.FRONTEND_URL);
+}
 app.use(cors({
-    origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
+    origin: allowedOrigins,
     credentials: true,
 }));
 app.use(express.json());
@@ -48,6 +67,206 @@ app.get('/api/health', (req, res) => {
         uptime: process.uptime()
     });
 });
+// Emergency migration endpoint (for Render deployment issues)
+app.post('/api/admin/migrate', async (req, res) => {
+    try {
+        // First: Run prisma migrate deploy
+        let migrateOutput = '';
+        try {
+            migrateOutput = execSync('npx prisma migrate deploy', {
+                cwd: '/opt/render/project/src/backend',
+                encoding: 'utf-8',
+                stdio: 'pipe'
+            });
+        }
+        catch (migrateError) {
+            migrateOutput = migrateError.stdout || migrateError.message;
+        }
+        // Second: Always run db push to ensure schema is in sync
+        let pushOutput = '';
+        try {
+            pushOutput = execSync('npx prisma db push --accept-data-loss', {
+                cwd: '/opt/render/project/src/backend',
+                encoding: 'utf-8',
+                stdio: 'pipe'
+            });
+        }
+        catch (pushError) {
+            pushOutput = pushError.stdout || pushError.message;
+        }
+        res.json({
+            success: true,
+            message: 'Migrations and schema sync completed',
+            migrateOutput: migrateOutput,
+            pushOutput: pushOutput
+        });
+    }
+    catch (error) {
+        res.status(500).json({
+            success: false,
+            error: 'Migration process failed',
+            details: error?.message || 'Unknown error'
+        });
+    }
+});
+// FORCE RESET - Drop and recreate all tables
+app.post('/api/admin/reset-schema', async (req, res) => {
+    try {
+        const results = { steps: [] };
+        // Step 1: Drop migration history
+        try {
+            await prisma.$executeRaw `DROP TABLE IF EXISTS "_prisma_migrations" CASCADE`;
+            results.steps.push({ step: 1, action: 'Drop _prisma_migrations', status: 'success' });
+        }
+        catch (e) {
+            results.steps.push({ step: 1, action: 'Drop _prisma_migrations', status: 'skipped', error: e.message });
+        }
+        // Step 2: Drop all tables in schema
+        const tables = ['Reconciliation', 'ApprovalHistory', 'ApprovalAction', 'AuditLog',
+            'Expense', 'Device', 'Resource', 'Measurement', 'Validation',
+            'SubTask', 'Task', 'Sprint', 'Report', 'ProjectResource',
+            'Project', 'Program', 'User', 'Session'];
+        for (const table of tables) {
+            try {
+                await prisma.$executeRaw `DROP TABLE IF EXISTS "${table}" CASCADE`;
+                results.steps.push({ step: 2, action: `Drop ${table}`, status: 'success' });
+            }
+            catch (e) {
+                results.steps.push({ step: 2, action: `Drop ${table}`, status: 'skipped' });
+            }
+        }
+        // Step 3: Run prisma migrate reset --force
+        let resetOutput = '';
+        try {
+            resetOutput = execSync('npx prisma migrate reset --force --skip-generate', {
+                cwd: '/opt/render/project/src/backend',
+                encoding: 'utf-8',
+                stdio: 'pipe',
+                timeout: 120000
+            });
+            results.steps.push({ step: 3, action: 'prisma migrate reset', status: 'success', output: resetOutput.substring(0, 500) });
+        }
+        catch (e) {
+            resetOutput = e.stdout || e.message;
+            results.steps.push({ step: 3, action: 'prisma migrate reset', status: 'error', output: resetOutput.substring(0, 500) });
+        }
+        // Step 4: Run prisma db push as fallback
+        let pushOutput = '';
+        try {
+            pushOutput = execSync('npx prisma db push --accept-data-loss', {
+                cwd: '/opt/render/project/src/backend',
+                encoding: 'utf-8',
+                stdio: 'pipe',
+                timeout: 120000
+            });
+            results.steps.push({ step: 4, action: 'prisma db push', status: 'success', output: pushOutput.substring(0, 500) });
+        }
+        catch (e) {
+            pushOutput = e.stdout || e.message;
+            results.steps.push({ step: 4, action: 'prisma db push', status: 'error', output: pushOutput.substring(0, 500) });
+        }
+        res.json({
+            success: true,
+            message: 'Schema reset attempted - check steps for details',
+            timestamp: new Date().toISOString(),
+            results
+        });
+    }
+    catch (error) {
+        res.status(500).json({
+            success: false,
+            error: 'Schema reset failed',
+            details: error?.message || 'Unknown error'
+        });
+    }
+});
+// Debug endpoint - capture exact errors from Prisma
+app.get('/api/admin/debug', async (req, res) => {
+    const debug = {
+        timestamp: new Date().toISOString(),
+        tests: {}
+    };
+    // Test 1: Simple query
+    try {
+        const result = await prisma.$queryRaw `SELECT 1 as test`;
+        debug.tests.rawQuery = { success: true, result };
+    }
+    catch (e) {
+        debug.tests.rawQuery = { success: false, error: e.message, code: e.code };
+    }
+    // Test 2: Prisma model query
+    try {
+        const result = await prisma.program.findMany({ take: 1 });
+        debug.tests.programQuery = { success: true, count: result.length };
+    }
+    catch (e) {
+        debug.tests.programQuery = {
+            success: false,
+            error: e.message,
+            code: e.code,
+            meta: e.meta
+        };
+    }
+    // Test 3: Create without relations
+    try {
+        const testProg = await prisma.program.create({
+            data: {
+                Name: 'TEST-DEBUG',
+                Description: 'Debug test'
+            }
+        });
+        debug.tests.programCreate = { success: true, id: testProg.ProgramID };
+        // Cleanup
+        await prisma.program.delete({ where: { ProgramID: testProg.ProgramID } });
+    }
+    catch (e) {
+        debug.tests.programCreate = {
+            success: false,
+            error: e.message,
+            code: e.code,
+            meta: e.meta
+        };
+    }
+    res.json(debug);
+});
+// Diagnostic endpoint - check database state
+app.get('/api/admin/diagnostic', async (req, res) => {
+    try {
+        // Check if tables exist by querying them
+        const results = {};
+        try {
+            const programs = await prisma.$queryRaw `SELECT COUNT(*) as count FROM "Program"`;
+            results.programs = { exists: true, count: Number(programs[0]?.count || 0) };
+        }
+        catch (e) {
+            results.programs = { exists: false, error: e.message };
+        }
+        try {
+            const projects = await prisma.$queryRaw `SELECT COUNT(*) as count FROM "Project"`;
+            results.projects = { exists: true, count: Number(projects[0]?.count || 0) };
+        }
+        catch (e) {
+            results.projects = { exists: false, error: e.message };
+        }
+        try {
+            const users = await prisma.$queryRaw `SELECT COUNT(*) as count FROM "User"`;
+            results.users = { exists: true, count: Number(users[0]?.count || 0) };
+        }
+        catch (e) {
+            results.users = { exists: false, error: e.message };
+        }
+        res.json({
+            database: 'connected',
+            tables: results
+        });
+    }
+    catch (error) {
+        res.status(500).json({
+            database: 'error',
+            error: error.message
+        });
+    }
+});
 // API routes
 app.use('/api/measurements', measurementRoutes);
 app.use('/api/validations', validationRoutes);
@@ -60,8 +279,18 @@ app.use('/api/approvals', approvalRoutes);
 app.use('/api/reconciliation', reconciliationRoutes);
 app.use('/api/metrics', metricsRoutes);
 app.use('/api/export', exportRoutes);
-// app.use('/api/projects', projectRoutes);
-// app.use('/api/reports', reportRoutes);
+app.use('/api/settings', settingsRoutes);
+app.use('/api/programs', programRoutes);
+app.use('/api/projects', projectRoutes);
+app.use('/api/reports', reportRoutes);
+app.use('/api/construction-steps', constructionStepsRoutes);
+app.use('/api/enterprises', enterpriseRoutes);
+app.use('/api/contracts', contractRoutes);
+app.use('/api/documents', documentRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/notifications', notificationRoutes);
+app.use('/api/permissions', permissionRoutes);
+app.use('/api/report-templates', reportTemplateRoutes);
 // User registration
 app.post('/auth/register', async (req, res) => {
     const { name, email, password, role } = req.body;
@@ -119,9 +348,9 @@ app.get('/me', authenticateJWT, async (req, res) => {
 });
 // Create Project
 app.post('/api/projects', authenticateJWT, requireAdminOrSupervisor, async (req, res) => {
-    const { Name, StartDate, EndDate, TotalBudget } = req.body;
-    if (!Name || !StartDate || !TotalBudget) {
-        res.status(400).json({ error: 'Name, StartDate, and TotalBudget are required.' });
+    const { Name, StartDate, EndDate, TotalBudget, ProgramID } = req.body;
+    if (!Name || !StartDate || !TotalBudget || !ProgramID) {
+        res.status(400).json({ error: 'Name, StartDate, TotalBudget, and ProgramID are required.' });
         return;
     }
     const project = await prisma.project.create({
@@ -130,6 +359,7 @@ app.post('/api/projects', authenticateJWT, requireAdminOrSupervisor, async (req,
             StartDate: new Date(StartDate),
             EndDate: EndDate ? new Date(EndDate) : null,
             TotalBudget: Number(TotalBudget),
+            ProgramID: Number(ProgramID),
         },
     });
     res.status(201).json(project);
@@ -183,15 +413,16 @@ app.delete('/api/projects/:id', authenticateJWT, requireAdminOrSupervisor, async
 // Create Task
 app.post('/api/projects/:projectId/tasks', authenticateJWT, requireAdminOrSupervisor, async (req, res) => {
     const projectId = Number(req.params.projectId);
-    const { Description, Duration, AssignedTo, CompletionStatus } = req.body;
-    if (!Description) {
-        res.status(400).json({ error: 'Description is required.' });
+    const { Name, Description, Duration, AssignedTo, CompletionStatus } = req.body;
+    if (!Name) {
+        res.status(400).json({ error: 'Name is required.' });
         return;
     }
     const task = await prisma.task.create({
         data: {
             ProjectID: projectId,
-            Description,
+            Name,
+            Description: Description || null,
             Duration: Duration ? Number(Duration) : null,
             AssignedTo: AssignedTo || null,
             CompletionStatus: CompletionStatus || 'NotStarted',
@@ -248,15 +479,24 @@ app.delete('/api/tasks/:id', authenticateJWT, requireAdminOrSupervisor, async (r
 });
 // Create Resource
 app.post('/api/resources', authenticateJWT, requireAdminOrSupervisor, async (req, res) => {
-    const { Type, Quantity } = req.body;
-    if (!Type || Quantity === undefined) {
-        res.status(400).json({ error: 'Type and Quantity are required.' });
+    const { Name, Type, Quantity, Description, Location, SerialNumber, Cost, PurchaseDate, LastMaintenance, NextMaintenance, Status } = req.body;
+    if (!Name || !Type) {
+        res.status(400).json({ error: 'Name and Type are required.' });
         return;
     }
     const resource = await prisma.resource.create({
         data: {
+            Name,
             Type,
-            Quantity: Number(Quantity),
+            Quantity: Quantity !== undefined ? Number(Quantity) : 1,
+            Description: Description || null,
+            Location: Location || null,
+            SerialNumber: SerialNumber || null,
+            Cost: Cost !== undefined ? Number(Cost) : null,
+            PurchaseDate: PurchaseDate ? new Date(PurchaseDate) : null,
+            LastMaintenance: LastMaintenance ? new Date(LastMaintenance) : null,
+            NextMaintenance: NextMaintenance ? new Date(NextMaintenance) : null,
+            Status: Status || 'active',
         },
     });
     res.status(201).json(resource);
@@ -269,7 +509,7 @@ app.get('/api/resources', authenticateJWT, async (req, res) => {
 // Update Resource
 app.put('/api/resources/:id', authenticateJWT, requireAdminOrSupervisor, async (req, res) => {
     const id = Number(req.params.id);
-    const { Type, Quantity } = req.body;
+    const { Name, Type, Quantity, Description, Location, SerialNumber, Cost, PurchaseDate, LastMaintenance, NextMaintenance, Status } = req.body;
     const resource = await prisma.resource.findUnique({ where: { ResourceID: id } });
     if (!resource) {
         res.status(404).json({ error: 'Resource not found' });
@@ -278,8 +518,17 @@ app.put('/api/resources/:id', authenticateJWT, requireAdminOrSupervisor, async (
     const updated = await prisma.resource.update({
         where: { ResourceID: id },
         data: {
+            Name: Name ?? resource.Name,
             Type: Type ?? resource.Type,
             Quantity: Quantity !== undefined ? Number(Quantity) : resource.Quantity,
+            Description: Description !== undefined ? Description : resource.Description,
+            Location: Location !== undefined ? Location : resource.Location,
+            SerialNumber: SerialNumber !== undefined ? SerialNumber : resource.SerialNumber,
+            Cost: Cost !== undefined ? Number(Cost) : resource.Cost,
+            PurchaseDate: PurchaseDate !== undefined ? (PurchaseDate ? new Date(PurchaseDate) : null) : resource.PurchaseDate,
+            LastMaintenance: LastMaintenance !== undefined ? (LastMaintenance ? new Date(LastMaintenance) : null) : resource.LastMaintenance,
+            NextMaintenance: NextMaintenance !== undefined ? (NextMaintenance ? new Date(NextMaintenance) : null) : resource.NextMaintenance,
+            Status: Status ?? resource.Status,
         },
     });
     res.json(updated);

@@ -12,6 +12,8 @@ router.get('/project/:projectId', authenticateJWT, getReportsByProject);
 router.get('/project/:projectId/billing', authenticateJWT, requireFinance, generateBillingReport);
 // Validation-specific routes
 router.get('/validation/:validationId', authenticateJWT, getReportsByValidation);
+// Report generation route
+router.post('/generate', authenticateJWT, requireFinance, createReport);
 // Admin/Finance routes
 router.post('/', authenticateJWT, requireFinance, validateSchema(ReportCreateSchema, 'body'), createReport);
 router.delete('/:id', authenticateJWT, requireAdminOrSupervisor, validateSchema(ReportParamsSchema, 'params'), deleteReport);

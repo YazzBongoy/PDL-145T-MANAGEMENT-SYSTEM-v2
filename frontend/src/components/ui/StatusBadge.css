@@ -55,20 +55,6 @@
   --badge-pulse-color: var(--color-info);
 }
 
-/* Animated pulse for active statuses */
-.status-badge--in-progress,
-.status-badge--loading {
-  animation: status-pulse 2s ease-in-out infinite;
-}
-
-@keyframes status-pulse {
-  0%, 100% {
-    box-shadow: 0 0 0 0 rgba(var(--badge-pulse-color), 0.4);
-  }
-  50% {
-    box-shadow: 0 0 0 4px rgba(var(--badge-pulse-color), 0);
-  }
-}
 
 /* Tooltip styles for status badge */
 .status-tooltip {
@@ -232,12 +218,7 @@
 
 /* Interactive states */
 .status-badge:hover {
-  transform: translateY(-1px);
-  transition: transform var(--duration-fast) var(--ease-out);
-}
-
-.status-badge:active {
-  transform: translateY(0);
+  opacity: 0.85;
 }
 
 /* Focus states for accessibility */

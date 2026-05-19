@@ -12,6 +12,7 @@ export const createTask = asyncHandler(async (req, res) => {
         data: {
             ProjectID: parseInt(projectId),
             SprintID: sprintId ? parseInt(sprintId) : null,
+            Name: description.substring(0, 100),
             Description: description,
             Duration: duration ? parseInt(duration) : null,
             AssignedTo: assignedTo || null,
