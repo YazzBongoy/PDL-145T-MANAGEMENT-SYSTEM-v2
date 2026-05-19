@@ -7,7 +7,8 @@ import {
   deleteDocument,
   getProjectDocuments,
   getContractDocuments,
-  uploadDocument
+  uploadDocument,
+  upload
 } from '../controllers/documentController.js';
 import { requireAuth } from '../middleware/authMiddleware.js';
 
@@ -28,7 +29,7 @@ router.get('/project/:projectId', getProjectDocuments);
 // Contract documents
 router.get('/contract/:contractId', getContractDocuments);
 
-// Upload endpoint
-router.post('/upload', uploadDocument);
+// Upload endpoint (multipart/form-data)
+router.post('/upload', upload.single('file'), uploadDocument);
 
 export default router;

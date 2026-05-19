@@ -432,3 +432,51 @@
     color: #f9fafb;
   }
 }
+
+/* File Upload Dropzone */
+.doc-dropzone {
+  border: 2px dashed #cbd5e1;
+  border-radius: 10px;
+  padding: 28px 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  background: #f8fafc;
+  color: #64748b;
+  font-size: 0.88rem;
+}
+.doc-dropzone:hover,
+.doc-dropzone--over {
+  border-color: #3b82f6;
+  background: #eff6ff;
+  color: #3b82f6;
+}
+.doc-dropzone--selected {
+  border-color: #22c55e;
+  background: #f0fdf4;
+  color: #16a34a;
+}
+.doc-dropzone__name {
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin: 0;
+  word-break: break-all;
+}
+.doc-dropzone__size {
+  font-size: 0.78rem;
+  color: #94a3b8;
+}
+.doc-dropzone__hint {
+  font-size: 0.75rem;
+  color: #94a3b8;
+}
+.doc-upload-error {
+  color: #ef4444;
+  font-size: 0.82rem;
+  margin: 4px 0 8px;
+}

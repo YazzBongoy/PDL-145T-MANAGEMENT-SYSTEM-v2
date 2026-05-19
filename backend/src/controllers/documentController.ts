@@ -1,6 +1,29 @@
 import { Request, Response } from 'express';
 import { normalizeBody } from '../utils/normalizeBody.js';
 import { PrismaClient } from '@prisma/client';
+import multer from 'multer';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import fs from 'fs';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const UPLOADS_DIR = path.join(__dirname, '../../uploads');
+if (!fs.existsSync(UPLOADS_DIR)) fs.mkdirSync(UPLOADS_DIR, { recursive: true });
+
+export const upload = multer({
+  storage: multer.diskStorage({
+    destination: (_req, _file, cb) => cb(null, UPLOADS_DIR),
+    filename: (_req, file, cb) => {
+      const unique = `${Date.now()}-${Math.round(Math.random() * 1e6)}`;
+      cb(null, unique + path.extname(file.originalname));
+    }
+  }),
+  limits: { fileSize: 50 * 1024 * 1024 }, // 50 MB
+  fileFilter: (_req, file, cb) => {
+    const allowed = /pdf|doc|docx|xls|xlsx|ppt|pptx|png|jpg|jpeg|gif|zip|rar|txt/i;
+    cb(null, allowed.test(path.extname(file.originalname)));
+  }
+});
 
 const prisma = new PrismaClient();
 
@@ -179,15 +202,37 @@ export async function getContractDocuments(req: Request, res: Response) {
   }
 }
 
-// Upload document (placeholder for future file storage integration)
+// Upload file and create document record
 export async function uploadDocument(req: Request, res: Response) {
   try {
-    // For now, return a placeholder URL
-    // In production, this would handle file upload to Cloudinary, S3, etc.
-    res.status(501).json({ 
-      error: 'File upload not implemented yet',
-      message: 'Please use createDocument endpoint with a pre-uploaded URL'
+    const file = (req as any).file;
+    if (!file) {
+      res.status(400).json({ error: 'No file uploaded' });
+      return;
+    }
+
+    const { type, projectID, contractID, name } = normalizeBody(req.body);
+    const userId = (req as any).user?.id || 1;
+    const fileUrl = `/uploads/${file.filename}`;
+
+    const document = await prisma.document.create({
+      data: {
+        Name: name || file.originalname,
+        Type: type || 'AUTRE',
+        URL: fileUrl,
+        ProjectID: projectID ? parseInt(projectID) : null,
+        ContractID: contractID ? parseInt(contractID) : null,
+        Size: file.size,
+        MimeType: file.mimetype,
+        UploadedBy: userId,
+      },
+      include: {
+        Project: { select: { ProjectID: true, Name: true } },
+        Contract: { select: { ContractID: true, ContractNumber: true } },
+      }
     });
+
+    res.status(201).json(document);
   } catch (error) {
     console.error('Error uploading document:', error);
     res.status(500).json({ error: 'Failed to upload document' });

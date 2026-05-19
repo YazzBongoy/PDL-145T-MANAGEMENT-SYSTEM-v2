@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Plus, Search, FileText, Edit2, Trash2, Loader2, AlertCircle, Download, File, FileImage, FileSpreadsheet } from 'lucide-react';
+import { Plus, Search, FileText, Edit2, Trash2, Loader2, AlertCircle, Download, File, FileImage, FileSpreadsheet, UploadCloud } from 'lucide-react';
 import { getApiUrl } from '../../api/config';
 import type { Document } from '../../types';
 import './Documents.css';
@@ -14,16 +14,16 @@ const fetchDocuments = async (): Promise<Document[]> => {
   return response.json();
 };
 
-const createDocument = async (data: Omit<Document, 'DocumentID' | 'UploadedAt' | 'UpdatedAt' | 'Version'>): Promise<Document> => {
-  const response = await fetch(getApiUrl('/api/documents'), {
+const uploadDocument = async (formData: FormData): Promise<Document> => {
+  const response = await fetch(getApiUrl('/api/documents/upload'), {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${localStorage.getItem('token')}`
-    },
-    body: JSON.stringify({ ...data, Version: 1 })
+    headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` },
+    body: formData
   });
-  if (!response.ok) throw new Error('Failed to create document');
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({}));
+    throw new Error(err.error || 'Failed to upload document');
+  }
   return response.json();
 };
 
@@ -77,17 +77,21 @@ export function DocumentsView() {
   const [typeFilter, setTypeFilter] = useState<string>('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingDocument, setEditingDocument] = useState<Document | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [dragOver, setDragOver] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { data: documents, isLoading, error } = useQuery({
     queryKey: ['documents'],
     queryFn: fetchDocuments
   });
 
-  const createMutation = useMutation({
-    mutationFn: createDocument,
+  const uploadMutation = useMutation({
+    mutationFn: uploadDocument,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['documents'] });
       setIsModalOpen(false);
+      setSelectedFile(null);
     }
   });
 
@@ -113,23 +117,23 @@ export function DocumentsView() {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    const userId = JSON.parse(localStorage.getItem('user') || '{}').id || 1;
-    const data = {
-      Name: formData.get('name') as string,
-      Type: formData.get('type') as Document['Type'],
-      URL: formData.get('url') as string,
-      ProjectID: parseInt(formData.get('projectId') as string) || undefined,
-      ContractID: parseInt(formData.get('contractId') as string) || undefined,
-      Size: parseInt(formData.get('size') as string) || undefined,
-      MimeType: formData.get('mimeType') as string || undefined,
-      UploadedBy: userId
-    };
+    const form = e.currentTarget;
+    const name = (form.querySelector('[name=name]') as HTMLInputElement)?.value;
+    const type = (form.querySelector('[name=type]') as HTMLSelectElement)?.value;
+    const projectId = (form.querySelector('[name=projectId]') as HTMLInputElement)?.value;
+    const contractId = (form.querySelector('[name=contractId]') as HTMLInputElement)?.value;
 
     if (editingDocument) {
-      updateMutation.mutate({ id: editingDocument.DocumentID, data });
+      updateMutation.mutate({ id: editingDocument.DocumentID, data: { Name: name, Type: type as Document['Type'] } });
     } else {
-      createMutation.mutate(data);
+      if (!selectedFile) return;
+      const fd = new FormData();
+      fd.append('file', selectedFile);
+      fd.append('name', name || selectedFile.name);
+      fd.append('type', type || 'AUTRE');
+      if (projectId) fd.append('projectID', projectId);
+      if (contractId) fd.append('contractID', contractId);
+      uploadMutation.mutate(fd);
     }
   };
 
@@ -264,9 +268,31 @@ export function DocumentsView() {
           <div className="modal" onClick={(e) => e.stopPropagation()}>
             <h3>{editingDocument ? t('documents.editDocument') : t('documents.addDocument')}</h3>
             <form onSubmit={handleSubmit}>
+              {!editingDocument && (
+                <div
+                  className={`doc-dropzone${dragOver ? ' doc-dropzone--over' : ''}${selectedFile ? ' doc-dropzone--selected' : ''}`}
+                  onClick={() => fileInputRef.current?.click()}
+                  onDragOver={e => { e.preventDefault(); setDragOver(true); }}
+                  onDragLeave={() => setDragOver(false)}
+                  onDrop={e => { e.preventDefault(); setDragOver(false); const f = e.dataTransfer.files[0]; if (f) setSelectedFile(f); }}
+                >
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.png,.jpg,.jpeg,.gif,.zip,.txt"
+                    style={{ display: 'none' }}
+                    onChange={e => { const f = e.target.files?.[0]; if (f) setSelectedFile(f); }}
+                  />
+                  {selectedFile ? (
+                    <><FileText size={28} color="#3b82f6" /><p className="doc-dropzone__name">{selectedFile.name}</p><span className="doc-dropzone__size">{(selectedFile.size / 1024).toFixed(1)} KB</span></>
+                  ) : (
+                    <><UploadCloud size={32} color="#94a3b8" /><p>Glisser-déposer ou cliquer pour sélectionner un fichier</p><span className="doc-dropzone__hint">PDF, Word, Excel, Image — max 50 MB</span></>
+                  )}
+                </div>
+              )}
               <div className="form-group">
-                <label>{t('documents.name')} *</label>
-                <input name="name" defaultValue={editingDocument?.Name} required />
+                <label>{t('documents.name')}</label>
+                <input name="name" defaultValue={editingDocument?.Name} placeholder={selectedFile?.name || ''} />
               </div>
               <div className="form-row">
                 <div className="form-group">
@@ -282,41 +308,32 @@ export function DocumentsView() {
                     <option value="AUTRE">{t('documents.types.AUTRE')}</option>
                   </select>
                 </div>
-                <div className="form-group">
-                  <label>{t('documents.upload')} URL *</label>
-                  <input name="url" type="url" defaultValue={editingDocument?.URL} required />
-                </div>
               </div>
-              <div className="form-row">
-                <div className="form-group">
-                  <label>Project ID</label>
-                  <input name="projectId" type="number" defaultValue={editingDocument?.ProjectID || ''} />
+              {!editingDocument && (
+                <div className="form-row">
+                  <div className="form-group">
+                    <label>Projet (ID)</label>
+                    <input name="projectId" type="number" placeholder="optionnel" />
+                  </div>
+                  <div className="form-group">
+                    <label>Contrat (ID)</label>
+                    <input name="contractId" type="number" placeholder="optionnel" />
+                  </div>
                 </div>
-                <div className="form-group">
-                  <label>Contract ID</label>
-                  <input name="contractId" type="number" defaultValue={editingDocument?.ContractID || ''} />
-                </div>
-              </div>
-              <div className="form-row">
-                <div className="form-group">
-                  <label>Size (bytes)</label>
-                  <input name="size" type="number" defaultValue={editingDocument?.Size || ''} />
-                </div>
-                <div className="form-group">
-                  <label>MIME Type</label>
-                  <input name="mimeType" defaultValue={editingDocument?.MimeType || ''} />
-                </div>
-              </div>
+              )}
+              {uploadMutation.isError && (
+                <p className="doc-upload-error">{(uploadMutation.error as Error).message}</p>
+              )}
               <div className="modal-actions">
-                <button type="button" className="btn btn--secondary" onClick={() => setIsModalOpen(false)}>
+                <button type="button" className="btn btn--secondary" onClick={() => { setIsModalOpen(false); setSelectedFile(null); }}>
                   {t('common.cancel')}
                 </button>
-                <button 
-                  type="submit" 
+                <button
+                  type="submit"
                   className="btn btn--primary"
-                  disabled={createMutation.isPending || updateMutation.isPending}
+                  disabled={uploadMutation.isPending || updateMutation.isPending || (!editingDocument && !selectedFile)}
                 >
-                  {createMutation.isPending || updateMutation.isPending ? t('common.loading') : t('common.save')}
+                  {uploadMutation.isPending || updateMutation.isPending ? <><Loader2 size={14} className="animate-spin" /> Envoi...</> : editingDocument ? t('common.save') : 'Télécharger'}
                 </button>
               </div>
             </form>
