@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import type { User } from '../../types';
-import { TaskList } from './TaskList';
 import { MeasurementForm } from './MeasurementForm';
 import { MeasurementList } from './MeasurementList';
 import { SprintBoardView } from './SprintBoardView';
@@ -12,10 +11,10 @@ interface ConstructionDashboardProps {
   onLogout: () => void;
 }
 
-type TabId = 'tasks' | 'measurements' | 'sprint' | 'validation';
+type TabId = 'overview' | 'measurements' | 'sprint' | 'validation';
 
 export function ConstructionDashboard({ user, onLogout }: ConstructionDashboardProps): React.ReactElement {
-  const [activeTab, setActiveTab] = useState<TabId>('tasks');
+  const [activeTab, setActiveTab] = useState<TabId>('overview');
   const [measurementRefresh, setMeasurementRefresh] = useState(0);
 
   function handleMeasurementCreated() {
@@ -23,9 +22,9 @@ export function ConstructionDashboard({ user, onLogout }: ConstructionDashboardP
   }
 
   const tabs = [
-    { id: 'tasks' as TabId, label: 'My Tasks', icon: '📋' },
+    { id: 'overview' as TabId, label: 'Vue d\'ensemble', icon: '�' },
     { id: 'measurements' as TabId, label: 'Measurements', icon: '📏' },
-    { id: 'sprint' as TabId, label: 'Sprint Board', icon: '📊' },
+    { id: 'sprint' as TabId, label: 'Sprint Board', icon: '�' },
     { id: 'validation' as TabId, label: 'Validation', icon: '✓' },
   ];
 
@@ -50,8 +49,11 @@ export function ConstructionDashboard({ user, onLogout }: ConstructionDashboardP
       </nav>
 
       <div className="dashboard-content">
-        {activeTab === 'tasks' && (
-          <TaskList userId={user.id} />
+        {activeTab === 'overview' && (
+          <div className="overview-section">
+            <h3>Vue d'ensemble du projet</h3>
+            <p>Statistiques générales et indicateurs clés de performance.</p>
+          </div>
         )}
 
         {activeTab === 'measurements' && (
@@ -67,7 +69,7 @@ export function ConstructionDashboard({ user, onLogout }: ConstructionDashboardP
         )}
 
         {activeTab === 'sprint' && (
-          <SprintBoardView projectId={1} /> // TODO: Get projectId from user context or selection
+          <SprintBoardView projectId={1} />
         )}
 
         {activeTab === 'validation' && (

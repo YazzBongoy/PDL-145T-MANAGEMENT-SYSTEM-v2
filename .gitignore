@@ -3,3 +3,4 @@ backend/dist/
 frontend/dist/
 frontend/test-results/
 frontend/playwright-report/
+backend/uploads/

@@ -26,6 +26,7 @@ export function AppBar({ user, currentView = 'dashboard', onViewChange, onLogout
     { key: 'projects', label: t('nav.projects'), icon: FolderOpen },
     { key: 'tasks', label: t('nav.tasks'), icon: CheckCircle },
     { key: 'measurements', label: 'Mesures', icon: Ruler },
+    { key: 'resources', label: 'Ressources', icon: Wrench },
     { key: 'enterprises', label: t('enterprises.title'), icon: Building2 },
     { key: 'contracts', label: t('contracts.title'), icon: Clipboard },
     { key: 'documents', label: t('documents.title'), icon: FileText },

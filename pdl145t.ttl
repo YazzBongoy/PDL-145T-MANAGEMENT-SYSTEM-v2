@@ -1,0 +1,136 @@
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix pdl:  <http://example.org/pdl#> .
+
+#################################################################
+# Classes
+#################################################################
+pdl:Projet          rdf:type owl:Class ; rdfs:label "Projet PDL‑145T"@fr .
+pdl:Territoire      rdf:type owl:Class ; rdfs:label "Territoire concerné"@fr .
+pdl:Equipement      rdf:type owl:Class ; rdfs:label "Equipement (école / centre de santé / bâtiment administratif)"@fr .
+pdl:Personne        rdf:type owl:Class ; rdfs:label "Personne responsable du projet"@fr .
+pdl:Entreprise      rdf:type owl:Class ; rdfs:label "Entreprise / sous‑traitant"@fr .
+pdl:Contrat         rdf:type owl:Class ; rdfs:label "Contrat (CFEF – ASCAT‑SPPE)"@fr .
+
+#################################################################
+# Propriétés d’objet
+#################################################################
+pdl:aPourTerritoire   rdf:type owl:ObjectProperty ;
+    rdfs:domain pdl:Projet ;
+    rdfs:range  pdl:Territoire ;
+    rdfs:label "territoire concerné par le projet"@fr .
+
+pdl:contientEquipement rdf:type owl:ObjectProperty ;
+    rdfs:domain pdl:Territoire ;
+    rdfs:range  pdl:Equipement ;
+    rdfs:label "équipement présent dans le territoire"@fr .
+
+pdl:responsable       rdf:type owl:ObjectProperty ;
+    rdfs:domain pdl:Projet ;
+    rdfs:range  pdl:Personne ;
+    rdfs:label "responsable du projet"@fr .
+
+pdl:sousTraitant      rdf:type owl:ObjectProperty ;
+    rdfs:domain pdl:Projet ;
+    rdfs:range  pdl:Entreprise ;
+    rdfs:label "sous‑traitant exécutant les travaux"@fr .
+
+pdl:contratDe         rdf:type owl:ObjectProperty ;
+    rdfs:domain pdl:Projet ;
+    rdfs:range  pdl:Contrat ;
+    rdfs:label "contrat liant les parties"@fr .
+
+#################################################################
+# Propriétés de données
+#################################################################
+pdl:dateDebut         rdf:type owl:DatatypeProperty ;
+    rdfs:domain pdl:Projet ;
+    rdfs:range  xsd:date ;
+    rdfs:label "date de début du projet"@fr .
+
+pdl:montantPayé       rdf:type owl:DatatypeProperty ;
+    rdfs:domain pdl:Contrat ;
+    rdfs:range  xsd:decimal ;
+    rdfs:label "montant payé au sous‑traitant"@fr .
+
+pdl:typeEquipement    rdf:type owl:DatatypeProperty ;
+    rdfs:domain pdl:Equipement ;
+    rdfs:range  xsd:string ;
+    rdfs:label "type d’équipement (école, centre de santé, bâtiment administratif)"@fr .
+
+pdl:nom               rdf:type owl:DatatypeProperty ;
+    rdfs:domain [ rdf:type owl:Class ; owl:unionOf (pdl:Territoire pdl:Personne pdl:Entreprise) ] ;
+    rdfs:range  xsd:string ;
+    rdfs:label "nom de l’entité"@fr .
+
+#################################################################
+# Individus (exemple)
+#################################################################
+# ────── Projet principal
+pdl:PDL145T rdf:type pdl:Projet ;
+    pdl:dateDebut "2022-04-01"^^xsd:date ;          # date indicative – à ajuster
+    pdl:aPourTerritoire pdl:Yumbi , pdl:Mushie , pdl:Kutu ;
+    pdl:sousTraitant pdl:ASCAT_SPPE ;
+    pdl:responsable pdl:JeanKELAW ;
+    pdl:contratDe pdl:ContratLot4 .
+
+# ────── Entreprise / sous‑traitant
+pdl:ASCAT_SPPE rdf:type pdl:Entreprise ;
+    pdl:nom "Groupement ASCAT‑SPPE (ASCAT Sarl – SPPE Sarl)" .
+
+# ────── Personne responsable (exemple)
+pdl:JeanKELAW rdf:type pdl:Personne ;
+    pdl:nom "Jean KELAW" ;
+    pdl:fonction "Coordinateur national CFEF" .
+
+# ────── Territoires
+pdl:Yumbi rdf:type pdl:Territoire ;
+    pdl:nom "Yumbi" .
+
+pdl:Mushie rdf:type pdl:Territoire ;
+    pdl:nom "Mushie" .
+
+pdl:Kutu rdf:type pdl:Territoire ;
+    pdl:nom "Kutu" .
+
+# ────── Equipements du Lot 4 (Kutu) – informations tirées du contrat [3]
+# 8 écoles
+pdl:Kutu_Ecole1 rdf:type pdl:Equipement ; pdl:typeEquipement "École" .
+pdl:Kutu_Ecole2 rdf:type pdl:Equipement ; pdl:typeEquipement "École" .
+pdl:Kutu_Ecole3 rdf:type pdl:Equipement ; pdl:typeEquipement "École" .
+pdl:Kutu_Ecole4 rdf:type pdl:Equipement ; pdl:typeEquipement "École" .
+pdl:Kutu_Ecole5 rdf:type pdl:Equipement ; pdl:typeEquipement "École" .
+pdl:Kutu_Ecole6 rdf:type pdl:Equipement ; pdl:typeEquipement "École" .
+pdl:Kutu_Ecole7 rdf:type pdl:Equipement ; pdl:typeEquipement "École" .
+pdl:Kutu_Ecole8 rdf:type pdl:Equipement ; pdl:typeEquipement "École" .
+
+# 5 centres de santé
+pdl:Kutu_CS1 rdf:type pdl:Equipement ; pdl:typeEquipement "Centre de santé" .
+pdl:Kutu_CS2 rdf:type pdl:Equipement ; pdl:typeEquipement "Centre de santé" .
+pdl:Kutu_CS3 rdf:type pdl:Equipement ; pdl:typeEquipement "Centre de santé" .
+pdl:Kutu_CS4 rdf:type pdl:Equipement ; pdl:typeEquipement "Centre de santé" .
+pdl:Kutu_CS5 rdf:type pdl:Equipement ; pdl:typeEquipement "Centre de santé" .
+
+# 1 bâtiment administratif
+pdl:Kutu_AdminBâtiment rdf:type pdl:Equipement ; pdl:typeEquipement "Bâtiment administratif" .
+
+# Liaison territoire → équipements (Lot 4, Kutu)
+pdl:Kutu pdl:contientEquipement
+        pdl:Kutu_Ecole1 , pdl:Kutu_Ecole2 , pdl:Kutu_Ecole3 , pdl:Kutu_Ecole4 ,
+        pdl:Kutu_Ecole5 , pdl:Kutu_Ecole6 , pdl:Kutu_Ecole7 , pdl:Kutu_Ecole8 ,
+        pdl:Kutu_CS1 , pdl:Kutu_CS2 , pdl:Kutu_CS3 , pdl:Kutu_CS4 , pdl:Kutu_CS5 ,
+        pdl:Kutu_AdminBâtiment .
+
+# ────── Contrat du Lot 4 (extrait du document contractuel) [3]
+pdl:ContratLot4 rdf:type pdl:Contrat ;
+    pdl:montantPayé "0"^^xsd:decimal ;      # le montant réel est indiqué dans les annexes du contrat ; valeur placeholder
+    pdl:nom "Contrat N° Lot 4 – CFEF / PDL‑145T" .
+
+#################################################################
+# Annotations complémentaires (facultatives)
+#################################################################
+pdl:Projet rdfs:comment "Programme de développement local (PDL‑145T) financé par la CFEF et exécuté par le groupement ASCAT‑SPPE." .
+pdl:Territoire rdfs:comment "Un territoire du Province du Mai‑Ndombe où sont réalisés les travaux." .
+pdl:Equipement rdfs:comment "Équipement public : école, centre de santé ou bâtiment administratif." .
