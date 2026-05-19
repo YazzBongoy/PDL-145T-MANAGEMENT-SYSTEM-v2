@@ -93,7 +93,7 @@ export function UserManagementView(): React.ReactElement {
         <div className="phase3-toolbar">
           <div className="phase3-input" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <Search size={16} />
-            <input value={search} onChange={event => setSearch(event.target.value)} placeholder="Search users" style={{ border: 0, outline: 0, background: 'transparent' }} />
+            <input value={search} onChange={event => setSearch(event.target.value)} placeholder="Search users" style={{ border: 0, outline: 0, background: 'transparent', color: 'inherit' }} />
           </div>
           <select className="phase3-select" value={role} onChange={event => setRole(event.target.value)}>
             <option value="">All roles</option>
