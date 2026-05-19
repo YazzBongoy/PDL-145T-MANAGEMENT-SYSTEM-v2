@@ -109,6 +109,8 @@ export function ContractsView() {
     }
   });
 
+  const contractError = createMutation.error || updateMutation.error;
+
   const deleteMutation = useMutation({
     mutationFn: deleteContract,
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['contracts'] })
@@ -200,7 +202,7 @@ export function ContractsView() {
           </div>
           <button 
             className="btn btn--primary" 
-            onClick={() => { setEditingContract(null); setIsModalOpen(true); }}
+            onClick={() => { setEditingContract(null); createMutation.reset(); setIsModalOpen(true); }}
           >
             <Plus size={16} />
             {t('contracts.addContract')}
@@ -346,8 +348,13 @@ export function ContractsView() {
                 <label>{t('tasks.description')}</label>
                 <textarea name="description" defaultValue={editingContract?.Description || ''} rows={3} />
               </div>
+              {contractError && (
+                <p style={{ color: '#ef4444', fontSize: '0.82rem', margin: '4px 0 8px' }}>
+                  {(contractError as Error).message}
+                </p>
+              )}
               <div className="modal-actions">
-                <button type="button" className="btn btn--secondary" onClick={() => setIsModalOpen(false)}>
+                <button type="button" className="btn btn--secondary" onClick={() => { setIsModalOpen(false); createMutation.reset(); updateMutation.reset(); }}>
                   {t('common.cancel')}
                 </button>
                 <button 
