@@ -6,6 +6,8 @@ import { getApiUrl } from '../../api/config';
 import type { Document } from '../../types';
 import './Documents.css';
 
+const auth = () => ({ 'Authorization': `Bearer ${localStorage.getItem('token')}` });
+
 const fetchDocuments = async (): Promise<Document[]> => {
   const response = await fetch(getApiUrl('/api/documents'), {
     headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
@@ -43,9 +45,19 @@ const updateDocument = async ({ id, data }: { id: number; data: Partial<Document
 const deleteDocument = async (id: number): Promise<void> => {
   const response = await fetch(getApiUrl(`/api/documents/${id}`), {
     method: 'DELETE',
-    headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+    headers: auth()
   });
   if (!response.ok) throw new Error('Failed to delete document');
+};
+
+const fetchProjects = async () => {
+  const r = await fetch(getApiUrl('/api/projects'), { headers: auth() });
+  return r.json() as Promise<{ ProjectID: number; Name: string }[]>;
+};
+
+const fetchContracts = async () => {
+  const r = await fetch(getApiUrl('/api/contracts'), { headers: auth() });
+  return r.json() as Promise<{ ContractID: number; ContractNumber: string; Title: string }[]>;
 };
 
 const typeIcons: Record<string, React.ReactNode> = {
@@ -80,6 +92,9 @@ export function DocumentsView() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [dragOver, setDragOver] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const { data: projects } = useQuery({ queryKey: ['projects'], queryFn: fetchProjects });
+  const { data: contracts } = useQuery({ queryKey: ['contracts'], queryFn: fetchContracts });
 
   const { data: documents, isLoading, error } = useQuery({
     queryKey: ['documents'],
@@ -312,12 +327,22 @@ export function DocumentsView() {
               {!editingDocument && (
                 <div className="form-row">
                   <div className="form-group">
-                    <label>Projet (ID)</label>
-                    <input name="projectId" type="number" placeholder="optionnel" />
+                    <label>Projet</label>
+                    <select name="projectId">
+                      <option value="">— Aucun —</option>
+                      {projects?.map(p => (
+                        <option key={p.ProjectID} value={p.ProjectID}>{p.Name}</option>
+                      ))}
+                    </select>
                   </div>
                   <div className="form-group">
-                    <label>Contrat (ID)</label>
-                    <input name="contractId" type="number" placeholder="optionnel" />
+                    <label>Contrat</label>
+                    <select name="contractId">
+                      <option value="">— Aucun —</option>
+                      {contracts?.map(c => (
+                        <option key={c.ContractID} value={c.ContractID}>{c.ContractNumber} – {c.Title}</option>
+                      ))}
+                    </select>
                   </div>
                 </div>
               )}
