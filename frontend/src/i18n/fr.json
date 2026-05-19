@@ -180,10 +180,13 @@
     "role": "Rôle",
     "contact": "Contact",
     "types": {
-      "ASCAT_SARL": "ASCAT SARL",
-      "SPPE_SARL": "SPPE SARL",
-      "CFEF": "CFEF",
-      "OTHER": "Autre"
+      "SPRL": "SPRL (Société Privée à Responsabilité Limitée)",
+      "SARL": "SARL (Société à Responsabilité Limitée)",
+      "SA": "SA (Société Anonyme)",
+      "SNC": "SNC (Société en Nom Collectif)",
+      "SCS": "SCS (Société en Commandite Simple)",
+      "ONG": "ONG (Organisation Non Gouvernementale)",
+      "AUTRES": "Autre"
     },
     "roles": {
       "CHEF_FILE": "Chef de file",

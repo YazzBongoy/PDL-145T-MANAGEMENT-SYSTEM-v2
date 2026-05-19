@@ -1,0 +1,5 @@
+-- AlterTable
+ALTER TABLE "Task" ADD COLUMN     "SiteID" TEXT;
+
+-- AddForeignKey
+ALTER TABLE "Task" ADD CONSTRAINT "Task_SiteID_fkey" FOREIGN KEY ("SiteID") REFERENCES "Site"("SiteID") ON DELETE SET NULL ON UPDATE CASCADE;

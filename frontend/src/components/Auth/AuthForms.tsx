@@ -63,9 +63,9 @@ export function LoginForm({ onLogin, onShowRegister, error, isLoading = false }:
           <p className="auth-subtitle">Welcome back! Please enter your credentials</p>
         </div>
         <div className="card__body">
-          <form onSubmit={handleSubmit} className="login-form">
+          <form onSubmit={handleSubmit} className="login-form" data-testid="login-form">
             {error && (
-              <div id="login-error" className="alert alert--error" role="alert" aria-live="polite">
+              <div id="login-error" className="alert alert--error" role="alert" aria-live="polite" data-testid="error-message">
                 <AlertTriangle className="alert-icon" size={16} aria-hidden="true" />
                 <span>{error}</span>
               </div>
@@ -85,6 +85,7 @@ export function LoginForm({ onLogin, onShowRegister, error, isLoading = false }:
                   aria-invalid={!!(error || fieldErrors.email)}
                   aria-describedby={error ? 'login-error' : undefined}
                   disabled={isLoading}
+                  data-testid="email-input"
                 />
               </div>
               {fieldErrors.email && <span className="field-error">{fieldErrors.email}</span>}
@@ -104,6 +105,7 @@ export function LoginForm({ onLogin, onShowRegister, error, isLoading = false }:
                   aria-invalid={!!(error || fieldErrors.password)}
                   aria-describedby={error ? 'login-error' : undefined}
                   disabled={isLoading}
+                  data-testid="password-input"
                 />
                 <button
                   type="button"
@@ -123,6 +125,7 @@ export function LoginForm({ onLogin, onShowRegister, error, isLoading = false }:
                 type="submit" 
                 className={`btn btn--primary btn--full ${isLoading ? 'loading' : ''}`}
                 disabled={isLoading}
+                data-testid="login-button"
               >
                 {isLoading ? (
                   <>

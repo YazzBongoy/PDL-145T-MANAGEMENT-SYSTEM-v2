@@ -180,10 +180,13 @@
     "role": "Role",
     "contact": "Contact",
     "types": {
-      "ASCAT_SARL": "ASCAT SARL",
-      "SPPE_SARL": "SPPE SARL",
-      "CFEF": "CFEF",
-      "OTHER": "Other"
+      "SPRL": "SPRL (Private Limited Company)",
+      "SARL": "SARL (Limited Liability Company)",
+      "SA": "SA (Public Limited Company)",
+      "SNC": "SNC (General Partnership)",
+      "SCS": "SCS (Limited Partnership)",
+      "ONG": "NGO (Non-Governmental Organisation)",
+      "AUTRES": "Other"
     },
     "roles": {
       "CHEF_FILE": "Lead partner",

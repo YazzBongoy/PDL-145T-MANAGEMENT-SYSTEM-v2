@@ -7,6 +7,7 @@ import {
   updateTask,
   deleteTask,
   completeTask,
+  updateLeafProgress,
 } from '../controllers/tasksController.js';
 import { authenticateJWT, requireAdminOrSupervisor } from '../middleware/index.js';
 
@@ -35,5 +36,8 @@ router.delete('/:id', requireAdminOrSupervisor, deleteTask);
 
 // Mark task as complete
 router.patch('/:id/complete', completeTask);
+
+// Update leaf progress + recalculate parents (weighted average)
+router.patch('/:id/progress', updateLeafProgress);
 
 export default router;

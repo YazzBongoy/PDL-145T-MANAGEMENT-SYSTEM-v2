@@ -14,6 +14,13 @@ export async function getProjects(req: Request, res: Response) {
             Name: true
           }
         },
+        ProjectSites: {
+          include: {
+            Site: {
+              select: { SiteID: true, Name: true, Province: true, Type: true }
+            }
+          }
+        },
         _count: {
           select: {
             Tasks: true,
@@ -76,7 +83,7 @@ export async function getProjectById(req: Request, res: Response) {
 // Create project
 export async function createProject(req: Request, res: Response) {
   try {
-    const { name, description, startDate, endDate, totalBudget, programId } = req.body;
+    const { name, description, startDate, endDate, totalBudget, programId, siteIds } = req.body;
 
     // Validate required fields
     if (!name || !programId) {
@@ -90,15 +97,14 @@ export async function createProject(req: Request, res: Response) {
         StartDate: startDate ? new Date(startDate) : new Date(),
         EndDate: endDate ? new Date(endDate) : null,
         TotalBudget: totalBudget ? parseFloat(totalBudget) : 0,
-        ProgramID: parseInt(programId)
+        ProgramID: parseInt(programId),
+        ProjectSites: siteIds?.length ? {
+          create: siteIds.map((sid: string) => ({ SiteID: sid }))
+        } : undefined
       },
       include: {
-        Program: {
-          select: {
-            ProgramID: true,
-            Name: true
-          }
-        }
+        Program: { select: { ProgramID: true, Name: true } },
+        ProjectSites: { include: { Site: { select: { SiteID: true, Name: true, Province: true, Type: true } } } }
       }
     });
 
@@ -113,7 +119,7 @@ export async function createProject(req: Request, res: Response) {
 export async function updateProject(req: Request, res: Response) {
   try {
     const { id } = req.params;
-    const { name, description, startDate, endDate, totalBudget, status } = req.body;
+    const { name, description, startDate, endDate, totalBudget, status, siteIds } = req.body;
 
     const project = await prisma.project.update({
       where: { ProjectID: parseInt(id) },
@@ -122,15 +128,17 @@ export async function updateProject(req: Request, res: Response) {
         Description: description,
         StartDate: startDate ? new Date(startDate) : undefined,
         EndDate: endDate ? new Date(endDate) : undefined,
-        TotalBudget: totalBudget !== undefined ? parseFloat(totalBudget) : undefined
+        TotalBudget: totalBudget !== undefined ? parseFloat(totalBudget) : undefined,
+        ...(siteIds !== undefined ? {
+          ProjectSites: {
+            deleteMany: {},
+            create: siteIds.map((sid: string) => ({ SiteID: sid }))
+          }
+        } : {})
       },
       include: {
-        Program: {
-          select: {
-            ProgramID: true,
-            Name: true
-          }
-        }
+        Program: { select: { ProgramID: true, Name: true } },
+        ProjectSites: { include: { Site: { select: { SiteID: true, Name: true, Province: true, Type: true } } } }
       }
     });
 

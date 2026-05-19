@@ -215,6 +215,12 @@
     --color-button-secondary-active: var(--color-gray-700);
     --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.3), 0 1px 2px 0 rgba(0, 0, 0, 0.2);
     --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+    --color-bg: #111827;
+    --surface-color: #1f2937;
+    --surface-secondary: #374151;
+    --primary-color: #60a5fa;
+    --border-hover: #4b5563;
+    --text-muted: #6b7280;
   }
 }
 
@@ -249,4 +255,10 @@
   --color-button-secondary-active: var(--color-gray-700);
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3), 0 1px 2px 0 rgba(0, 0, 0, 0.2);
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+  --color-bg: #111827;
+  --surface-color: #1f2937;
+  --surface-secondary: #374151;
+  --primary-color: #60a5fa;
+  --border-hover: #4b5563;
+  --text-muted: #6b7280;
 }

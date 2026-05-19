@@ -132,22 +132,37 @@
 }
 
 /* Enterprise Type Colors */
-.type-ascat {
+.type-sprl {
   background: #dbeafe;
   color: #1e40af;
 }
 
-.type-sppe {
+.type-sarl {
   background: #d1fae5;
   color: #065f46;
 }
 
-.type-cfef {
+.type-sa {
   background: #fef3c7;
   color: #92400e;
 }
 
-.type-other {
+.type-snc {
+  background: #ede9fe;
+  color: #5b21b6;
+}
+
+.type-scs {
+  background: #fce7f3;
+  color: #9d174d;
+}
+
+.type-ong {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.type-autres {
   background: #f3f4f6;
   color: #4b5563;
 }
@@ -308,7 +323,7 @@
   border: 1px solid var(--border-color, #d1d5db);
   border-radius: 8px;
   font-size: 0.875rem;
-  background: white;
+  background: var(--surface-color, white);
 }
 
 .form-group input:focus,

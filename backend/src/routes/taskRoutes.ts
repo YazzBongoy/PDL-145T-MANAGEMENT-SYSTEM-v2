@@ -6,7 +6,8 @@ import {
   updateTask,
   deleteTask,
   getTaskHierarchy,
-  getSubtasks
+  getSubtasks,
+  updateLeafProgress
 } from '../controllers/taskController.js';
 import { requireAuth } from '../middleware/authMiddleware.js';
 
@@ -22,6 +23,7 @@ router.get('/:id', getTaskById);
 router.get('/:id/subtasks', getSubtasks);
 router.post('/', createTask);
 router.put('/:id', updateTask);
+router.patch('/:id/progress', updateLeafProgress);
 router.delete('/:id', deleteTask);
 
 export default router;

@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Task" ADD COLUMN     "SortOrder" INTEGER NOT NULL DEFAULT 0;

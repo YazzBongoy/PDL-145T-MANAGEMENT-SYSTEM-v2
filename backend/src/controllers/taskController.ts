@@ -6,13 +6,15 @@ const prisma = new PrismaClient();
 // Get all tasks with optional filtering
 export async function getTasks(req: Request, res: Response) {
   try {
-    const { projectId, parentTaskId, level } = req.query;
+    const { projectId, parentTaskId, level, siteId, completionStatus } = req.query;
     
     const where: any = {};
     if (projectId) where.ProjectID = parseInt(projectId as string);
     if (parentTaskId) where.ParentTaskID = parseInt(parentTaskId as string);
     if (parentTaskId === 'null') where.ParentTaskID = null;
     if (level) where.Level = parseInt(level as string);
+    if (siteId) where.SiteID = siteId as string;
+    if (completionStatus) where.CompletionStatus = completionStatus as string;
 
     const tasks = await prisma.task.findMany({
       where,
@@ -40,9 +42,10 @@ export async function getTasks(req: Request, res: Response) {
           }
         }
       },
-      orderBy: {
-        CreatedAt: 'desc'
-      }
+      orderBy: [
+        { SortOrder: 'asc' },
+        { CreatedAt: 'desc' }
+      ]
     });
 
     res.json(tasks);
@@ -345,5 +348,70 @@ export async function getSubtasks(req: Request, res: Response) {
   } catch (error) {
     console.error('Error fetching subtasks:', error);
     res.status(500).json({ error: 'Failed to fetch subtasks' });
+  }
+}
+
+// ─── Recalcul pondéré des parents ───────────────────────────────────────────
+
+async function recalcParent(parentId: number): Promise<void> {
+  const children = await prisma.task.findMany({
+    where: { ParentTaskID: parentId },
+    select: { progressPercentage: true, Weight: true },
+  });
+  if (children.length === 0) return;
+
+  const totalWeight = children.reduce((s, c) => s + Number(c.Weight || 0), 0);
+  let weighted = 0;
+  if (totalWeight > 0) {
+    weighted = children.reduce((s, c) => s + (c.progressPercentage * Number(c.Weight || 0)), 0) / totalWeight;
+  } else {
+    weighted = children.reduce((s, c) => s + c.progressPercentage, 0) / children.length;
+  }
+  const progress = Math.round(weighted);
+  const status = progress === 0 ? 'NotStarted' : progress >= 100 ? 'Completed' : 'InProgress';
+
+  await prisma.task.update({
+    where: { TaskID: parentId },
+    data: { progressPercentage: progress, CompletionStatus: status },
+  });
+
+  const parent = await prisma.task.findUnique({
+    where: { TaskID: parentId },
+    select: { ParentTaskID: true },
+  });
+  if (parent?.ParentTaskID) await recalcParent(parent.ParentTaskID);
+}
+
+// Update leaf task progress and propagate weighted average to parents
+export async function updateLeafProgress(req: Request, res: Response) {
+  try {
+    const taskId = parseInt(req.params.id);
+    const { progressPercentage, CompletionStatus } = req.body;
+
+    const task = await prisma.task.findUnique({ where: { TaskID: taskId } });
+    if (!task) { res.status(404).json({ error: 'Task not found' }); return; }
+
+    const progress = Number(progressPercentage ?? task.progressPercentage);
+    const status: string = CompletionStatus ?? (progress === 0 ? 'NotStarted' : progress >= 100 ? 'Completed' : 'InProgress');
+
+    const updated = await prisma.task.update({
+      where: { TaskID: taskId },
+      data: { progressPercentage: progress, CompletionStatus: status as any },
+    });
+
+    if (task.ParentTaskID) await recalcParent(task.ParentTaskID);
+
+    const ancestors: any[] = [];
+    let cur: any = updated;
+    while (cur?.ParentTaskID) {
+      const parent = await prisma.task.findUnique({ where: { TaskID: cur.ParentTaskID } });
+      if (parent) ancestors.push(parent);
+      cur = parent;
+    }
+
+    res.json({ updated, ancestors });
+  } catch (error) {
+    console.error('Error updating leaf progress:', error);
+    res.status(500).json({ error: 'Failed to update progress' });
   }
 }

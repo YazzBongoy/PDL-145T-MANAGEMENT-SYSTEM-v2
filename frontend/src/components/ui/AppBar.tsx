@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { BarChart3, Wrench, TrendingUp, Settings, X, FolderTree, FolderOpen, CheckCircle, Search, Command, Building2, FileText, Clipboard, Users, Bell, KeyRound, FileBarChart } from 'lucide-react';
+import { BarChart3, Wrench, TrendingUp, Settings, X, FolderTree, FolderOpen, CheckCircle, Search, Command, Building2, FileText, Clipboard, Users, Bell, KeyRound, FileBarChart, Ruler } from 'lucide-react';
 import { Logo } from './Logo';
 import { GlobalSearch } from '../GlobalSearch';
 import type { User } from '../../types';
@@ -25,6 +25,7 @@ export function AppBar({ user, currentView = 'dashboard', onViewChange, onLogout
     { key: 'programs', label: t('nav.programs'), icon: FolderTree },
     { key: 'projects', label: t('nav.projects'), icon: FolderOpen },
     { key: 'tasks', label: t('nav.tasks'), icon: CheckCircle },
+    { key: 'measurements', label: 'Mesures', icon: Ruler },
     { key: 'enterprises', label: t('enterprises.title'), icon: Building2 },
     { key: 'contracts', label: t('contracts.title'), icon: Clipboard },
     { key: 'documents', label: t('documents.title'), icon: FileText },

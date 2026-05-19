@@ -21,28 +21,38 @@ model Program {
 }
 
 model Project {
-  ProjectID        Int               @id @default(autoincrement())
-  ProgramID        Int
-  Name             String
-  Description      String?
-  StartDate        DateTime
-  EndDate          DateTime?
-  TotalBudget      Decimal
-  CreatedAt        DateTime          @default(now())
-  UpdatedAt        DateTime          @updatedAt
-  ProjectResources ProjectResource[]
-  Reports          Report[]
-  Sprints          Sprint[]
-  Tasks            Task[]
-  Program          Program           @relation(fields: [ProgramID], references: [ProgramID])
-  Documents        Document[]
-  Contracts        Contract[]
+  ProjectID          Int               @id @default(autoincrement())
+  ProgramID          Int
+  Name               String
+  Description        String?
+  StartDate          DateTime
+  EndDate            DateTime?
+  TotalBudget        Decimal
+  CreatedAt          DateTime          @default(now())
+  UpdatedAt          DateTime          @updatedAt
+  ProjectResources   ProjectResource[]
+  Reports            Report[]
+  Sprints            Sprint[]
+  Tasks              Task[]
+  Program            Program           @relation(fields: [ProgramID], references: [ProgramID])
+  Documents          Document[]
+  Contracts          Contract[]
   ProjectEnterprises ProjectEnterprise[]
+  ProjectSites       ProjectSite[]
+}
+
+model ProjectSite {
+  ProjectID Int
+  SiteID    String
+  Project   Project @relation(fields: [ProjectID], references: [ProjectID], onDelete: Cascade)
+  Site      Site    @relation(fields: [SiteID], references: [SiteID], onDelete: Cascade)
+  @@id([ProjectID, SiteID])
 }
 
 model Task {
   TaskID             Int                  @id @default(autoincrement())
   ProjectID          Int
+  SiteID             String?
   ParentTaskID       Int?
   Name               String
   Description        String?
@@ -57,10 +67,13 @@ model Task {
   progressPercentage Int                  @default(0)
   statusReason       String?
   Level              Int                  @default(1) // Niveau 1, 2 ou 3
+  SortOrder          Int                  @default(0) // Ordre séquentiel dans le planning
+  Weight             Decimal?             @default(0) // Poids physique (%) pour la moyenne pondérée
   ouvrageType        OuvrageType?         // Type d'ouvrage pour les tâches de construction
   Expenses           Expense[]
   Measurements       Measurement[]
   Project            Project              @relation(fields: [ProjectID], references: [ProjectID])
+  Site               Site?                @relation("TaskSite", fields: [SiteID], references: [SiteID])
   Sprint             Sprint?              @relation(fields: [SprintID], references: [SprintID])
   TaskResources      TaskResource[]
   Validations        Validation[]
@@ -180,6 +193,8 @@ model Site {
   Measurements Measurement[]
   Territory    Territory     @relation(fields: [TerritoryID], references: [TerritoryID])
   Validations  Validation[]
+  ProjectSites ProjectSite[]
+  Tasks        Task[]        @relation("TaskSite")
 }
 
 model User {
@@ -586,10 +601,13 @@ model ReportTemplate {
 
 // Enums for Phase 2
 enum EnterpriseType {
-  ASCAT_SARL
-  SPPE_SARL
-  CFEF
-  OTHER
+  SPRL
+  SARL
+  SA
+  SNC
+  SCS
+  ONG
+  AUTRES
 }
 
 enum EnterpriseRole {

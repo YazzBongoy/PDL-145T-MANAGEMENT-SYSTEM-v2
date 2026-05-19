@@ -223,7 +223,7 @@
 }
 
 .modal-container {
-  background: white;
+  background: var(--surface-color, white);
   border-radius: 12px;
   width: 100%;
   max-width: 600px;
@@ -263,7 +263,7 @@
   margin: 0;
   font-size: 1.25rem;
   font-weight: 600;
-  color: #111827;
+  color: var(--color-text-primary, #111827);
 }
 
 .modal-close-btn {
@@ -383,7 +383,7 @@
 
 .delete-warning-text {
   font-size: 1rem;
-  color: #111827;
+  color: var(--color-text-primary, #111827);
   margin-bottom: 0.5rem;
 }
 
@@ -411,7 +411,7 @@
 .device-info-box .value {
   font-size: 0.875rem;
   font-weight: 500;
-  color: #111827;
+  color: var(--color-text-primary, #111827);
 }
 
 .animate-spin {

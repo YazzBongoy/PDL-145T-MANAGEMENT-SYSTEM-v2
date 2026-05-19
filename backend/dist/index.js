@@ -38,11 +38,11 @@ const app = express();
 const PORT = process.env.PORT || 8001;
 // Initialize Prisma client
 const prisma = new PrismaClient();
-// Middleware - CORS configuration for Render.com and local development
+// Middleware - CORS configuration for Railway and local development
 const allowedOrigins = [
     'http://localhost:5173',
     'http://localhost:3000',
-    'https://pdl145t-frontend.onrender.com',
+    'http://localhost:80',
 ];
 if (process.env.FRONTEND_URL) {
     allowedOrigins.push(process.env.FRONTEND_URL);
@@ -54,6 +54,10 @@ app.use(cors({
 app.use(express.json());
 // Store prisma client in app locals for route access
 app.locals.prisma = prisma;
+if (!process.env.JWT_SECRET && process.env.NODE_ENV === 'production') {
+    console.error('FATAL: JWT_SECRET environment variable is not set in production.');
+    process.exit(1);
+}
 const JWT_SECRET = process.env.JWT_SECRET || 'dev_secret';
 // Test route
 app.get('/', (req, res) => {
@@ -291,6 +295,34 @@ app.use('/api/users', userRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/permissions', permissionRoutes);
 app.use('/api/report-templates', reportTemplateRoutes);
+// Sites by project
+app.get('/api/projects/:projectId/sites', authenticateJWT, async (req, res) => {
+    try {
+        const projectId = Number(req.params.projectId);
+        const projectSites = await prisma.projectSite.findMany({
+            where: { ProjectID: projectId },
+            include: { Site: { include: { Territory: { select: { Name: true } } } } },
+            orderBy: { Site: { Name: 'asc' } }
+        });
+        res.json(projectSites.map(ps => ps.Site));
+    }
+    catch (error) {
+        res.status(500).json({ error: 'Failed to fetch project sites' });
+    }
+});
+// Sites endpoint
+app.get('/api/sites', authenticateJWT, async (req, res) => {
+    try {
+        const sites = await prisma.site.findMany({
+            include: { Territory: { select: { TerritoryID: true, Name: true } } },
+            orderBy: { Name: 'asc' }
+        });
+        res.json(sites);
+    }
+    catch (error) {
+        res.status(500).json({ error: 'Failed to fetch sites' });
+    }
+});
 // User registration
 app.post('/auth/register', async (req, res) => {
     const { name, email, password, role } = req.body;
@@ -413,7 +445,7 @@ app.delete('/api/projects/:id', authenticateJWT, requireAdminOrSupervisor, async
 // Create Task
 app.post('/api/projects/:projectId/tasks', authenticateJWT, requireAdminOrSupervisor, async (req, res) => {
     const projectId = Number(req.params.projectId);
-    const { Name, Description, Duration, AssignedTo, CompletionStatus } = req.body;
+    const { Name, Description, Duration, AssignedTo, CompletionStatus, SiteID } = req.body;
     if (!Name) {
         res.status(400).json({ error: 'Name is required.' });
         return;
@@ -426,20 +458,29 @@ app.post('/api/projects/:projectId/tasks', authenticateJWT, requireAdminOrSuperv
             Duration: Duration ? Number(Duration) : null,
             AssignedTo: AssignedTo || null,
             CompletionStatus: CompletionStatus || 'NotStarted',
+            SiteID: SiteID || null,
         },
+        include: { Site: { select: { SiteID: true, Name: true, Province: true, Type: true } } }
     });
     res.status(201).json(task);
 });
 // List Tasks by Project
 app.get('/api/projects/:projectId/tasks', authenticateJWT, async (req, res) => {
     const projectId = Number(req.params.projectId);
-    const tasks = await prisma.task.findMany({ where: { ProjectID: projectId }, orderBy: { CreatedAt: 'desc' } });
+    const tasks = await prisma.task.findMany({
+        where: { ProjectID: projectId },
+        include: { Site: { select: { SiteID: true, Name: true, Province: true, Type: true } } },
+        orderBy: { SortOrder: 'asc' }
+    });
     res.json(tasks);
 });
 // Get Task Details
 app.get('/api/tasks/:id', authenticateJWT, async (req, res) => {
     const id = Number(req.params.id);
-    const task = await prisma.task.findUnique({ where: { TaskID: id } });
+    const task = await prisma.task.findUnique({
+        where: { TaskID: id },
+        include: { Site: { select: { SiteID: true, Name: true, Province: true, Type: true } } }
+    });
     if (!task) {
         res.status(404).json({ error: 'Task not found' });
         return;
@@ -455,6 +496,7 @@ app.put('/api/tasks/:id', authenticateJWT, async (req, res) => {
         res.status(404).json({ error: 'Task not found' });
         return;
     }
+    const { SiteID, progressPercentage } = req.body;
     const updated = await prisma.task.update({
         where: { TaskID: id },
         data: {
@@ -462,7 +504,10 @@ app.put('/api/tasks/:id', authenticateJWT, async (req, res) => {
             Duration: Duration !== undefined ? Number(Duration) : task.Duration,
             AssignedTo: AssignedTo ?? task.AssignedTo,
             CompletionStatus: CompletionStatus ?? task.CompletionStatus,
+            SiteID: SiteID !== undefined ? (SiteID || null) : task.SiteID,
+            ...(progressPercentage !== undefined && { progressPercentage: Number(progressPercentage) }),
         },
+        include: { Site: { select: { SiteID: true, Name: true, Province: true, Type: true } } }
     });
     res.json(updated);
 });

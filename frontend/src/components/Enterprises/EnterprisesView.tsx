@@ -53,10 +53,13 @@ const deleteEnterprise = async (id: number): Promise<void> => {
 };
 
 const typeColors: Record<string, string> = {
-  'ASCAT_SARL': 'type-ascat',
-  'SPPE_SARL': 'type-sppe',
-  'CFEF': 'type-cfef',
-  'OTHER': 'type-other'
+  'SPRL': 'type-sprl',
+  'SARL': 'type-sarl',
+  'SA': 'type-sa',
+  'SNC': 'type-snc',
+  'SCS': 'type-scs',
+  'ONG': 'type-ong',
+  'AUTRES': 'type-autres'
 };
 
 const roleColors: Record<string, string> = {
@@ -252,11 +255,14 @@ export function EnterprisesView() {
               <div className="form-row">
                 <div className="form-group">
                   <label>{t('enterprises.type')}</label>
-                  <select name="type" defaultValue={editingEnterprise?.Type || 'OTHER'}>
-                    <option value="ASCAT_SARL">{t('enterprises.types.ASCAT_SARL')}</option>
-                    <option value="SPPE_SARL">{t('enterprises.types.SPPE_SARL')}</option>
-                    <option value="CFEF">{t('enterprises.types.CFEF')}</option>
-                    <option value="OTHER">{t('enterprises.types.OTHER')}</option>
+                  <select name="type" defaultValue={editingEnterprise?.Type || 'AUTRES'}>
+                    <option value="SPRL">{t('enterprises.types.SPRL')}</option>
+                    <option value="SARL">{t('enterprises.types.SARL')}</option>
+                    <option value="SA">{t('enterprises.types.SA')}</option>
+                    <option value="SNC">{t('enterprises.types.SNC')}</option>
+                    <option value="SCS">{t('enterprises.types.SCS')}</option>
+                    <option value="ONG">{t('enterprises.types.ONG')}</option>
+                    <option value="AUTRES">{t('enterprises.types.AUTRES')}</option>
                   </select>
                 </div>
                 <div className="form-group">

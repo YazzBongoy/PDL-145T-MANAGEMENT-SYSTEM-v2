@@ -1,5 +1,5 @@
 .task-hierarchy {
-  background: white;
+  background: var(--surface-color, white);
   border-radius: 12px;
   padding: 24px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
@@ -8,7 +8,7 @@
 .hierarchy-title {
   font-size: 1.25rem;
   font-weight: 600;
-  color: #1a1a2e;
+  color: var(--color-text-primary, #1a1a2e);
   margin: 0 0 16px 0;
 }
 
@@ -61,7 +61,7 @@
 }
 
 .task-item {
-  background: white;
+  background: var(--surface-color, white);
   border: 1px solid #e2e8f0;
   border-radius: 8px;
   padding: 12px 16px;
@@ -150,7 +150,7 @@
 
 .task-name {
   font-weight: 600;
-  color: #1a1a2e;
+  color: var(--color-text-primary, #1a1a2e);
   font-size: 0.95rem;
 }
 
@@ -277,7 +277,7 @@
   padding: 48px;
   text-align: center;
   border-radius: 12px;
-  background: white;
+  background: var(--surface-color, white);
 }
 
 .hierarchy-loading {

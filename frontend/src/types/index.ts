@@ -235,10 +235,13 @@ export interface Device {
 
 // Phase 2: Enterprise Types
 export const EnterpriseType = {
-  ASCAT_SARL: 'ASCAT_SARL',
-  SPPE_SARL: 'SPPE_SARL',
-  CFEF: 'CFEF',
-  OTHER: 'OTHER'
+  SPRL: 'SPRL',
+  SARL: 'SARL',
+  SA: 'SA',
+  SNC: 'SNC',
+  SCS: 'SCS',
+  ONG: 'ONG',
+  AUTRES: 'AUTRES'
 } as const;
 export type EnterpriseType = typeof EnterpriseType[keyof typeof EnterpriseType];
 

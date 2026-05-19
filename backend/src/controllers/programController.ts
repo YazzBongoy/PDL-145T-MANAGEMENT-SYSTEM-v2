@@ -15,6 +15,11 @@ export async function getPrograms(req: Request, res: Response) {
             StartDate: true,
             EndDate: true,
             TotalBudget: true,
+            ProjectSites: {
+              include: {
+                Site: { select: { SiteID: true, Name: true, Province: true, Type: true } }
+              }
+            },
             _count: {
               select: {
                 Tasks: true

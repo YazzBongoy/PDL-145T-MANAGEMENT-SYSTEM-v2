@@ -23,7 +23,7 @@
 
 .workflow-header h3 {
   margin: 0;
-  color: #333;
+  color: var(--color-text-primary, #333);
   font-size: 18px;
 }
 
@@ -51,7 +51,7 @@
   padding: 15px;
   border: 2px solid #ddd;
   border-radius: 6px;
-  background: white;
+  background: var(--surface-color, white);
   transition: all 0.3s ease;
 }
 

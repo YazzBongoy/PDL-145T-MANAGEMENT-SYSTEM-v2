@@ -12,6 +12,13 @@
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  /* Aliases used across components */
+  --color-bg: #f9fafb;
+  --surface-color: #ffffff;
+  --surface-secondary: #f3f4f6;
+  --primary-color: #3b82f6;
+  --border-hover: #d1d5db;
+  --text-muted: #9ca3af;
 }
 
 [data-theme="dark"] {
@@ -27,6 +34,13 @@
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
+  /* Aliases — dark overrides */
+  --color-bg: #111827;
+  --surface-color: #1f2937;
+  --surface-secondary: #374151;
+  --primary-color: #60a5fa;
+  --border-hover: #4b5563;
+  --text-muted: #6b7280;
 }
 
 /* Smooth theme transition */

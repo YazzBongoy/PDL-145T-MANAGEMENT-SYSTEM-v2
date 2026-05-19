@@ -1,23 +1,31 @@
 import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Plus, Search, CheckCircle, Clock, AlertCircle, Loader2, Edit2, Trash2, Calendar, User, Building2 } from 'lucide-react';
+import { CheckCircle, Clock, AlertCircle, Loader2, ChevronDown, ChevronRight, MapPin, Filter } from 'lucide-react';
 import './Tasks.css';
 import { getApiUrl } from '../../api/config';
-import { ConstructionStepsView } from './ConstructionStepsView';
+
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+interface Site {
+  SiteID: string;
+  Name: string;
+  Type: string;
+  Province: string;
+}
 
 interface Task {
   TaskID: number;
   ProjectID: number;
+  SiteID: string | null;
+  ParentTaskID: number | null;
   Name: string;
-  Description: string | null;
-  Duration: number | null;
-  AssignedTo: string | null;
-  CompletionStatus: 'NotStarted' | 'InProgress' | 'Completed' | 'Blocked';
-  CreatedAt: string;
-  UpdatedAt: string;
-  ouvrageType?: 'ECOLE' | 'CENTRE_SANTE' | 'BATIMENT_ADMINISTRATIF';
-  progressPercentage?: number;
+  CompletionStatus: string;
+  progressPercentage: number;
+  Level: number;
+  SortOrder: number;
+  Weight: number;
+  Site?: Site | null;
+  children?: Task[];
 }
 
 interface Project {
@@ -25,410 +33,306 @@ interface Project {
   Name: string;
 }
 
-interface UserType {
-  id: number;
-  name: string;
-  email: string;
+// ─── Constants ────────────────────────────────────────────────────────────────
+
+const STATUS_LABELS: Record<string, string> = {
+  NotStarted: 'Non commencé',
+  InProgress: 'En cours',
+  Completed: 'Terminé',
+  Blocked: 'Bloqué',
+};
+
+const STATUS_COLORS: Record<string, string> = {
+  NotStarted: '#94a3b8',
+  InProgress: '#3b82f6',
+  Completed: '#22c55e',
+  Blocked: '#ef4444',
+};
+
+const TYPE_LABEL: Record<string, string> = {
+  ECOLE_PRIMAIRE: 'EP',
+  CENTRE_DE_SANTE: 'CS',
+  BATIMENT_ADMINISTRATIF: 'BA',
+};
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+const auth = () => ({ 'Authorization': `Bearer ${localStorage.getItem('token')}`, 'Content-Type': 'application/json' });
+
+function buildTree(flat: Task[]): Task[] {
+  const sorted = [...flat].sort((a, b) => a.SortOrder - b.SortOrder);
+  const map = new Map<number, Task>();
+  sorted.forEach(t => map.set(t.TaskID, { ...t, children: [] }));
+  const roots: Task[] = [];
+  map.forEach(t => {
+    if (t.ParentTaskID && map.has(t.ParentTaskID)) map.get(t.ParentTaskID)!.children!.push(t);
+    else if (!t.ParentTaskID) roots.push(t);
+  });
+  return roots;
 }
 
-const fetchTasks = async (): Promise<Task[]> => {
-  const response = await fetch(getApiUrl('/api/tasks'), {
-    headers: {
-      'Authorization': `Bearer ${localStorage.getItem('token')}`
-    }
-  });
-  if (!response.ok) throw new Error('Failed to fetch tasks');
-  return response.json();
-};
-
-const fetchProjects = async (): Promise<Project[]> => {
-  const response = await fetch(getApiUrl('/api/projects'), {
-    headers: {
-      'Authorization': `Bearer ${localStorage.getItem('token')}`
-    }
-  });
-  if (!response.ok) throw new Error('Failed to fetch projects');
-  return response.json();
-};
-
-const fetchUsers = async (): Promise<UserType[]> => {
-  const response = await fetch(getApiUrl('/api/users'), {
-    headers: {
-      'Authorization': `Bearer ${localStorage.getItem('token')}`
-    }
-  });
-  if (!response.ok) throw new Error('Failed to fetch users');
-  return response.json();
-};
-
-const createTask = async (data: Omit<Task, 'TaskID' | 'CreatedAt' | 'UpdatedAt'>): Promise<Task> => {
-  const response = await fetch(`/api/projects/${data.ProjectID}/tasks`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${localStorage.getItem('token')}`
-    },
-    body: JSON.stringify(data)
-  });
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.error || 'Failed to create task');
-  }
-  return response.json();
-};
-
-const updateTask = async ({ id, data }: { id: number; data: Partial<Task> }): Promise<Task> => {
-  const response = await fetch(`/api/tasks/${id}`, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${localStorage.getItem('token')}`
-    },
-    body: JSON.stringify(data)
-  });
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.error || 'Failed to update task');
-  }
-  return response.json();
-};
-
-const deleteTask = async (id: number): Promise<void> => {
-  const response = await fetch(`/api/tasks/${id}`, {
-    method: 'DELETE',
-    headers: {
-      'Authorization': `Bearer ${localStorage.getItem('token')}`
-    }
-  });
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.error || 'Failed to delete task');
-  }
-};
-
-const statusColors: Record<string, string> = {
-  'NotStarted': 'status-not-started',
-  'InProgress': 'status-in-progress',
-  'Completed': 'status-completed',
-  'Blocked': 'status-blocked',
-  'NOT_STARTED': 'status-not-started',
-  'IN_PROGRESS': 'status-in-progress',
-  'COMPLETED': 'status-completed',
-  'BLOCKED': 'status-blocked'
-};
-
-const statusLabels: Record<string, string> = {
-  'NotStarted': 'Not Started',
-  'InProgress': 'In Progress',
-  'Completed': 'Completed',
-  'Blocked': 'Blocked',
-  'NOT_STARTED': 'Not Started',
-  'IN_PROGRESS': 'In Progress',
-  'COMPLETED': 'Completed',
-  'BLOCKED': 'Blocked'
-};
-
-export function TasksView() {
-  const { t } = useTranslation();
-  const [searchQuery, setSearchQuery] = useState('');
-  const [statusFilter, setStatusFilter] = useState<string>('');
-  const [projectFilter, setProjectFilter] = useState<string>('');
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingTask, setEditingTask] = useState<Task | null>(null);
-  const [viewingTaskSteps, setViewingTaskSteps] = useState<Task | null>(null);
-  
-  const queryClient = useQueryClient();
-
-  const { data: tasks, isLoading, error } = useQuery({
-    queryKey: ['tasks'],
-    queryFn: fetchTasks
-  });
-
-  const { data: projects } = useQuery({
-    queryKey: ['projects'],
-    queryFn: fetchProjects
-  });
-
-  const { data: users } = useQuery({
-    queryKey: ['users'],
-    queryFn: fetchUsers
-  });
-
-  const createMutation = useMutation({
-    mutationFn: createTask,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['tasks'] });
-      setIsModalOpen(false);
-    }
-  });
-
-  const updateMutation = useMutation({
-    mutationFn: updateTask,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['tasks'] });
-      setIsModalOpen(false);
-      setEditingTask(null);
-    }
-  });
-
-  const deleteMutation = useMutation({
-    mutationFn: deleteTask,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['tasks'] });
-    }
-  });
-
-  const filteredTasks = tasks?.filter(t => {
-    const matchesSearch = t.Name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         t.Description?.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesStatus = !statusFilter || t.CompletionStatus === statusFilter;
-    const matchesProject = !projectFilter || t.ProjectID === Number(projectFilter);
-    return matchesSearch && matchesStatus && matchesProject;
-  }) || [];
-
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    const data: Omit<Task, 'TaskID' | 'CreatedAt' | 'UpdatedAt'> = {
-      Name: formData.get('name') as string,
-      Description: formData.get('description') as string || null,
-      Duration: formData.get('duration') ? Number(formData.get('duration')) : null,
-      AssignedTo: formData.get('assignedTo') as string || null,
-      CompletionStatus: formData.get('status') as Task['CompletionStatus'],
-      ProjectID: Number(formData.get('projectId')),
-      ouvrageType: formData.get('ouvrageType') as Task['ouvrageType']
-    };
-
-    if (editingTask) {
-      updateMutation.mutate({ id: editingTask.TaskID, data });
-    } else {
-      createMutation.mutate(data);
-    }
+function countStats(tasks: Task[]): { total: number; done: number; inProgress: number; blocked: number } {
+  let total = 0, done = 0, inProgress = 0, blocked = 0;
+  const walk = (t: Task) => {
+    total++;
+    if (t.CompletionStatus === 'Completed') done++;
+    else if (t.CompletionStatus === 'InProgress') inProgress++;
+    else if (t.CompletionStatus === 'Blocked') blocked++;
+    t.children?.forEach(walk);
   };
+  tasks.forEach(walk);
+  return { total, done, inProgress, blocked };
+}
 
-  const handleEdit = (task: Task) => {
-    setEditingTask(task);
-    setIsModalOpen(true);
-  };
+// ─── TaskRow ──────────────────────────────────────────────────────────────────
 
-  const handleDelete = (task: Task) => {
-    if (confirm(`Are you sure you want to delete "${task.Name}"?`)) {
-      deleteMutation.mutate(task.TaskID);
-    }
-  };
-
-  const getProjectName = (projectId: number) => {
-    return projects?.find(p => p.ProjectID === projectId)?.Name || `Project ${projectId}`;
-  };
+function TaskRow({ task, depth, onUpdate }: {
+  task: Task;
+  depth: number;
+  onUpdate: (id: number, status: string, progress: number, level: number) => void;
+}) {
+  const [open, setOpen] = useState(depth < 1);
+  const [localProgress, setLocalProgress] = useState(task.progressPercentage);
+  const hasChildren = (task.children?.length || 0) > 0;
+  const isLeaf = task.Level === 3;
+  const isCalc = !isLeaf; // Level 1 et 2 sont calculés automatiquement
 
   return (
-    <div className="tasks-view">
-      <div className="section-header">
-        <div className="section-title">
-          <CheckCircle className="section-icon" size={24} />
-          <h2>{t('tasks.title')}</h2>
-        </div>
-        <div className="section-actions">
-          <div className="filters-row">
-            <div className="search-box">
-              <Search size={16} />
-              <input
-                type="text"
-                placeholder={t('common.search') + '...'}
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-            </div>
-            <select 
-              className="filter-select" 
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-            >
-              <option value="">{t('tasks.status')}</option>
-              <option value="NotStarted">{t('tasks.statusValues.notStarted')}</option>
-              <option value="InProgress">{t('tasks.statusValues.inProgress')}</option>
-              <option value="Completed">{t('tasks.statusValues.completed')}</option>
-              <option value="Blocked">{t('tasks.statusValues.blocked')}</option>
-            </select>
-            <select 
-              className="filter-select"
-              value={projectFilter}
-              onChange={(e) => setProjectFilter(e.target.value)}
-            >
-              <option value="">{t('projects.title')}</option>
-              {projects?.map(p => (
-                <option key={p.ProjectID} value={p.ProjectID}>{p.Name}</option>
-              ))}
-            </select>
+    <>
+      <tr className={`tv-row tv-row--d${Math.min(depth, 2)} ${isCalc ? 'tv-row--calc' : ''}`}>
+        <td style={{ paddingLeft: `${8 + depth * 20}px` }}>
+          <div className="tv-name-cell">
+            {hasChildren ? (
+              <button className="tv-toggle" onClick={() => setOpen(o => !o)}>
+                {open ? <ChevronDown size={13} /> : <ChevronRight size={13} />}
+              </button>
+            ) : <span className="tv-toggle-gap" />}
+            {task.CompletionStatus === 'Completed' && <CheckCircle size={13} color="#22c55e" />}
+            {task.CompletionStatus === 'InProgress' && <Clock size={13} color="#3b82f6" />}
+            {task.CompletionStatus === 'Blocked' && <AlertCircle size={13} color="#ef4444" />}
+            {task.CompletionStatus === 'NotStarted' && <Clock size={13} color="#94a3b8" />}
+            <span className={depth === 0 ? 'tv-name tv-name--l1' : depth === 1 ? 'tv-name tv-name--l2' : 'tv-name'}>{task.Name}</span>
+            {isLeaf && task.Weight > 0 && <span className="tv-weight">{task.Weight}%</span>}
           </div>
-          <button className="btn btn--primary" onClick={() => { setEditingTask(null); setIsModalOpen(true); }}>
-            <Plus size={16} />
-            {t('tasks.addTask')}
-          </button>
-        </div>
-      </div>
-
-      {isLoading && (
-        <div className="loading-state">
-          <Loader2 className="animate-spin" size={24} />
-          <p>{t('common.loading')}</p>
-        </div>
-      )}
-
-      {error && (
-        <div className="error-state">
-          <AlertCircle size={24} />
-          <p>{t('errors.generic')}: {error.message}</p>
-        </div>
-      )}
-
-      {!isLoading && !error && filteredTasks.length === 0 && (
-        <div className="empty-state">
-          <p>{t('tasks.noTasks')}</p>
-        </div>
-      )}
-
-      <div className="tasks-list">
-        {filteredTasks.map((task) => (
-          <div key={task.TaskID} className="task-card">
-            <div className="task-header">
-              <div className="task-info">
-                <h3 className="task-name">{task.Name}</h3>
-                <div className="task-badges">
-                  <span className={`task-status ${statusColors[task.CompletionStatus] || 'status-default'}`}>
-                    {statusLabels[task.CompletionStatus] || task.CompletionStatus}
-                  </span>
-                  {task.ouvrageType && (
-                    <span className="ouvrage-badge">
-                      <Building2 size={12} />
-                      {t(`tasks.ouvrageTypes.${task.ouvrageType.toLowerCase().replace('_', '')}`)}
-                    </span>
-                  )}
-                </div>
-              </div>
-              <div className="task-actions">
-                {task.ouvrageType && (
-                  <button 
-                    className="btn btn--primary btn--sm" 
-                    onClick={() => setViewingTaskSteps(task)}
-                    title={t('construction.steps')}
-                  >
-                    {task.progressPercentage || 0}%
-                  </button>
-                )}
-                <button className="btn btn--secondary btn--sm" onClick={() => handleEdit(task)}>
-                  <Edit2 size={14} />
-                </button>
-                <button className="btn btn--danger btn--sm" onClick={() => handleDelete(task)}>
-                  <Trash2 size={14} />
-                </button>
-              </div>
-            </div>
-            
-            {task.Description && (
-              <p className="task-description">{task.Description}</p>
+        </td>
+        <td>
+          {isCalc ? (
+            <span className="tv-status-calc" style={{ color: STATUS_COLORS[task.CompletionStatus] }}>
+              {STATUS_LABELS[task.CompletionStatus] || task.CompletionStatus}
+            </span>
+          ) : (
+            <select
+              className="tv-status-select"
+              value={task.CompletionStatus}
+              style={{ borderColor: STATUS_COLORS[task.CompletionStatus] }}
+              onChange={e => onUpdate(task.TaskID, e.target.value, localProgress, task.Level)}
+            >
+              {Object.entries(STATUS_LABELS).map(([v, l]) => <option key={v} value={v}>{l}</option>)}
+            </select>
+          )}
+        </td>
+        <td>
+          <div className="tv-progress-cell">
+            {isCalc ? (
+              <>
+                <span className="tv-progress-calc">{task.progressPercentage}%</span>
+                <div className="tv-bar"><div className="tv-bar-fill tv-bar-fill--calc" style={{ width: `${task.progressPercentage}%` }} /></div>
+              </>
+            ) : (
+              <>
+                <input
+                  className="tv-progress-input"
+                  type="number" min={0} max={100}
+                  value={localProgress}
+                  onChange={e => setLocalProgress(Number(e.target.value))}
+                  onBlur={() => onUpdate(task.TaskID, task.CompletionStatus, localProgress, task.Level)}
+                />
+                <span className="tv-pct">%</span>
+                <div className="tv-bar"><div className="tv-bar-fill" style={{ width: `${localProgress}%` }} /></div>
+              </>
             )}
-            
-            <div className="task-meta">
-              <div className="meta-item">
-                <Calendar size={14} />
-                <span>{getProjectName(task.ProjectID)}</span>
-              </div>
-              {task.Duration && (
-                <div className="meta-item">
-                  <Clock size={14} />
-                  <span>{task.Duration} days</span>
-                </div>
-              )}
-              {task.AssignedTo && (
-                <div className="meta-item">
-                  <User size={14} />
-                  <span>{task.AssignedTo}</span>
-                </div>
-              )}
-            </div>
           </div>
-        ))}
+        </td>
+      </tr>
+      {open && hasChildren && task.children!.map(c => (
+        <TaskRow key={c.TaskID} task={c} depth={depth + 1} onUpdate={onUpdate} />
+      ))}
+    </>
+  );
+}
+
+// ─── SiteBlock ────────────────────────────────────────────────────────────────
+
+function SiteBlock({ site, projectId, statusFilter }: { site: Site; projectId: number; statusFilter: string }) {
+  const [open, setOpen] = useState(false);
+  const qc = useQueryClient();
+
+  const { data: tasks, isLoading } = useQuery({
+    queryKey: ['tasks-site', site.SiteID],
+    queryFn: async () => {
+      const r = await fetch(getApiUrl(`/api/tasks?projectId=${projectId}&siteId=${site.SiteID}`), { headers: auth() });
+      return r.json() as Promise<Task[]>;
+    },
+    enabled: open,
+  });
+
+  const updateMut = useMutation({
+    mutationFn: async ({ id, status, progress, level }: { id: number; status: string; progress: number; level: number }) => {
+      // Level 3 (feuille) → endpoint dédié qui recalcule les parents
+      // Level 1/2 (rubrique) → ne pas permettre la mise à jour manuelle
+      if (level !== 3) return null;
+      const r = await fetch(getApiUrl(`/api/tasks/${id}/progress`), {
+        method: 'PATCH', headers: auth(),
+        body: JSON.stringify({ progressPercentage: progress, CompletionStatus: status }),
+      });
+      return r.json();
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['tasks-site', site.SiteID] }),
+  });
+
+  const allTasks = tasks || [];
+  const filtered = statusFilter
+    ? allTasks.filter(t => t.CompletionStatus === statusFilter)
+    : allTasks;
+  const tree = buildTree(filtered);
+  const stats = countStats(buildTree(allTasks));
+  const avgProgress = allTasks.length > 0
+    ? Math.round(allTasks.reduce((s, t) => s + (t.progressPercentage || 0), 0) / allTasks.length)
+    : 0;
+
+  const typeLabel = TYPE_LABEL[site.Type] || site.Type;
+
+  return (
+    <div className="tv-site-block">
+      <button className="tv-site-header" onClick={() => setOpen(o => !o)}>
+        <span className={`tv-type-badge tv-type-badge--${typeLabel.toLowerCase()}`}>{typeLabel}</span>
+        <span className="tv-site-name">{site.Name}</span>
+        <span className="tv-site-stats">
+          <span className="tv-stat tv-stat--done">{stats.done} ✓</span>
+          <span className="tv-stat tv-stat--progress">{stats.inProgress} ⏳</span>
+          {stats.blocked > 0 && <span className="tv-stat tv-stat--blocked">{stats.blocked} ✗</span>}
+          <span className="tv-stat">{avgProgress}%</span>
+        </span>
+        <div className="tv-site-bar"><div className="tv-site-bar-fill" style={{ width: `${avgProgress}%` }} /></div>
+        {open ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+      </button>
+
+      {open && (
+        <div className="tv-site-content">
+          {isLoading && <div className="tv-loading"><Loader2 className="animate-spin" size={18} /> Chargement...</div>}
+          {!isLoading && tree.length === 0 && <p className="tv-empty">Aucune tâche{statusFilter ? ' pour ce filtre' : ''}.</p>}
+          {!isLoading && tree.length > 0 && (
+            <table className="tv-table">
+              <thead>
+                <tr>
+                  <th>Tâche</th>
+                  <th style={{ width: '160px' }}>Statut</th>
+                  <th style={{ width: '180px' }}>Avancement</th>
+                </tr>
+              </thead>
+              <tbody>
+                {tree.map(t => (
+                  <TaskRow key={t.TaskID} task={t} depth={0}
+                    onUpdate={(id, status, progress, level) => updateMut.mutate({ id, status, progress, level })} />
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── TasksView (main) ─────────────────────────────────────────────────────────
+
+export function TasksView() {
+  const [selectedProjectId, setSelectedProjectId] = useState<number | null>(null);
+  const [statusFilter, setStatusFilter] = useState('');
+  const [typeFilter, setTypeFilter] = useState('');
+
+  const { data: projects, isLoading: loadingProjects } = useQuery({
+    queryKey: ['projects'],
+    queryFn: async () => {
+      const r = await fetch(getApiUrl('/api/projects'), { headers: auth() });
+      return r.json() as Promise<Project[]>;
+    },
+  });
+
+  const { data: sites, isLoading: loadingSites } = useQuery({
+    queryKey: ['project-sites', selectedProjectId],
+    queryFn: async () => {
+      const r = await fetch(getApiUrl(`/api/projects/${selectedProjectId}/sites`), { headers: auth() });
+      return r.json() as Promise<Site[]>;
+    },
+    enabled: selectedProjectId !== null,
+  });
+
+  const visibleSites = (sites || []).filter(s => !typeFilter || s.Type === typeFilter);
+
+  return (
+    <div className="tv-view">
+      {/* Header */}
+      <div className="tv-header">
+        <CheckCircle size={22} />
+        <h1>Suivi des Tâches par Site</h1>
       </div>
 
-      {viewingTaskSteps && (
-        <ConstructionStepsView 
-          task={viewingTaskSteps} 
-          onClose={() => setViewingTaskSteps(null)} 
-        />
+      {/* Filters bar */}
+      <div className="tv-filters">
+        <div className="tv-filter-group">
+          <label>Lot / Projet</label>
+          <select value={selectedProjectId ?? ''} onChange={e => setSelectedProjectId(e.target.value ? Number(e.target.value) : null)}>
+            <option value="">— Sélectionner un lot —</option>
+            {loadingProjects && <option disabled>Chargement...</option>}
+            {projects?.map(p => <option key={p.ProjectID} value={p.ProjectID}>{p.Name}</option>)}
+          </select>
+        </div>
+
+        {selectedProjectId && (
+          <>
+            <div className="tv-filter-group">
+              <label><Filter size={12} /> Type de site</label>
+              <select value={typeFilter} onChange={e => setTypeFilter(e.target.value)}>
+                <option value="">Tous</option>
+                <option value="BATIMENT_ADMINISTRATIF">Bâtiment Administratif</option>
+                <option value="ECOLE_PRIMAIRE">École Primaire</option>
+                <option value="CENTRE_DE_SANTE">Centre de Santé</option>
+              </select>
+            </div>
+            <div className="tv-filter-group">
+              <label><Filter size={12} /> Statut</label>
+              <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)}>
+                <option value="">Tous les statuts</option>
+                {Object.entries(STATUS_LABELS).map(([v, l]) => <option key={v} value={v}>{l}</option>)}
+              </select>
+            </div>
+          </>
+        )}
+      </div>
+
+      {/* Content */}
+      {!selectedProjectId && (
+        <div className="tv-empty-state">
+          <CheckCircle size={48} color="#94a3b8" />
+          <p>Sélectionnez un lot pour afficher les tâches par site.</p>
+        </div>
       )}
 
-      {isModalOpen && (
-        <div className="modal-overlay" onClick={() => setIsModalOpen(false)}>
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <h3>{editingTask ? t('tasks.editTask') : t('tasks.addTask')}</h3>
-            <form onSubmit={handleSubmit}>
-              <div className="form-group">
-                <label>{t('tasks.name')} *</label>
-                <input name="name" defaultValue={editingTask?.Name} required />
-              </div>
-              <div className="form-group">
-                <label>{t('tasks.description')}</label>
-                <textarea name="description" defaultValue={editingTask?.Description || ''} />
-              </div>
-              <div className="form-row">
-                <div className="form-group">
-                  <label>{t('tasks.project')} *</label>
-                  <select name="projectId" defaultValue={editingTask?.ProjectID} required>
-                    <option value="">{t('common.select')} {t('tasks.project').toLowerCase()}</option>
-                    {projects?.map(p => (
-                      <option key={p.ProjectID} value={p.ProjectID}>{p.Name}</option>
-                    ))}
-                  </select>
-                </div>
-                <div className="form-group">
-                  <label>{t('tasks.status')}</label>
-                  <select name="status" defaultValue={editingTask?.CompletionStatus || 'NotStarted'}>
-                    <option value="NotStarted">{t('tasks.statusValues.notStarted')}</option>
-                    <option value="InProgress">{t('tasks.statusValues.inProgress')}</option>
-                    <option value="Completed">{t('tasks.statusValues.completed')}</option>
-                    <option value="Blocked">{t('tasks.statusValues.blocked')}</option>
-                  </select>
-                </div>
-              </div>
-              <div className="form-row">
-                <div className="form-group">
-                  <label>{t('tasks.duration')}</label>
-                  <input name="duration" type="number" defaultValue={editingTask?.Duration || ''} />
-                </div>
-                <div className="form-group">
-                  <label>{t('tasks.assignedTo')}</label>
-                  <select name="assignedTo" defaultValue={editingTask?.AssignedTo || ''}>
-                    <option value="">{t('common.unassigned')}</option>
-                    {users?.map(u => (
-                      <option key={u.id} value={u.email}>{u.name}</option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-              <div className="form-group">
-                <label>{t('tasks.ouvrageType')}</label>
-                <select name="ouvrageType" defaultValue={editingTask?.ouvrageType || ''}>
-                  <option value="">{t('common.none')}</option>
-                  <option value="ECOLE">{t('tasks.ouvrageTypes.ecole')}</option>
-                  <option value="CENTRE_SANTE">{t('tasks.ouvrageTypes.centreSante')}</option>
-                  <option value="BATIMENT_ADMINISTRATIF">{t('tasks.ouvrageTypes.batimentAdmin')}</option>
-                </select>
-              </div>
-              <div className="modal-actions">
-                <button type="button" className="btn btn--secondary" onClick={() => setIsModalOpen(false)}>
-                  {t('common.cancel')}
-                </button>
-                <button 
-                  type="submit" 
-                  className="btn btn--primary"
-                  disabled={createMutation.isPending || updateMutation.isPending}
-                >
-                  {createMutation.isPending || updateMutation.isPending ? t('common.loading') : t('common.save')}
-                </button>
-              </div>
-            </form>
-          </div>
+      {selectedProjectId && loadingSites && (
+        <div className="tv-loading"><Loader2 className="animate-spin" size={24} /> Chargement des sites...</div>
+      )}
+
+      {selectedProjectId && !loadingSites && visibleSites.length === 0 && (
+        <div className="tv-empty-state"><MapPin size={40} color="#94a3b8" /><p>Aucun site trouvé pour ce lot.</p></div>
+      )}
+
+      {selectedProjectId && !loadingSites && visibleSites.length > 0 && (
+        <div className="tv-sites-list">
+          <p className="tv-sites-count">{visibleSites.length} site(s) · Cliquez sur un site pour afficher ses tâches</p>
+          {visibleSites.map(s => (
+            <SiteBlock key={s.SiteID} site={s} projectId={selectedProjectId} statusFilter={statusFilter} />
+          ))}
         </div>
       )}
     </div>
