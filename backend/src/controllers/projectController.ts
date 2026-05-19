@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { normalizeBody } from '../utils/normalizeBody.js';
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
@@ -83,7 +84,9 @@ export async function getProjectById(req: Request, res: Response) {
 // Create project
 export async function createProject(req: Request, res: Response) {
   try {
-    const { name, description, startDate, endDate, totalBudget, programId, siteIds } = req.body;
+    const { name, description, startDate, endDate, totalBudget, programid, siteids } = normalizeBody(req.body);
+    const programId = programid;
+    const siteIds = siteids;
 
     // Validate required fields
     if (!name || !programId) {
@@ -119,7 +122,8 @@ export async function createProject(req: Request, res: Response) {
 export async function updateProject(req: Request, res: Response) {
   try {
     const { id } = req.params;
-    const { name, description, startDate, endDate, totalBudget, status, siteIds } = req.body;
+    const { name, description, startDate, endDate, totalBudget, status, siteids } = normalizeBody(req.body);
+    const siteIds = siteids;
 
     const project = await prisma.project.update({
       where: { ProjectID: parseInt(id) },

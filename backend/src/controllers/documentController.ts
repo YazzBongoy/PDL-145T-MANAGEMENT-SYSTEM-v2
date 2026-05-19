@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { normalizeBody } from '../utils/normalizeBody.js';
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
@@ -65,7 +66,8 @@ export async function getDocumentById(req: Request, res: Response) {
 // Create document
 export async function createDocument(req: Request, res: Response) {
   try {
-    const { name, type, url, projectId, contractId, size, mimeType } = req.body;
+    const { name, type, url, projectid, contractid, size, mimetype } = normalizeBody(req.body);
+    const projectId = projectid; const contractId = contractid; const mimeType = mimetype;
     const userId = (req as any).user?.id || 1;
 
     const document = await prisma.document.create({
@@ -100,7 +102,7 @@ export async function createDocument(req: Request, res: Response) {
 export async function updateDocument(req: Request, res: Response) {
   try {
     const { id } = req.params;
-    const { name, type, url } = req.body;
+    const { name, type, url } = normalizeBody(req.body);
 
     const document = await prisma.document.update({
       where: { DocumentID: parseInt(id) },

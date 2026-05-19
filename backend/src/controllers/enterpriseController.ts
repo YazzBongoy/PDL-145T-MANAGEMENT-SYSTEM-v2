@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { normalizeBody } from '../utils/normalizeBody.js';
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
@@ -78,14 +79,8 @@ export async function getEnterpriseById(req: Request, res: Response) {
 // Create enterprise
 export async function createEnterprise(req: Request, res: Response) {
   try {
-    const b = req.body;
-    const name = b.name ?? b.Name;
-    const type = b.type ?? b.Type;
-    const role = b.role ?? b.Role;
-    const contactEmail = b.contactEmail ?? b.ContactEmail;
-    const contactPhone = b.contactPhone ?? b.ContactPhone;
-    const address = b.address ?? b.Address;
-    const taxId = b.taxId ?? b.TaxID;
+    const { name, type, role, contactemail, contactphone, address, taxid } = normalizeBody(req.body);
+    const contactEmail = contactemail; const contactPhone = contactphone; const taxId = taxid;
 
     if (!name) { res.status(400).json({ error: 'Name is required' }); return; }
 
@@ -112,14 +107,8 @@ export async function createEnterprise(req: Request, res: Response) {
 export async function updateEnterprise(req: Request, res: Response) {
   try {
     const { id } = req.params;
-    const b = req.body;
-    const name = b.name ?? b.Name;
-    const type = b.type ?? b.Type;
-    const role = b.role ?? b.Role;
-    const contactEmail = b.contactEmail ?? b.ContactEmail;
-    const contactPhone = b.contactPhone ?? b.ContactPhone;
-    const address = b.address ?? b.Address;
-    const taxId = b.taxId ?? b.TaxID;
+    const { name, type, role, contactemail, contactphone, address, taxid } = normalizeBody(req.body);
+    const contactEmail = contactemail; const contactPhone = contactphone; const taxId = taxid;
 
     const enterprise = await prisma.enterprise.update({
       where: { EnterpriseID: parseInt(id) },

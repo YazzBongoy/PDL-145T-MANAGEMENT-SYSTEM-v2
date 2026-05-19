@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { normalizeBody } from '../utils/normalizeBody.js';
 import { PrismaClient, UserStatus, UserRole } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 
@@ -77,7 +78,9 @@ export async function getUserById(req: Request, res: Response) {
 
 export async function createUser(req: Request, res: Response) {
   try {
-    const { name, email, password, role = UserRole.USER, status = UserStatus.ACTIVE } = req.body;
+    const body = normalizeBody(req.body);
+    const name = body.name; const email = body.email; const password = body.password;
+    const role = body.role ?? UserRole.USER; const status = body.status ?? UserStatus.ACTIVE;
 
     if (!name || !email || !password) {
       return res.status(400).json({ error: 'Name, email, and password are required' });
@@ -118,7 +121,7 @@ export async function createUser(req: Request, res: Response) {
 export async function updateUser(req: Request, res: Response) {
   try {
     const { id } = req.params;
-    const { name, email, role, status, avatar } = req.body;
+    const { name, email, role, status, avatar } = normalizeBody(req.body);
 
     const updateData: any = {};
     if (name) updateData.name = name;

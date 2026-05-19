@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { normalizeBody } from '../utils/normalizeBody.js';
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
@@ -234,7 +235,8 @@ export async function getContractPaymentSchedules(req: Request, res: Response) {
 export async function createPaymentSchedule(req: Request, res: Response) {
   try {
     const { id } = req.params;
-    const { description, amount, dueDate } = req.body;
+    const { description, amount, duedate } = normalizeBody(req.body);
+    const dueDate = duedate;
 
     const schedule = await prisma.paymentSchedule.create({
       data: {
@@ -256,7 +258,8 @@ export async function createPaymentSchedule(req: Request, res: Response) {
 export async function updatePaymentSchedule(req: Request, res: Response) {
   try {
     const { scheduleId } = req.params;
-    const { description, amount, dueDate, paidAmount, paidDate, status } = req.body;
+    const { description, amount, duedate, paidamount, paiddate, status } = normalizeBody(req.body);
+    const dueDate = duedate; const paidAmount = paidamount; const paidDate = paiddate;
 
     const updateData: any = {};
     if (description !== undefined) updateData.Description = description;

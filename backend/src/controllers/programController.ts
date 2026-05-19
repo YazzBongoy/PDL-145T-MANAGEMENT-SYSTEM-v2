@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { normalizeBody } from '../utils/normalizeBody.js';
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
@@ -95,7 +96,7 @@ export async function getProgramById(req: Request, res: Response) {
 // Create program
 export async function createProgram(req: Request, res: Response) {
   try {
-    const { name, description, startDate, endDate, budget } = req.body;
+    const { name, description, startDate, endDate, budget } = normalizeBody(req.body);
 
     const program = await prisma.program.create({
       data: {
@@ -118,7 +119,7 @@ export async function createProgram(req: Request, res: Response) {
 export async function updateProgram(req: Request, res: Response) {
   try {
     const { id } = req.params;
-    const { name, description, startDate, endDate, budget, status } = req.body;
+    const { name, description, startDate, endDate, budget, status } = normalizeBody(req.body);
 
     const program = await prisma.program.update({
       where: { ProgramID: parseInt(id) },
