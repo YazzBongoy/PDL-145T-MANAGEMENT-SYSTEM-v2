@@ -86,6 +86,13 @@ function countStats(tasks: Task[]): { total: number; done: number; inProgress: n
 
 // ─── TaskRow ──────────────────────────────────────────────────────────────────
 
+function progressToStatus(p: number, current: string): string {
+  if (current === 'Blocked') return 'Blocked';
+  if (p === 0) return 'NotStarted';
+  if (p >= 100) return 'Completed';
+  return 'InProgress';
+}
+
 function TaskRow({ task, depth, onUpdate }: {
   task: Task;
   depth: number;
@@ -93,9 +100,10 @@ function TaskRow({ task, depth, onUpdate }: {
 }) {
   const [open, setOpen] = useState(depth < 1);
   const [localProgress, setLocalProgress] = useState(task.progressPercentage);
+  const [localStatus, setLocalStatus] = useState(task.CompletionStatus);
   const hasChildren = (task.children?.length || 0) > 0;
   const isLeaf = task.Level === 3;
-  const isCalc = !isLeaf; // Level 1 et 2 sont calculés automatiquement
+  const isCalc = !isLeaf;
 
   return (
     <>
@@ -121,14 +129,24 @@ function TaskRow({ task, depth, onUpdate }: {
               {STATUS_LABELS[task.CompletionStatus] || task.CompletionStatus}
             </span>
           ) : (
-            <select
-              className="tv-status-select"
-              value={task.CompletionStatus}
-              style={{ borderColor: STATUS_COLORS[task.CompletionStatus] }}
-              onChange={e => onUpdate(task.TaskID, e.target.value, localProgress, task.Level)}
-            >
-              {Object.entries(STATUS_LABELS).map(([v, l]) => <option key={v} value={v}>{l}</option>)}
-            </select>
+            <div className="tv-status-leaf">
+              <span className="tv-status-badge" style={{ background: STATUS_COLORS[localStatus] + '22', color: STATUS_COLORS[localStatus], borderColor: STATUS_COLORS[localStatus] }}>
+                {STATUS_LABELS[localStatus] || localStatus}
+              </span>
+              {localStatus !== 'Blocked' ? (
+                <button
+                  className="tv-blocked-btn"
+                  title="Marquer comme bloqué"
+                  onClick={() => { setLocalStatus('Blocked'); onUpdate(task.TaskID, 'Blocked', localProgress, task.Level); }}
+                >⊘</button>
+              ) : (
+                <button
+                  className="tv-blocked-btn tv-blocked-btn--active"
+                  title="Débloquer"
+                  onClick={() => { const s = progressToStatus(localProgress, 'InProgress'); setLocalStatus(s); onUpdate(task.TaskID, s, localProgress, task.Level); }}
+                >⊘</button>
+              )}
+            </div>
           )}
         </td>
         <td>
@@ -144,11 +162,15 @@ function TaskRow({ task, depth, onUpdate }: {
                   className="tv-progress-input"
                   type="number" min={0} max={100}
                   value={localProgress}
-                  onChange={e => setLocalProgress(Number(e.target.value))}
-                  onBlur={() => onUpdate(task.TaskID, task.CompletionStatus, localProgress, task.Level)}
+                  onChange={e => {
+                    const v = Math.min(100, Math.max(0, Number(e.target.value)));
+                    setLocalProgress(v);
+                    if (localStatus !== 'Blocked') setLocalStatus(progressToStatus(v, localStatus));
+                  }}
+                  onBlur={() => onUpdate(task.TaskID, localStatus, localProgress, task.Level)}
                 />
                 <span className="tv-pct">%</span>
-                <div className="tv-bar"><div className="tv-bar-fill" style={{ width: `${localProgress}%` }} /></div>
+                <div className="tv-bar"><div className="tv-bar-fill" style={{ width: `${localProgress}%`, background: localProgress >= 100 ? '#22c55e' : localProgress > 0 ? '#3b82f6' : '#e5e7eb' }} /></div>
               </>
             )}
           </div>

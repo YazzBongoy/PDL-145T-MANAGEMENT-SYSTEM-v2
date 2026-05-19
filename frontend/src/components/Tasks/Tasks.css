@@ -611,6 +611,34 @@
 }
 .tv-bar-fill--calc { background: linear-gradient(90deg, #a5b4fc, #34d399); }
 
+/* Leaf status badge + blocked button */
+.tv-status-leaf {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.tv-status-badge {
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 10px;
+  border: 1px solid;
+  white-space: nowrap;
+}
+.tv-blocked-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  color: #cbd5e1;
+  line-height: 1;
+  padding: 0 2px;
+  opacity: 0.5;
+  transition: opacity 0.15s, color 0.15s;
+}
+.tv-blocked-btn:hover { opacity: 1; color: #ef4444; }
+.tv-blocked-btn--active { opacity: 1; color: #ef4444; }
+
 /* Weight badge on leaf tasks */
 .tv-weight {
   margin-left: 6px;
