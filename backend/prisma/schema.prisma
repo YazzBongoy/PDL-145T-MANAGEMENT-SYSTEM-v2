@@ -209,6 +209,7 @@ model Site {
   TerritoryID  Int
   Location     String?
   Elevation    Float?
+  tepGlobal    Float         @default(0)
   CreatedAt    DateTime      @default(now())
   UpdatedAt    DateTime      @updatedAt
   Measurements Measurement[]

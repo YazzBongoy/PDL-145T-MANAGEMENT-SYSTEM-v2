@@ -120,6 +120,25 @@ export const deleteTask = asyncHandler(async (req: Request, res: Response) => {
   res.status(204).send();
 });
 
+// ─── Recalcul TEP global du site ────────────────────────────────────────────
+// TEP site = moyenne simple des progressPercentage de toutes ses tâches feuilles
+// (pondération égale = 1 par tâche, identique au fichier TMUPDATED)
+async function recalcSiteTEP(siteId: string): Promise<number> {
+  const leafTasks = await prisma.task.findMany({
+    where: { SiteID: siteId, ParentTaskID: null },
+    select: { progressPercentage: true },
+  });
+  if (leafTasks.length === 0) return 0;
+  const tep = Math.round(
+    leafTasks.reduce((s, t) => s + t.progressPercentage, 0) / leafTasks.length
+  );
+  await prisma.site.update({
+    where: { SiteID: siteId },
+    data: { tepGlobal: tep },
+  });
+  return tep;
+}
+
 // ─── Recalcul pondéré des parents ───────────────────────────────────────────
 
 async function recalcParent(parentId: number): Promise<void> {
@@ -178,7 +197,13 @@ export const updateLeafProgress = asyncHandler(async (req: Request, res: Respons
     await recalcParent(task.ParentTaskID);
   }
 
-  // Retourner la tâche mise à jour + tous les ancêtres recalculés
+  // Recalculer le TEP global du site (moyenne de toutes les tâches feuilles)
+  let siteTEP: number | null = null;
+  if (task.SiteID) {
+    siteTEP = await recalcSiteTEP(task.SiteID);
+  }
+
+  // Retourner la tâche mise à jour + tous les ancêtres recalculés + TEP site
   const allAncestors: any[] = [];
   let cur: any = updated;
   while (cur?.ParentTaskID) {
@@ -187,7 +212,7 @@ export const updateLeafProgress = asyncHandler(async (req: Request, res: Respons
     cur = parent;
   }
 
-  res.json({ updated, ancestors: allAncestors });
+  res.json({ updated, ancestors: allAncestors, siteTEP });
 });
 
 // Mark task as complete

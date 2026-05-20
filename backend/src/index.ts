@@ -352,6 +352,40 @@ app.get('/api/sites', authenticateJWT, async (req, res) => {
   }
 });
 
+// Single site by ID (includes tepGlobal)
+app.get('/api/sites/:id', authenticateJWT, async (req, res) => {
+  try {
+    const site = await prisma.site.findUnique({
+      where: { SiteID: req.params.id },
+      include: { Territory: { select: { TerritoryID: true, Name: true } } },
+    });
+    if (!site) { res.status(404).json({ error: 'Site not found' }); return; }
+    res.json(site);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch site' });
+  }
+});
+
+// Recalcul forcé du TEP global d'un site (moyenne simple de toutes ses tâches)
+app.patch('/api/sites/:id/tep/recalc', authenticateJWT, async (req, res) => {
+  try {
+    const siteId = req.params.id;
+    const tasks = await prisma.task.findMany({
+      where: { SiteID: siteId, ParentTaskID: null },
+      select: { progressPercentage: true },
+    });
+    if (tasks.length === 0) { res.json({ siteId, tepGlobal: 0 }); return; }
+    const tep = Math.round(tasks.reduce((s, t) => s + t.progressPercentage, 0) / tasks.length);
+    const site = await prisma.site.update({
+      where: { SiteID: siteId },
+      data: { tepGlobal: tep },
+    });
+    res.json({ siteId, tepGlobal: site.tepGlobal, taskCount: tasks.length });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to recalculate TEP' });
+  }
+});
+
 // User registration
 app.post('/auth/register', async (req, res) => {
   const { name, email, password, role } = req.body;

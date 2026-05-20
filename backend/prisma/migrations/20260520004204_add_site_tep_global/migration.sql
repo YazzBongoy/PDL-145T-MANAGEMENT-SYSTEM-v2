@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Site" ADD COLUMN     "tepGlobal" DOUBLE PRECISION NOT NULL DEFAULT 0;
