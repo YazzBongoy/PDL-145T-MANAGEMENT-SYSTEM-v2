@@ -78,7 +78,7 @@ export const getResourceById = asyncHandler(async (req: Request, res: Response) 
 export const getResourcesByType = asyncHandler(async (req: Request, res: Response) => {
   const { type } = req.params;
   const resources = await prisma.resource.findMany({
-    where: { Type: type },
+    where: { Type: type as any },
   });
 
   res.json(resources);
