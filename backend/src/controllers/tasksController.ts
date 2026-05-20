@@ -120,18 +120,59 @@ export const deleteTask = asyncHandler(async (req: Request, res: Response) => {
   res.status(204).send();
 });
 
-// ─── Recalcul TEP global du site ────────────────────────────────────────────
-// TEP site = moyenne simple des progressPercentage de toutes ses tâches feuilles
-// (pondération égale = 1 par tâche, identique au fichier TMUPDATED)
+// ─── Recalcul TEP global du site (pondéré 3 niveaux) ─────────────────────────
+// Formule identique au fichier TMUPDATED :
+//   TEP_site = Σ(TEP_L1 × Weight_L1) / 100
+//   TEP_L1   = Σ(TEP_L2 × Weight_L2) / Σ(Weight_L2)
+//   TEP_L2   = moyenne simple des tâches feuilles L3 (Weight=1 chacune)
 async function recalcSiteTEP(siteId: string): Promise<number> {
-  const leafTasks = await prisma.task.findMany({
-    where: { SiteID: siteId, ParentTaskID: null },
-    select: { progressPercentage: true },
+  // Récupérer toute la hiérarchie du site en une seule requête
+  const allTasks = await prisma.task.findMany({
+    where: { SiteID: siteId },
+    select: { TaskID: true, ParentTaskID: true, Level: true, Weight: true, progressPercentage: true },
   });
-  if (leafTasks.length === 0) return 0;
-  const tep = Math.round(
-    leafTasks.reduce((s, t) => s + t.progressPercentage, 0) / leafTasks.length
-  );
+  if (allTasks.length === 0) return 0;
+
+  const byId = new Map(allTasks.map(t => [t.TaskID, t]));
+
+  // L3 : tâches feuilles (pas d'enfants) — progressPercentage mis à jour directement
+  // L2 : moyenne simple des L3 enfants
+  // L1 : moyenne pondérée des L2 enfants (Weight = poids sous-rubrique)
+  // Site : moyenne pondérée des L1 (Weight = poids rubrique contrat, total = 100)
+
+  const l1tasks = allTasks.filter(t => t.Level === 1 && t.ParentTaskID === null);
+  let tepSite = 0;
+  let totalW1 = 0;
+
+  for (const l1 of l1tasks) {
+    const l2tasks = allTasks.filter(t => t.ParentTaskID === l1.TaskID);
+    let tepL1 = 0;
+    let totalW2 = 0;
+
+    for (const l2 of l2tasks) {
+      const l3tasks = allTasks.filter(t => t.ParentTaskID === l2.TaskID);
+      let tepL2 = 0;
+      if (l3tasks.length > 0) {
+        tepL2 = l3tasks.reduce((s, t) => s + t.progressPercentage, 0) / l3tasks.length;
+      } else {
+        tepL2 = l2.progressPercentage;
+      }
+      const w2 = Number(l2.Weight ?? 0);
+      tepL1 += tepL2 * w2;
+      totalW2 += w2;
+    }
+
+    if (totalW2 > 0) tepL1 = tepL1 / totalW2;
+    else tepL1 = l1.progressPercentage;
+
+    const w1 = Number(l1.Weight ?? 0);
+    tepSite += tepL1 * w1;
+    totalW1 += w1;
+  }
+
+  if (totalW1 > 0) tepSite = tepSite / totalW1;
+
+  const tep = Math.round(tepSite);
   await prisma.site.update({
     where: { SiteID: siteId },
     data: { tepGlobal: tep },

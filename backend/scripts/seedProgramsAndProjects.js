@@ -89,23 +89,110 @@ const LOTS = [
   },
 ];
 
-// Tâches de construction standard pour chaque site (source: TMUPDATED PLANNING)
-const TASKS = [
-  { name: 'Installation et Repli Chantier',            sort: 1 },
-  { name: 'Fouilles manuelles en section',             sort: 2 },
-  { name: 'Maçonnerie de Fondation',                   sort: 3 },
-  { name: 'Socles, Dès, Colonnes et chape en B-A',     sort: 4 },
-  { name: 'Remblais des fondations',                   sort: 5 },
-  { name: 'Sous-Pavement',                             sort: 6 },
-  { name: "Murs d'élévations",                         sort: 7 },
-  { name: 'Charpente en bois et Couverture',           sort: 8 },
-  { name: 'Menuiseries extérieures',                   sort: 9 },
-  { name: 'Collecte eaux et Assainissement',           sort: 10 },
-  { name: 'Installation sanitaire et électrique',      sort: 11 },
-  { name: 'Plafonds et Crépissage',                    sort: 12 },
-  { name: 'Menuiseries intérieures et Peinture',       sort: 13 },
-  { name: 'Aménagement extérieur',                     sort: 14 },
-  { name: 'Fourniture équipements et réception',       sort: 15 },
+// ─── HIÉRARCHIE DES TÂCHES — 3 niveaux (source: TMUPDATED PLANNING) ──────────
+//
+// Niveau 1 = Rubrique contrat     (Weight = poids TEP contrat %)
+// Niveau 2 = Sous-rubrique travaux (Weight = poids TEP travaux %)
+// Niveau 3 = Tâche feuille         (Weight = 1, pondération égale)
+//
+// TEP site = Σ(TEP_rubrique_L1 × poids_L1) / 100
+// TEP_rubrique_L1 = Σ(TEP_sousrubrique_L2 × poids_L2) / Σ(poids_L2)
+// TEP_sousrubrique_L2 = moyenne simple des tâches feuilles L3
+//
+// Poids contrat : Gros Œuvres 50% | Second Œuvre 25% | Finition 15% | Fournitures 10%
+// ─────────────────────────────────────────────────────────────────────────────
+
+const TASK_HIERARCHY = [
+  {
+    name: 'TRAVAUX DE GROS ŒUVRES', level: 1, sort: 1, weight: 50,
+    children: [
+      {
+        name: 'TRAVAUX DE FONDATIONS', level: 2, sort: 1, weight: 17,
+        children: [
+          { name: 'Installation et Repli Chantier',                          level: 3, sort: 1,  weight: 1 },
+          { name: 'Fouilles manuelles en section obligatoire',               level: 3, sort: 2,  weight: 1 },
+          { name: 'Maçonnerie de Fondation sur béton de propreté',           level: 3, sort: 3,  weight: 1 },
+          { name: 'Socles, Dès, Colonnes et chape en B-A',                  level: 3, sort: 4,  weight: 1 },
+          { name: 'Remblais des fondations avec terres in situ ou d\'apport',level: 3, sort: 5,  weight: 1 },
+          { name: 'Sous-Pavement',                                           level: 3, sort: 6,  weight: 1 },
+        ],
+      },
+      {
+        name: "TRAVAUX D'ÉLÉVATIONS", level: 2, sort: 2, weight: 18,
+        children: [
+          { name: "Murs d'allège et de séparations",                         level: 3, sort: 1,  weight: 1 },
+          { name: 'Murs sous linteau',                                       level: 3, sort: 2,  weight: 1 },
+          { name: 'Chainage linteaux et Colonnes',                           level: 3, sort: 3,  weight: 1 },
+          { name: 'Murs sur Chainage linteau',                               level: 3, sort: 4,  weight: 1 },
+          { name: 'Chainage Poutrelle et Colonnette',                        level: 3, sort: 5,  weight: 1 },
+          { name: 'Murs Pignons',                                            level: 3, sort: 6,  weight: 1 },
+        ],
+      },
+      {
+        name: 'TOITURE ET MENUISERIES EXTÉRIEURES', level: 2, sort: 3, weight: 12,
+        children: [
+          { name: 'Charpente en bois (Fermes, Pannes et Gitages)',           level: 3, sort: 1,  weight: 1 },
+          { name: 'Couverture en tôles',                                     level: 3, sort: 2,  weight: 1 },
+          { name: 'Pose des menuiseries et huisseries extérieures',          level: 3, sort: 3,  weight: 1 },
+        ],
+      },
+      {
+        name: 'ASSAINISSEMENT ET OUVRAGES CONNEXES', level: 2, sort: 4, weight: 3,
+        children: [
+          { name: 'Assainissements (Fosses humides ou sèches et Puits Perdus)',                                    level: 3, sort: 1,  weight: 1 },
+          { name: 'Ouvrages connexes / de Protection (Fosses, Incinérateurs, Marches, Rampes, Parafouilles)',      level: 3, sort: 2,  weight: 1 },
+        ],
+      },
+    ],
+  },
+  {
+    name: 'TRAVAUX DE SECOND ŒUVRE', level: 1, sort: 2, weight: 25,
+    children: [
+      {
+        name: "TRAVAUX D'ACHÈVEMENT ET INSTALLATIONS PRÉALABLES À LA FINITION", level: 2, sort: 1, weight: 25,
+        children: [
+          { name: 'Pose des Planches de Rive et des Plafonds sur gitages',   level: 3, sort: 1,  weight: 1 },
+          { name: 'Collecte et Canalisation des eaux des toitures',          level: 3, sort: 2,  weight: 1 },
+          { name: 'Installation de plomberie sanitaire',                     level: 3, sort: 3,  weight: 1 },
+          { name: "Installation Électrique et d'incendie",                   level: 3, sort: 4,  weight: 1 },
+          { name: 'Préparation des surfaces des murs (Crépissages)',         level: 3, sort: 5,  weight: 1 },
+          { name: "Pose des menuiseries et huisseries intérieures",          level: 3, sort: 6,  weight: 1 },
+          { name: 'Aménagement Extérieur',                                   level: 3, sort: 7,  weight: 1 },
+        ],
+      },
+    ],
+  },
+  {
+    name: 'TRAVAUX DE FINITION', level: 1, sort: 3, weight: 15,
+    children: [
+      {
+        name: 'TRAVAUX DE CONFORT ET DE FONCTIONNALITÉ', level: 2, sort: 1, weight: 15,
+        children: [
+          { name: 'Pose des photovoltaïques et Appareillages Électriques',   level: 3, sort: 1,  weight: 1 },
+          { name: 'Appareillage Sanitaires',                                  level: 3, sort: 2,  weight: 1 },
+          { name: 'Pose des Plafonds sur Gitage',                            level: 3, sort: 3,  weight: 1 },
+          { name: 'Pose des Vitres',                                         level: 3, sort: 4,  weight: 1 },
+          { name: 'Pavement lissé ou en céramique sol',                      level: 3, sort: 5,  weight: 1 },
+          { name: 'Céramique Murs',                                          level: 3, sort: 6,  weight: 1 },
+          { name: 'Pose des Chambrales ou Moulures et Huisseries',           level: 3, sort: 7,  weight: 1 },
+          { name: 'Masticage et Peinture des Murs',                          level: 3, sort: 8,  weight: 1 },
+        ],
+      },
+    ],
+  },
+  {
+    name: 'FOURNITURE DES ÉQUIPEMENTS', level: 1, sort: 4, weight: 10,
+    children: [
+      {
+        name: 'MOBILIERS ET MATÉRIELS INFORMATIQUES', level: 2, sort: 1, weight: 100,
+        children: [
+          { name: 'Matériels Informatiques',                                 level: 3, sort: 1,  weight: 1 },
+          { name: 'Mobiliers Bureau (Voir TDR)',                             level: 3, sort: 2,  weight: 1 },
+          { name: 'Équipements en Bois (EP, CS et BA de Territoire)',        level: 3, sort: 3,  weight: 1 },
+        ],
+      },
+    ],
+  },
 ];
 
 async function main() {
@@ -197,24 +284,43 @@ async function main() {
         data: { ProjectID: project.ProjectID, SiteID: siteId },
       });
 
-      // Créer les 15 tâches de construction pour ce site dans ce projet
-      for (const task of TASKS) {
-        await prisma.task.create({
+      // Créer les tâches hiérarchiques (3 niveaux) avec pondérations
+      for (const l1 of TASK_HIERARCHY) {
+        const t1 = await prisma.task.create({
           data: {
-            ProjectID:          project.ProjectID,
-            SiteID:             siteId,
-            Name:               task.name,
-            Level:              1,
-            SortOrder:          task.sort,
-            progressPercentage: 0,
-            CompletionStatus:   'NotStarted',
+            ProjectID: project.ProjectID, SiteID: siteId,
+            Name: l1.name, Level: 1, SortOrder: l1.sort,
+            Weight: l1.weight, progressPercentage: 0, CompletionStatus: 'NotStarted',
           },
         });
         taskCount++;
+        for (const l2 of l1.children) {
+          const t2 = await prisma.task.create({
+            data: {
+              ProjectID: project.ProjectID, SiteID: siteId,
+              ParentTaskID: t1.TaskID,
+              Name: l2.name, Level: 2, SortOrder: l2.sort,
+              Weight: l2.weight, progressPercentage: 0, CompletionStatus: 'NotStarted',
+            },
+          });
+          taskCount++;
+          for (const l3 of l2.children) {
+            await prisma.task.create({
+              data: {
+                ProjectID: project.ProjectID, SiteID: siteId,
+                ParentTaskID: t2.TaskID,
+                Name: l3.name, Level: 3, SortOrder: l3.sort,
+                Weight: l3.weight, progressPercentage: 0, CompletionStatus: 'NotStarted',
+              },
+            });
+            taskCount++;
+          }
+        }
       }
     }
 
-    console.log(`  ✓ ${lot.projectName}  (${lot.sites.length} sites, ${lot.sites.length * TASKS.length} tâches)`);
+    const tasksPerSite = TASK_HIERARCHY.reduce((s, l1) => s + 1 + l1.children.reduce((s2, l2) => s2 + 1 + l2.children.length, 0), 0);
+    console.log(`  ✓ ${lot.projectName}  (${lot.sites.length} sites × ${tasksPerSite} tâches/site)`);
   }
 
   // ── RÉSUMÉ ───────────────────────────────────────────────────────────────────
@@ -231,7 +337,8 @@ async function main() {
   console.log(`  Territoires: ${LOTS.length}`);
   console.log(`  Lots/Projets: ${projectCount}  (1 par territoire)`);
   console.log(`  Sites      : ${totalSites}  (EP:${ep} | CS:${cs} | BA:${ba})`);
-  console.log(`  Tâches     : ${taskCount}  (${TASKS.length} par site)`);
+  const tasksPerSite = TASK_HIERARCHY.reduce((s, l1) => s + 1 + l1.children.reduce((s2, l2) => s2 + 1 + l2.children.length, 0), 0);
+  console.log(`  Tâches     : ${taskCount}  (${tasksPerSite} par site — 3 niveaux pondérés)`);
   console.log('════════════════════════════════════════════\n');
 }
 
