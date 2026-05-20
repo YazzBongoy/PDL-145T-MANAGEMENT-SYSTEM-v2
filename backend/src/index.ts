@@ -566,27 +566,32 @@ app.delete('/api/tasks/:id', authenticateJWT, requireAdminOrSupervisor, async (r
 
 // Create Resource
 app.post('/api/resources', authenticateJWT, requireAdminOrSupervisor, async (req, res) => {
-  const { Name, Type, Quantity, Description, Location, SerialNumber, Cost, PurchaseDate, LastMaintenance, NextMaintenance, Status } = req.body;
-  if (!Name || !Type) {
-    res.status(400).json({ error: 'Name and Type are required.' });
-    return;
+  try {
+    const { Name, Type, Quantity, Description, Location, SerialNumber, Cost, PurchaseDate, LastMaintenance, NextMaintenance, Status } = req.body;
+    if (!Name || !Type) {
+      res.status(400).json({ error: 'Name and Type are required.' });
+      return;
+    }
+    const resource = await prisma.resource.create({
+      data: {
+        Name,
+        Type,
+        Quantity: Quantity !== undefined ? Number(Quantity) : 1,
+        Description: Description || null,
+        Location: Location || null,
+        SerialNumber: SerialNumber || null,
+        Cost: Cost !== undefined ? Number(Cost) : null,
+        PurchaseDate: PurchaseDate ? new Date(PurchaseDate) : null,
+        LastMaintenance: LastMaintenance ? new Date(LastMaintenance) : null,
+        NextMaintenance: NextMaintenance ? new Date(NextMaintenance) : null,
+        Status: Status || 'active',
+      },
+    });
+    res.status(201).json(resource);
+  } catch (error: any) {
+    console.error('Error creating resource:', error);
+    res.status(500).json({ error: 'Failed to create resource', details: error?.message || String(error) });
   }
-  const resource = await prisma.resource.create({
-    data: {
-      Name,
-      Type,
-      Quantity: Quantity !== undefined ? Number(Quantity) : 1,
-      Description: Description || null,
-      Location: Location || null,
-      SerialNumber: SerialNumber || null,
-      Cost: Cost !== undefined ? Number(Cost) : null,
-      PurchaseDate: PurchaseDate ? new Date(PurchaseDate) : null,
-      LastMaintenance: LastMaintenance ? new Date(LastMaintenance) : null,
-      NextMaintenance: NextMaintenance ? new Date(NextMaintenance) : null,
-      Status: Status || 'active',
-    },
-  });
-  res.status(201).json(resource);
 });
 
 // List Resources
