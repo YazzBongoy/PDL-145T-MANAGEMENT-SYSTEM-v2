@@ -1,0 +1,153 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main]
+
+env:
+  NODE_VERSION: '20'
+
+jobs:
+  # ──────────────────────────────────────────────
+  # Lint & Format Check
+  # ──────────────────────────────────────────────
+  lint:
+    name: Lint & Format
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - run: npm ci
+
+      - name: Lint Backend
+        run: npm run lint --workspace=backend
+
+      - name: Lint Frontend
+        run: npm run lint --workspace=frontend
+
+      - name: Check Backend Format
+        run: npm run format:check --workspace=backend || true
+
+      - name: Check Frontend Format
+        run: npm run format:check --workspace=frontend || true
+
+  # ──────────────────────────────────────────────
+  # Backend Build & Test
+  # ──────────────────────────────────────────────
+  backend:
+    name: Backend Build & Test
+    runs-on: ubuntu-latest
+    needs: lint
+    services:
+      postgres:
+        image: postgis/postgis:15-3.3
+        env:
+          POSTGRES_USER: pdl145t
+          POSTGRES_PASSWORD: testpassword
+          POSTGRES_DB: pdl145t_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - run: npm ci
+
+      - name: Generate Prisma Client
+        run: npx prisma generate
+        working-directory: backend
+
+      - name: Run Migrations
+        run: npx prisma migrate deploy
+        working-directory: backend
+        env:
+          DATABASE_URL: postgresql://pdl145t:testpassword@localhost:5432/pdl145t_test
+
+      - name: Build Backend
+        run: npm run build --workspace=backend
+
+      - name: Run Backend Tests
+        run: npm test --workspace=backend
+        env:
+          DATABASE_URL: postgresql://pdl145t:testpassword@localhost:5432/pdl145t_test
+          JWT_SECRET: test-secret-key
+          PORT: 8002
+
+  # ──────────────────────────────────────────────
+  # Frontend Build & Test
+  # ──────────────────────────────────────────────
+  frontend:
+    name: Frontend Build & Test
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - run: npm ci
+
+      - name: TypeScript Check
+        run: npx tsc -b
+        working-directory: frontend
+
+      - name: Build Frontend
+        run: npm run build --workspace=frontend
+        env:
+          VITE_API_URL: /api
+
+      - name: Run Frontend Unit Tests
+        run: npm run test:run --workspace=frontend
+
+  # ──────────────────────────────────────────────
+  # Docker Build (validates Dockerfiles)
+  # ──────────────────────────────────────────────
+  docker:
+    name: Docker Build
+    runs-on: ubuntu-latest
+    needs: [backend, frontend]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build Backend Docker Image
+        run: docker build -t pdl145t-backend ./backend
+
+      - name: Build Frontend Docker Image
+        run: docker build -t pdl145t-frontend ./frontend
+
+  # ──────────────────────────────────────────────
+  # Deploy to Render (only on main push)
+  # ──────────────────────────────────────────────
+  deploy:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    needs: [lint, backend, frontend, docker]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Deploy to Render
+        uses: johnbeynon/render-deploy-action@v1.2.0
+        with:
+          service-id: ${{ secrets.RENDER_SERVICE_ID }}
+          api-key: ${{ secrets.RENDER_API_KEY }}

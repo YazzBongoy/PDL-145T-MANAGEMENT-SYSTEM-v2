@@ -1,6 +1,37 @@
-node_modules
+# Dependencies
+node_modules/
+
+# Build outputs
 backend/dist/
 frontend/dist/
+
+# Environment files (NEVER commit secrets)
+.env
+.env.local
+.env.*.local
+infrastructure/.env
+
+# Test outputs
 frontend/test-results/
 frontend/playwright-report/
+backend/coverage/
+
+# Uploads
 backend/uploads/
+
+# IDE
+.vscode/settings.json
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+
+# Prisma
+backend/prisma/migrations/

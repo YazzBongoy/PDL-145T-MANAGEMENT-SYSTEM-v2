@@ -3,17 +3,18 @@ version: '3.8'
 services:
   db:
     image: postgis/postgis:15-3.3
+    container_name: pdl145t-db
     environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER:-pdl145t}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
+      POSTGRES_DB: ${POSTGRES_DB:-pdl145t}
     ports:
-      - "127.0.0.1:5432:5432"  # Only bind to localhost for security
+      - "127.0.0.1:5432:5432"
     volumes:
       - ./sql:/docker-entrypoint-initdb.d
       - postgres_data_prod:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-pdl145t} -d ${POSTGRES_DB:-pdl145t}"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -28,23 +29,31 @@ services:
           cpus: '0.5'
 
   backend:
-    build: 
+    build:
       context: ../backend
       dockerfile: Dockerfile
       target: production
+    container_name: pdl145t-backend
     depends_on:
       db:
         condition: service_healthy
     ports:
-      - "127.0.0.1:3010:3010"  # Only bind to localhost, use reverse proxy
+      - "127.0.0.1:8002:8002"
     environment:
-      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+      DATABASE_URL: postgresql://${POSTGRES_USER:-pdl145t}:${POSTGRES_PASSWORD:-changeme}@db:5432/${POSTGRES_DB:-pdl145t}
       NODE_ENV: production
-      JWT_SECRET: ${JWT_SECRET}
-      PORT: 3010
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET is required}
+      PORT: 8002
+      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost}
     restart: unless-stopped
     networks:
       - pdl-network
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:8002/api/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) })"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
     deploy:
       resources:
         limits:
@@ -60,42 +69,12 @@ services:
         max-size: "10m"
         max-file: "3"
 
-  frontend:
-    build:
-      context: ../frontend
-      dockerfile: Dockerfile
-      target: production
-    depends_on:
-      - backend
-    ports:
-      - "80:80"
-      - "443:443"
-    environment:
-      VITE_API_URL: ${VITE_API_URL:-http://localhost:3010}
-    restart: unless-stopped
-    networks:
-      - pdl-network
-    deploy:
-      resources:
-        limits:
-          memory: 256M
-          cpus: '0.25'
-      restart_policy:
-        condition: on-failure
-        delay: 5s
-        max_attempts: 3
-    logging:
-      driver: json-file
-      options:
-        max-size: "10m"
-        max-file: "3"
-
-  # Reverse proxy for production
   nginx:
     image: nginx:alpine
+    container_name: pdl145t-nginx
     depends_on:
-      - frontend
-      - backend
+      backend:
+        condition: service_healthy
     ports:
       - "80:80"
       - "443:443"
@@ -104,6 +83,7 @@ services:
       - ./nginx/ssl:/etc/nginx/ssl:ro
     networks:
       - pdl-network
+    restart: unless-stopped
     deploy:
       resources:
         limits:

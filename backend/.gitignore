@@ -1,3 +1,8 @@
-node_modules
-
-/src/generated/prisma
+node_modules/
+dist/
+.env
+.env.local
+.env.*.local
+coverage/
+uploads/
+*.log

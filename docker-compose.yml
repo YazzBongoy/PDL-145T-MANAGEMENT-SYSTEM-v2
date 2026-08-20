@@ -1,37 +1,41 @@
 version: '3.8'
 
 services:
-  # PostgreSQL Database
+  # PostgreSQL Database with PostGIS
   db:
-    image: postgres:15-alpine
+    image: postgis/postgis:15-3.3
     container_name: pdl145t-db
     environment:
-      POSTGRES_USER: pdl145t
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: pdl145t
+      POSTGRES_USER: ${POSTGRES_USER:-pdl145t}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
+      POSTGRES_DB: ${POSTGRES_DB:-pdl145t}
     ports:
-      - "5432:5432"
+      - "${DB_PORT:-5432}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./infrastructure/sql:/docker-entrypoint-initdb.d
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U pdl145t"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-pdl145t}"]
       interval: 10s
       timeout: 5s
       retries: 5
+    restart: unless-stopped
 
   # Backend API
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
+      target: production
     container_name: pdl145t-backend
     environment:
       NODE_ENV: production
       PORT: 8002
-      DATABASE_URL: postgresql://pdl145t:password@db:5432/pdl145t
-      JWT_SECRET: your-secret-key-change-in-production
+      DATABASE_URL: postgresql://${POSTGRES_USER:-pdl145t}:${POSTGRES_PASSWORD:-changeme}@db:5432/${POSTGRES_DB:-pdl145t}
+      JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET in .env}
+      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost}
     ports:
-      - "8002:8002"
+      - "${BACKEND_PORT:-8002}:8002"
     depends_on:
       db:
         condition: service_healthy
@@ -40,18 +44,19 @@ services:
       interval: 30s
       timeout: 5s
       retries: 3
-      start_period: 10s
+      start_period: 15s
+    restart: unless-stopped
 
-  # Frontend
+  # Frontend (Nginx serving built React app)
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
       args:
-        VITE_API_URL: http://localhost:8002
+        VITE_API_URL: ${VITE_API_URL:-http://localhost:8002}
     container_name: pdl145t-frontend
     ports:
-      - "80:80"
+      - "${FRONTEND_PORT:-80}:80"
     depends_on:
       - backend
     healthcheck:
@@ -60,6 +65,7 @@ services:
       timeout: 5s
       retries: 3
       start_period: 10s
+    restart: unless-stopped
 
 volumes:
   postgres_data:

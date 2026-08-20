@@ -34,7 +34,7 @@ RUN echo 'server {' > /etc/nginx/conf.d/default.conf && \
     echo '    ' >> /etc/nginx/conf.d/default.conf && \
     echo '    # API proxy configuration' >> /etc/nginx/conf.d/default.conf && \
     echo '    location /api/ {' >> /etc/nginx/conf.d/default.conf && \
-    echo '        proxy_pass http://backend:8000;' >> /etc/nginx/conf.d/default.conf && \
+    echo '        proxy_pass http://backend:8002;' >> /etc/nginx/conf.d/default.conf && \
     echo '        proxy_set_header Host $host;' >> /etc/nginx/conf.d/default.conf && \
     echo '        proxy_set_header X-Real-IP $remote_addr;' >> /etc/nginx/conf.d/default.conf && \
     echo '        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;' >> /etc/nginx/conf.d/default.conf && \
@@ -43,7 +43,7 @@ RUN echo 'server {' > /etc/nginx/conf.d/default.conf && \
     echo '    ' >> /etc/nginx/conf.d/default.conf && \
     echo '    # Auth proxy configuration' >> /etc/nginx/conf.d/default.conf && \
     echo '    location /auth/ {' >> /etc/nginx/conf.d/default.conf && \
-    echo '        proxy_pass http://backend:8000;' >> /etc/nginx/conf.d/default.conf && \
+    echo '        proxy_pass http://backend:8002;' >> /etc/nginx/conf.d/default.conf && \
     echo '        proxy_set_header Host $host;' >> /etc/nginx/conf.d/default.conf && \
     echo '        proxy_set_header X-Real-IP $remote_addr;' >> /etc/nginx/conf.d/default.conf && \
     echo '        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;' >> /etc/nginx/conf.d/default.conf && \
