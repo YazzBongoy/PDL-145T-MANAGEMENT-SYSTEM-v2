@@ -7,7 +7,7 @@ services:
     name: pdl145t-backend
     env: node
     buildCommand: cd backend && npm install && npx prisma generate
-    startCommand: cd backend && npm start
+    startCommand: cd backend && npx prisma migrate deploy && npm start
     envVars:
       - key: NODE_ENV
         value: production
