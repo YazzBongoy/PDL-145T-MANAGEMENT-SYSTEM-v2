@@ -1,0 +1,17 @@
+# Playwright test results
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/
+
+# Screenshots and videos
+*.png
+*.jpg
+videos/
+
+# Dependencies
+node_modules/
+
+# Env
+.env
+.env.local

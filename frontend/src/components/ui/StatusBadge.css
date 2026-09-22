@@ -1,0 +1,247 @@
+/* Enhanced Status Badge Styles */
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  position: relative;
+}
+
+.status-badge__icon {
+  font-size: 0.75rem;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1rem;
+  height: 1rem;
+}
+
+.status-badge__label {
+  font-weight: var(--font-weight-medium);
+  font-size: inherit;
+}
+
+.status-badge__trend {
+  font-size: 0.875rem;
+  line-height: 1;
+  margin-left: var(--space-0-5);
+  opacity: 0.8;
+  transition: var(--transition-colors);
+}
+
+.status-badge:hover .status-badge__trend {
+  opacity: 1;
+}
+
+/* Status-specific styling */
+.status-badge--healthy {
+  --badge-pulse-color: var(--color-success);
+}
+
+.status-badge--warning {
+  --badge-pulse-color: var(--color-warning);
+}
+
+.status-badge--critical {
+  --badge-pulse-color: var(--color-error);
+}
+
+.status-badge--in-progress {
+  --badge-pulse-color: var(--color-info);
+}
+
+.status-badge--loading {
+  --badge-pulse-color: var(--color-info);
+}
+
+/* Animated pulse for active statuses */
+.status-badge--in-progress,
+.status-badge--loading {
+  animation: status-pulse 2s ease-in-out infinite;
+}
+
+@keyframes status-pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(var(--badge-pulse-color), 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 4px rgba(var(--badge-pulse-color), 0);
+  }
+}
+
+/* Tooltip styles for status badge */
+.status-tooltip {
+  text-align: left;
+  min-width: 200px;
+  max-width: 300px;
+}
+
+.status-tooltip__header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-2);
+  padding-bottom: var(--space-1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.status-tooltip__icon {
+  font-size: 1rem;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.status-tooltip__title {
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-sm);
+  flex: 1;
+}
+
+.status-tooltip__trend {
+  font-size: 1rem;
+  line-height: 1;
+  opacity: 0.9;
+}
+
+.status-tooltip__metadata {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.status-tooltip__item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: var(--font-size-xs);
+}
+
+.status-tooltip__label {
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: var(--font-weight-medium);
+}
+
+.status-tooltip__value {
+  font-weight: var(--font-weight-semibold);
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.status-tooltip__description {
+  font-size: var(--font-size-xs);
+  color: rgba(255, 255, 255, 0.8);
+  margin-top: var(--space-1);
+  padding-top: var(--space-1);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  line-height: var(--line-height-normal);
+}
+
+.status-tooltip__timestamp {
+  font-size: var(--font-size-xs);
+  color: rgba(255, 255, 255, 0.6);
+  margin-top: var(--space-1);
+  padding-top: var(--space-1);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  font-style: italic;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .status-badge__icon {
+    width: 0.875rem;
+    height: 0.875rem;
+    font-size: 0.625rem;
+  }
+  
+  .status-badge__trend {
+    font-size: 0.75rem;
+  }
+  
+  .status-tooltip {
+    min-width: 150px;
+    max-width: 250px;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .status-badge__icon {
+    font-weight: var(--font-weight-bold);
+  }
+  
+  .status-tooltip__header {
+    border-bottom-color: rgba(255, 255, 255, 0.3);
+  }
+  
+  .status-tooltip__description,
+  .status-tooltip__timestamp {
+    border-top-color: rgba(255, 255, 255, 0.3);
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .status-badge--in-progress,
+  .status-badge--loading {
+    animation: none;
+  }
+  
+  .status-badge__trend {
+    transition: none;
+  }
+}
+
+/* Dark theme adjustments */
+@media (prefers-color-scheme: dark) {
+  .status-tooltip__label {
+    color: rgba(255, 255, 255, 0.6);
+  }
+  
+  .status-tooltip__value {
+    color: rgba(255, 255, 255, 0.9);
+  }
+  
+  .status-tooltip__description {
+    color: rgba(255, 255, 255, 0.7);
+  }
+  
+  .status-tooltip__timestamp {
+    color: rgba(255, 255, 255, 0.5);
+  }
+}
+
+[data-theme="dark"] .status-tooltip__label {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+[data-theme="dark"] .status-tooltip__value {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+[data-theme="dark"] .status-tooltip__description {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+[data-theme="dark"] .status-tooltip__timestamp {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* Interactive states */
+.status-badge:hover {
+  transform: translateY(-1px);
+  transition: transform var(--duration-fast) var(--ease-out);
+}
+
+.status-badge:active {
+  transform: translateY(0);
+}
+
+/* Focus states for accessibility */
+.status-badge:focus-within {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}

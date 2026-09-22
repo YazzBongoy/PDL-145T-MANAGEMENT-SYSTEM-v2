@@ -1,0 +1,488 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`LoginForm > matches snapshot 1`] = `
+<div
+  class="form-container"
+>
+  <div
+    class="card card--primary"
+  >
+    <div
+      class="card__header"
+    >
+      <h2
+        class="auth-title"
+      >
+        Sign In
+      </h2>
+      <p
+        class="auth-subtitle"
+      >
+        Welcome back! Please enter your credentials
+      </p>
+    </div>
+    <div
+      class="card__body"
+    >
+      <form
+        class="login-form"
+      >
+        <div
+          class="form-group"
+        >
+          <label
+            for="email"
+          >
+            Email Address
+          </label>
+          <div
+            class="input-with-icon"
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-mail input-icon"
+              fill="none"
+              height="16"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="16"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7"
+              />
+              <rect
+                height="16"
+                rx="2"
+                width="20"
+                x="2"
+                y="4"
+              />
+            </svg>
+            <input
+              aria-invalid="false"
+              class="input "
+              id="email"
+              placeholder="your@email.com"
+              required=""
+              type="email"
+              value=""
+            />
+          </div>
+        </div>
+        <div
+          class="form-group"
+        >
+          <label
+            for="password"
+          >
+            Password
+          </label>
+          <div
+            class="input-with-icon"
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-lock input-icon"
+              fill="none"
+              height="16"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="16"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <rect
+                height="11"
+                rx="2"
+                ry="2"
+                width="18"
+                x="3"
+                y="11"
+              />
+              <path
+                d="M7 11V7a5 5 0 0 1 10 0v4"
+              />
+            </svg>
+            <input
+              aria-invalid="false"
+              class="input "
+              id="password"
+              placeholder="••••••••"
+              required=""
+              type="password"
+              value=""
+            />
+            <button
+              aria-label="Show password"
+              class="password-toggle"
+              type="button"
+            >
+              <svg
+                aria-hidden="true"
+                class="lucide lucide-eye"
+                fill="none"
+                height="16"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="16"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"
+                />
+                <circle
+                  cx="12"
+                  cy="12"
+                  r="3"
+                />
+              </svg>
+            </button>
+          </div>
+          <p
+            class="form-help-text"
+          >
+            Enter your password to access the system
+          </p>
+        </div>
+        <div
+          class="button-group"
+        >
+          <button
+            class="btn btn--primary btn--full "
+            type="submit"
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-key btn-icon"
+              fill="none"
+              height="16"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="16"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="m15.5 7.5 2.3 2.3a1 1 0 0 0 1.4 0l2.1-2.1a1 1 0 0 0 0-1.4L19 4"
+              />
+              <path
+                d="m21 2-9.6 9.6"
+              />
+              <circle
+                cx="7.5"
+                cy="15.5"
+                r="5.5"
+              />
+            </svg>
+             Sign In
+          </button>
+          <button
+            class="btn btn--outline btn--full"
+            type="button"
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-pen-tool btn-icon"
+              fill="none"
+              height="16"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="16"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M15.707 21.293a1 1 0 0 1-1.414 0l-1.586-1.586a1 1 0 0 1 0-1.414l5.586-5.586a1 1 0 0 1 1.414 0l1.586 1.586a1 1 0 0 1 0 1.414z"
+              />
+              <path
+                d="m18 13-1.375-6.874a1 1 0 0 0-.746-.776L3.235 2.028a1 1 0 0 0-1.207 1.207L5.35 15.879a1 1 0 0 0 .776.746L13 18"
+              />
+              <path
+                d="m2.3 2.3 7.286 7.286"
+              />
+              <circle
+                cx="11"
+                cy="11"
+                r="2"
+              />
+            </svg>
+             Create Account
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`RegisterForm > matches snapshot 1`] = `
+<div
+  class="form-container"
+>
+  <div
+    class="card card--secondary"
+  >
+    <div
+      class="card__header"
+    >
+      <h2
+        class="auth-title"
+      >
+        Create Account
+      </h2>
+      <p
+        class="auth-subtitle"
+      >
+        Join the PDL-145T Management System
+      </p>
+    </div>
+    <div
+      class="card__body"
+    >
+      <form
+        class="register-form"
+      >
+        <div
+          class="form-group"
+        >
+          <label
+            for="name"
+          >
+            Full Name
+          </label>
+          <div
+            class="input-with-icon"
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-user input-icon"
+              fill="none"
+              height="16"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="16"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"
+              />
+              <circle
+                cx="12"
+                cy="7"
+                r="4"
+              />
+            </svg>
+            <input
+              aria-invalid="false"
+              class="input "
+              id="name"
+              placeholder="John Doe"
+              required=""
+              type="text"
+              value=""
+            />
+          </div>
+        </div>
+        <div
+          class="form-group"
+        >
+          <label
+            for="email"
+          >
+            Email Address
+          </label>
+          <div
+            class="input-with-icon"
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-mail input-icon"
+              fill="none"
+              height="16"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="16"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7"
+              />
+              <rect
+                height="16"
+                rx="2"
+                width="20"
+                x="2"
+                y="4"
+              />
+            </svg>
+            <input
+              aria-invalid="false"
+              class="input "
+              id="email"
+              placeholder="your@email.com"
+              required=""
+              type="email"
+              value=""
+            />
+          </div>
+        </div>
+        <div
+          class="form-group"
+        >
+          <label
+            for="password"
+          >
+            Password
+          </label>
+          <div
+            class="input-with-icon"
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-lock input-icon"
+              fill="none"
+              height="16"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="16"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <rect
+                height="11"
+                rx="2"
+                ry="2"
+                width="18"
+                x="3"
+                y="11"
+              />
+              <path
+                d="M7 11V7a5 5 0 0 1 10 0v4"
+              />
+            </svg>
+            <input
+              aria-invalid="false"
+              class="input "
+              id="password"
+              placeholder="••••••••"
+              required=""
+              type="password"
+              value=""
+            />
+            <button
+              aria-label="Show password"
+              class="password-toggle"
+              type="button"
+            >
+              <svg
+                aria-hidden="true"
+                class="lucide lucide-eye"
+                fill="none"
+                height="16"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="16"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"
+                />
+                <circle
+                  cx="12"
+                  cy="12"
+                  r="3"
+                />
+              </svg>
+            </button>
+          </div>
+          <p
+            class="form-help-text"
+          >
+            Password must be at least 8 characters
+          </p>
+        </div>
+        <div
+          class="button-group"
+        >
+          <button
+            class="btn btn--primary btn--full "
+            type="submit"
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-circle-check-big btn-icon"
+              fill="none"
+              height="16"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="16"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M21.801 10A10 10 0 1 1 17 3.335"
+              />
+              <path
+                d="m9 11 3 3L22 4"
+              />
+            </svg>
+             Create Account
+          </button>
+          <button
+            class="btn btn--outline btn--full"
+            type="button"
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-arrow-left btn-icon"
+              fill="none"
+              height="16"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="16"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="m12 19-7-7 7-7"
+              />
+              <path
+                d="M19 12H5"
+              />
+            </svg>
+             Back to Login
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+`;

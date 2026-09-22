@@ -1,0 +1,293 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// Connection pooling is configured via DATABASE_URL query parameters:
+// ?connection_limit=10&pool_timeout=20
+// In development with PGlite, use: ?connection_limit=5
+
+// Projects Table - Manages the overall projects
+model Project {
+  ProjectID      Int      @id @default(autoincrement())
+  Name           String
+  StartDate      DateTime
+  EndDate        DateTime?
+  TotalBudget    Decimal
+  CreatedAt      DateTime @default(now())
+  UpdatedAt      DateTime @updatedAt
+
+  // Relationships
+  ProjectResources ProjectResource[]
+  Tasks           Task[]
+  Reports         Report[]
+  Documents       Document[]
+
+  @@index([Name])
+  @@index([StartDate])
+}
+
+// Tasks Table - Manages individual tasks within a project
+model Task {
+  TaskID         Int      @id @default(autoincrement())
+  ProjectID      Int
+  Description    String?
+  Duration       Int?
+  AssignedTo     String?
+  CompletionStatus TaskCompletionStatus @default(NotStarted)
+  CreatedAt      DateTime @default(now())
+  UpdatedAt      DateTime @updatedAt
+
+  // Relationships
+  Project       Project   @relation(fields: [ProjectID], references: [ProjectID], onDelete: Cascade)
+  Expenses      Expense[]
+  TaskResources TaskResource[]
+  Measurements  Measurement[]
+  Validations   Validation[]
+
+  @@index([ProjectID])
+  @@index([CompletionStatus])
+  @@index([AssignedTo])
+}
+
+// Expenses Table - Tracks expenses associated with tasks or projects
+model Expense {
+  ExpenseID    Int      @id @default(autoincrement())
+  TaskID       Int
+  Description  String?
+  Cost         Decimal
+  Date         DateTime
+  CreatedAt    DateTime @default(now())
+  UpdatedAt    DateTime @updatedAt
+
+  // Relationships
+  Task Task @relation(fields: [TaskID], references: [TaskID], onDelete: Cascade)
+
+  @@index([TaskID])
+  @@index([Date])
+}
+
+// Resources Table - Stores information about available resources
+model Resource {
+  ResourceID   Int      @id @default(autoincrement())
+  Type         String
+  Quantity     Decimal
+  CreatedAt    DateTime @default(now())
+  UpdatedAt    DateTime @updatedAt
+
+  // Relationships
+  ProjectResources ProjectResource[]
+  TaskResources TaskResource[]
+
+  @@index([Type])
+}
+
+// Project Resources - Many-to-Many relationship between Projects and Resources
+model ProjectResource {
+  ProjectID  Int
+  ResourceID Int
+
+  // Relationships
+  Project  Project  @relation(fields: [ProjectID], references: [ProjectID], onDelete: Cascade)
+  Resource Resource @relation(fields: [ResourceID], references: [ResourceID], onDelete: Cascade)
+
+  @@id([ProjectID, ResourceID])
+  @@index([ResourceID])
+}
+
+// Task Resources - Many-to-Many relationship between Tasks and Resources
+model TaskResource {
+  TaskID     Int
+  ResourceID Int
+
+  // Relationships
+  Task     Task     @relation(fields: [TaskID], references: [TaskID], onDelete: Cascade)
+  Resource Resource @relation(fields: [ResourceID], references: [ResourceID], onDelete: Cascade)
+
+  @@id([TaskID, ResourceID])
+  @@index([ResourceID])
+}
+
+// Measurements Table - Records site measurements performed by the Construction Execution Agent
+model Measurement {
+  MeasurementID Int      @id @default(autoincrement())
+  TaskID      Int
+  SiteID      String
+  MeasurementType String
+  Value       Decimal
+  Date        DateTime
+  CreatedAt   DateTime @default(now())
+  UpdatedAt   DateTime @updatedAt
+
+  // Relationships
+  Task Task @relation(fields: [TaskID], references: [TaskID], onDelete: Cascade)
+  Site Site @relation(fields: [SiteID], references: [SiteID], onDelete: Restrict)
+
+  @@index([TaskID])
+  @@index([SiteID])
+  @@index([MeasurementType])
+  @@index([Date])
+}
+
+// Validations Table - Tracks validations of construction sites
+model Validation {
+  ValidationID Int      @id @default(autoincrement())
+  TaskID       Int
+  SiteID       String
+  Status       ValidationStatus @default(Pending)
+  Notes        String?
+  GeneratedBy  String
+  Timestamp    DateTime @default(now())
+  UpdatedAt    DateTime @updatedAt
+
+  // Relationships
+  Task Task @relation(fields: [TaskID], references: [TaskID], onDelete: Cascade)
+  Site Site @relation(fields: [SiteID], references: [SiteID], onDelete: Restrict)
+  Reports Report[]
+
+  @@index([TaskID])
+  @@index([SiteID])
+  @@index([Status])
+  @@index([Timestamp])
+}
+
+// Reports Table - Holds reports generated for billing validation
+model Report {
+  ReportID    Int      @id @default(autoincrement())
+  ValidationID Int
+  ProjectID   Int
+  GeneratedBy String
+  Timestamp   DateTime @default(now())
+  UpdatedAt   DateTime @updatedAt
+
+  // Relationships
+  Validation Validation @relation(fields: [ValidationID], references: [ValidationID], onDelete: Cascade)
+  Project    Project    @relation(fields: [ProjectID], references: [ProjectID], onDelete: Restrict)
+
+  @@index([ValidationID])
+  @@index([ProjectID])
+  @@index([Timestamp])
+}
+
+// Territory Table - Manages territories containing multiple sites
+model Territory {
+  TerritoryID Int    @id @default(autoincrement())
+  Name        String @unique
+  CreatedAt   DateTime @default(now())
+  UpdatedAt   DateTime @updatedAt
+  Sites       Site[]
+  Documents   Document[]
+}
+
+// Site Table - Manages construction sites within territories
+model Site {
+  SiteID      String @id      // keep string for compatibility with Measurement/Validation
+  Name        String
+  Type        SiteType
+  Province    String
+  TerritoryID Int
+  Location    String? // Coordinates as string (lat,lng)
+  Elevation   Float?
+  CreatedAt   DateTime @default(now())
+  UpdatedAt   DateTime @updatedAt
+
+  Territory   Territory @relation(fields: [TerritoryID], references: [TerritoryID], onDelete: Restrict)
+  Measurements Measurement[]
+  Validations  Validation[]
+  Documents    Document[]
+
+  @@index([TerritoryID])
+  @@index([Type])
+  @@index([Province])
+}
+
+// Document Table - Gestion documentaire PDL-145T (classification ontologie ascat)
+// Toutes les classes/labels proviennent de l'ontologie ascat_documents_ontology.ttl
+// (urn:ontology:ascat-sarl:documents:v1, prefix http://ontology.ascat-sarl.cd/core#).
+model Document {
+  DocumentID     Int      @id @default(autoincrement())
+  FileName       String   @unique
+  Title          String
+  Category       DocumentCategory
+  // URI de la classe ontologique, ex. "http://ontology.ascat-sarl.cd/core#ContratPDL145T"
+  OntologyClass  String
+  DocumentDate   DateTime?
+  FilePath       String
+  Lot            String?
+  Phase          String?
+  ProjectID      Int?
+  TerritoryID    Int?
+  SiteID         String?
+  MontantUSD     Decimal?
+  Notes          String?
+  CreatedAt      DateTime @default(now())
+  UpdatedAt      DateTime @updatedAt
+
+  // Relationships (toutes optionnelles : documents transverses au programme)
+  Project   Project?   @relation(fields: [ProjectID], references: [ProjectID], onDelete: SetNull)
+  Territory Territory? @relation(fields: [TerritoryID], references: [TerritoryID], onDelete: SetNull)
+  Site      Site?      @relation(fields: [SiteID], references: [SiteID], onDelete: SetNull)
+
+  @@index([Category])
+  @@index([ProjectID])
+  @@index([TerritoryID])
+  @@index([SiteID])
+  @@index([DocumentDate])
+}
+
+// User Table - Stores user authentication and profile information
+model User {
+  id           Int      @id @default(autoincrement())
+  name         String
+  email        String   @unique
+  passwordHash String
+  role         UserRole @default(USER)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([email])
+  @@index([role])
+}
+
+enum TaskCompletionStatus {
+  NotStarted
+  InProgress
+  Completed
+}
+
+enum ValidationStatus {
+  Pending
+  Approved
+  Rejected
+}
+
+enum SiteType {
+  CENTRE_DE_SANTE
+  ECOLE_PRIMAIRE
+  BATIMENT_ADMINISTRATIF
+}
+
+// Catégories alignées sur les dossiers / les classes ontologiques ascat
+enum DocumentCategory {
+  JURIDIQUE
+  FINANCE
+  SUIVI
+  TECHNIQUE
+  ADMIN
+}
+
+enum UserRole {
+  USER
+  ADMIN
+  SUPERVISOR
+  FINANCE
+  CONSTRUCTION
+}

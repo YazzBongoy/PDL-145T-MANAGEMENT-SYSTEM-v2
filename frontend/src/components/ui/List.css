@@ -1,0 +1,54 @@
+/* List component styles */
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin: var(--space-3) 0;
+}
+
+.list__item {
+  padding: var(--space-3);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-gray-200);
+  background-color: var(--color-bg-primary);
+  transition: var(--transition-base);
+}
+
+.list__item:hover {
+  background-color: var(--color-bg-secondary);
+  border-color: var(--color-gray-300);
+}
+
+.list__item.zebra-row {
+  background-color: var(--color-bg-secondary);
+}
+
+.list__item.zebra-row:hover {
+  background-color: var(--color-bg-tertiary);
+}
+
+/* Action buttons within list items */
+.list__item .btn {
+  margin-left: var(--space-2);
+  font-size: var(--font-size-sm);
+  padding: var(--space-1) var(--space-2);
+}
+
+/* Dark theme support */
+@media (prefers-color-scheme: dark) {
+  .list__item {
+    border-color: var(--color-gray-700);
+  }
+  
+  .list__item:hover {
+    border-color: var(--color-gray-600);
+  }
+}
+
+[data-theme="dark"] .list__item {
+  border-color: var(--color-gray-700);
+}
+
+[data-theme="dark"] .list__item:hover {
+  border-color: var(--color-gray-600);
+}
