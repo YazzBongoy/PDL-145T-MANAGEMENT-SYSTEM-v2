@@ -1,6 +1,6 @@
 import request from 'supertest';
-import { app } from './index.js';
-import { prisma } from './index.js';
+import { app } from './app.js';
+import { prisma } from './prisma.js';
 
 describe('Authentication Endpoints', () => {
   const testUser = {

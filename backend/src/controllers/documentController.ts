@@ -9,7 +9,7 @@ import {
   DocumentCreateSchema,
   DocumentUpdateSchema,
 } from '../schemas/index.js';
-import { prisma } from '../index.js';
+import { prisma } from '../prisma.js';
 
 const documentService = new DocumentService();
 

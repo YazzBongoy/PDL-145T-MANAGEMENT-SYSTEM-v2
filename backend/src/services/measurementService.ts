@@ -1,4 +1,4 @@
-import { prisma } from '../index.js';
+import { prisma } from '../prisma.js';
 import { MeasurementCreateRequest, MeasurementUpdateRequest } from '../types/express.js';
 
 export class MeasurementService {

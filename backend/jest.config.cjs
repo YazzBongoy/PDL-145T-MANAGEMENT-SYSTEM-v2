@@ -33,6 +33,12 @@ module.exports = {
     "!src/**/*.spec.ts",
   ],
   testTimeout: 10000,
+  // The integration suites share one PostgreSQL database and each truncates
+  // shared tables (User, Project, Task, Site, Territory) in beforeAll/afterAll.
+  // Running suites in parallel makes them delete each other's fixtures (e.g. a
+  // 403/204 assertion fails because another worker removed the user mid-test),
+  // so execute suites serially.
+  maxWorkers: 1,
   extensionsToTreatAsEsm: [".ts"],
   moduleNameMapper: {
     "^(\\.\\.?/.*)\\.js$": "$1",

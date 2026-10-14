@@ -1,11 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
 import { ZodSchema, ZodError } from 'zod';
 import jwt from 'jsonwebtoken';
-import { PrismaClient } from '@prisma/client';
 import { JWTPayload, AuthenticatedRequest } from '../types/express.js';
 import { config } from '../config/env.js';
-
-const prisma = new PrismaClient();
+import { prisma } from '../prisma.js';
 
 // Validation middleware factory
 export function validateSchema<T extends ZodSchema>(

@@ -1,5 +1,6 @@
 import request from 'supertest';
-import { app, prisma } from './index.js';
+import { app } from './app.js';
+import { prisma } from './prisma.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { config } from './config/env.js';

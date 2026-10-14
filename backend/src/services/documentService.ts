@@ -1,7 +1,7 @@
 import { Prisma } from '@prisma/client';
 import type { DocumentCategory } from '@prisma/client';
 import path from 'node:path';
-import { prisma } from '../index.js';
+import { prisma } from '../prisma.js';
 
 export interface DocumentFilter {
   category?: DocumentCategory;
