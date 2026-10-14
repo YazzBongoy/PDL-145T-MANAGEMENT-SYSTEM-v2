@@ -9,8 +9,10 @@ WORKDIR /app
 COPY package*.json ./
 COPY tsconfig.json ./
 
-# Install dependencies (including dev dependencies for building)
-RUN npm ci
+# Install dependencies (including dev dependencies for building).
+# NOTE: this build context has no package-lock.json (the lockfile is at the
+# repo root for the npm workspace), so `npm ci` cannot be used here.
+RUN npm install
 
 # Copy Prisma schema
 COPY prisma/ ./prisma/
@@ -37,8 +39,8 @@ WORKDIR /app
 # Copy package files
 COPY package*.json ./
 
-# Install only production dependencies
-RUN npm ci --omit=dev && npm cache clean --force
+# Install only production dependencies (no lockfile in this context; see above)
+RUN npm install --omit=dev && npm cache clean --force
 
 # Copy built application from builder stage
 COPY --from=builder /app/dist ./dist
@@ -48,6 +50,10 @@ COPY --from=builder /app/prisma ./prisma
 
 # Generate Prisma client in production
 RUN npx prisma generate
+
+# Container entrypoint (applies Prisma migrations before starting the server)
+COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
 # Change ownership of the app directory to nodejs user
 RUN chown -R nodejs:nodejs /app
@@ -60,5 +66,6 @@ EXPOSE 3010
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
   CMD node -e "fetch('http://localhost:3010/api/health').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"
 
-# Start the application
+# Apply migrations, then start the application
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 CMD ["node", "dist/index.js"]
