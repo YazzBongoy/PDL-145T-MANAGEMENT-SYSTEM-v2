@@ -2,9 +2,12 @@
 # Start PDL-145T Management System (production)
 set -e
 
-PROJECT_DIR="/home/ascatsarl/Documents/GitHub/CascadeProjects/pdl-145t-management-system"
+# Resolve the repository root from this script's location so the script works
+# from any checkout path (the previous hard-coded path was machine-specific).
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 COMPOSE_FILE="infrastructure/docker-compose.prod.yml"
-LOG_FILE="/tmp/pdl-app.log"
+LOG_FILE="${PDL_APP_LOG:-/tmp/pdl-app.log}"
 
 echo "=== PDL-145T START ===" >> "$LOG_FILE"
 echo "Started at: $(date '+%Y-%m-%d %H:%M:%S %Z')" >> "$LOG_FILE"

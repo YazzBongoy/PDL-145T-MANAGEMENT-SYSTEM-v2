@@ -57,9 +57,11 @@ export default defineConfig({
     },
   ],
 
-  /* Run your local dev server before starting the tests */
+  /* Run your local dev server before starting the tests.
+   * Vite defaults to 5173, but this config (and the documented app URL) uses
+   * 3001, so pin the dev server port explicitly. */
   webServer: {
-    command: 'npm run dev',
+    command: 'npm run dev -- --port 3001 --strictPort',
     url: 'http://localhost:3001',
     reuseExistingServer: !process.env.CI,
   },

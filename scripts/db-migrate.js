@@ -14,10 +14,11 @@ try {
   // Generate Prisma client
   console.log('📦 Generating Prisma client...');
   execSync('npx prisma generate', { stdio: 'inherit' });
-  
-  // Run migrations
-  console.log('🚀 Running Prisma migrations...');
-  execSync('npx prisma migrate dev', { stdio: 'inherit' });
+
+  // Apply committed migrations (idempotent, non-interactive). Use
+  // `migrate dev` only when authoring a new migration.
+  console.log('🚀 Applying Prisma migrations...');
+  execSync('npx prisma migrate deploy', { stdio: 'inherit' });
   
   console.log('✅ Database migrations completed successfully!');
 } catch (error) {

@@ -44,7 +44,26 @@ The application implements a multi-agent architecture with three specialized age
 
 ## Getting Started
 
-Please refer to the individual agent documentation and setup instructions in their respective directories.
+See **[RUNBOOK.md](./RUNBOOK.md)** for full, reproducible build/run/test commands.
+
+Quick start (local dev; requires Node 20+ and Docker):
+
+```bash
+npm install
+cp backend/.env.example backend/.env      # then set DATABASE_URL, DIRECT_URL, JWT_SECRET
+docker compose -f infrastructure/docker-compose.yml up -d db
+npm run db:migrate
+npm run db:seed                           # optional demo login: demo@example.com / demo12345
+npm run dev -w backend                    # API on http://localhost:3010
+npm run dev -w frontend -- --port 3001    # UI  on http://localhost:3001
+```
+
+Tests:
+
+```bash
+npm run test:run -w frontend   # Vitest (no database needed)
+npm test -w backend            # Jest (needs a migrated PostgreSQL database)
+```
 
 
 ## Application Design Specification for Managing PDL-145T Development Program in Mai Ndombe
