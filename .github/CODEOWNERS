@@ -1,0 +1,38 @@
+# MIASE SARL code ownership — PDL-145T v2
+# See the Shared Engineering Baseline v1 §2 (MIAA-3) for the review rules.
+#
+# CTO-mandatory review applies to: public API/schema contracts, auth/security
+# boundaries, DB migrations, and CI/release paths.
+#
+# Reviewer identity for the CTO role is @ASCATSARL. Replace it with a dedicated
+# @MIASE-SARL/cto team once that team or a CTO bot account exists.
+
+# Default owner for the repository.
+*                               @YazzBongoy
+
+# --- API / schema contracts (CTO review required) ---
+/backend/src/api/               @ASCATSARL
+/backend/src/controllers/       @ASCATSARL
+/backend/src/routes/            @ASCATSARL
+/backend/src/schemas/           @ASCATSARL
+/frontend/src/services/         @ASCATSARL
+
+# --- Auth / security boundaries (CTO review required) ---
+/backend/src/middleware/        @ASCATSARL
+/backend/src/auth/              @ASCATSARL
+
+# --- DB migrations (CTO review required) ---
+/prisma/                        @ASCATSARL
+
+# --- CI / release / deploy paths (CTO review required) ---
+/.github/workflows/             @ASCATSARL
+/.github/CODEOWNERS             @ASCATSARL
+/docker-compose.yml             @ASCATSARL
+/infrastructure/                 @ASCATSARL
+/backend/Dockerfile             @ASCATSARL
+/frontend/Dockerfile            @ASCATSARL
+/render.yaml                    @ASCATSARL
+/scripts/                       @ASCATSARL
+/package.json                   @ASCATSARL
+/backend/package.json           @ASCATSARL
+/frontend/package.json          @ASCATSARL
