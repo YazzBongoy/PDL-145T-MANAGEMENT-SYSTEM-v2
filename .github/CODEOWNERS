@@ -1,0 +1,30 @@
+# MIASE shared engineering baseline (MIAA-13).
+# CTO review (@YazzBongoy) is mandatory for: public API/schema contracts,
+# auth/authorization boundaries, DB migrations, security-sensitive code,
+# and release/CI pipeline paths (baseline section 2).
+# GitHub username: repo owner acts as CTO reviewer. Revisions via CTO sign-off.
+
+# Public API + schema/data contracts
+/backend/src/routes/ @YazzBongoy
+/backend/src/controllers/ @YazzBongoy
+/backend/src/schemas/ @YazzBongoy
+/backend/src/types/ @YazzBongoy
+API_DOCUMENTATION.md @YazzBongoy
+
+# Auth / security boundaries
+/backend/src/middleware/ @YazzBongoy
+/backend/src/config/ @YazzBongoy
+/backend/src/routes/authRoutes.ts @YazzBongoy
+
+# DB migrations
+/backend/prisma/ @YazzBongoy
+/backend/prisma/migrations/ @YazzBongoy
+scripts/db-migrate.js @YazzBongoy
+
+# CI / release paths
+/.github/ @YazzBongoy
+/backend/Dockerfile @YazzBongoy
+/backend/Dockerfile.dev @YazzBongoy
+/backend/docker-entrypoint.sh @YazzBongoy
+/infrastructure/ @YazzBongoy
+/aws-deployment/ @YazzBongoy
