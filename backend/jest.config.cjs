@@ -1,6 +1,11 @@
 /** @type {import("jest").Config} **/
 module.exports = {
   testEnvironment: "node",
+  // The integration suites are destructive (they delete shared rows), so run
+  // them against a dedicated test database. globalSetup creates + migrates it;
+  // setupFiles points each worker's PrismaClient at it.
+  globalSetup: "<rootDir>/jest.global-setup.cjs",
+  setupFiles: ["<rootDir>/jest.setup-env.cjs"],
   transform: {
     "^.+\\.ts$": ["@swc/jest", {
       module: {

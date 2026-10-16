@@ -43,3 +43,9 @@ docker-compose.log
 
 # Prisma
 backend/prisma/migrations/**/migration_lock.toml
+
+# Playwright / test artifacts
+frontend/test-results/
+frontend/playwright-report/
+frontend/blob-report/
+frontend/frontend-screenshot.png

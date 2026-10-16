@@ -32,8 +32,10 @@ test.describe('PDL-145T Frontend Connection', () => {
     // Check for head and body
     const headElement = page.locator('head');
     const bodyElement = page.locator('body');
-    
-    await expect(headElement).toBeVisible();
+
+    // <head> has no layout box, so it is never "visible" — assert it is
+    // attached to the DOM instead.
+    await expect(headElement).toBeAttached();
     await expect(bodyElement).toBeVisible();
   });
 

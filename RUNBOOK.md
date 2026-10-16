@@ -100,20 +100,48 @@ docker compose up -d --build
 npm run build           # builds backend (tsc) and frontend (tsc -b && vite build)
 ```
 
+The backend build runs `prisma generate` first (the compiled services import
+generated Prisma types), so a clean checkout builds without a manual generate
+step. `npm install` also runs `prisma generate` via the backend `postinstall`
+script.
+
 ## 7. Test
 
 | Suite | Command | Notes |
 |---|---|---|
 | Frontend unit (Vitest) | `npm run test:run -w frontend` | Self-contained (jsdom). |
-| Backend integration (Jest) | `npm test -w backend` | **Requires a migrated PostgreSQL DB** (steps 3–4). Suites run serially. |
-| Backend watch | `npm run test:watch -w backend` | Same DB requirement. |
+| Backend integration (Jest) | `npm test -w backend` | Needs the PostgreSQL container running (step 3). Provisions its own database — see below. |
+| Backend watch | `npm run test:watch -w backend` | Same requirement. |
 | Playwright (E2E) | `npm run playwright:test -w frontend` | Requires `npx playwright install` first. Starts Vite on port 3001. |
 | Cypress (E2E) | `npm run cypress:run -w frontend` | Requires `npx cypress install` and the app running on http://localhost:3001. |
 
-Playwright one-time browser install:
+The backend integration suites are destructive (they `deleteMany({})` on shared
+tables), so they must not run against the developer database. Jest's
+`globalSetup` (`backend/jest.global-setup.cjs`) creates and migrates a dedicated
+**test database** automatically:
+
+- Default name: the `DATABASE_URL` database name with `_test` (e.g.
+  `pdl_management` → `pdl_test`).
+- Override with `TEST_DATABASE_URL` (full connection string) or
+  `TEST_DATABASE_NAME`.
+
+The first run creates and migrates `pdl_test`; later runs are idempotent. You
+only need PostgreSQL reachable (step 3) — the test database does not have to be
+migrated or seeded by hand.
+
+Playwright browsers — the config defines Chromium, Firefox, WebKit and two
+mobile projects. Install the ones you need:
 
 ```bash
-cd frontend && npx playwright install chromium
+cd frontend
+npx playwright install chromium          # minimal
+npx playwright install                   # all configured projects
+```
+
+Run a single project:
+
+```bash
+npm run playwright:test -w frontend -- --project=chromium
 ```
 
 ## 8. Production
