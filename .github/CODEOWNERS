@@ -5,26 +5,26 @@
 # GitHub username: repo owner acts as CTO reviewer. Revisions via CTO sign-off.
 
 # Public API + schema/data contracts
-/backend/src/routes/ @YazzBongoy
-/backend/src/controllers/ @YazzBongoy
-/backend/src/schemas/ @YazzBongoy
-/backend/src/types/ @YazzBongoy
-API_DOCUMENTATION.md @YazzBongoy
+/backend/src/routes/ @YazzBongoy @ASCATSARL
+/backend/src/controllers/ @YazzBongoy @ASCATSARL
+/backend/src/schemas/ @YazzBongoy @ASCATSARL
+/backend/src/types/ @YazzBongoy @ASCATSARL
+API_DOCUMENTATION.md @YazzBongoy @ASCATSARL
 
 # Auth / security boundaries
-/backend/src/middleware/ @YazzBongoy
-/backend/src/config/ @YazzBongoy
-/backend/src/routes/authRoutes.ts @YazzBongoy
+/backend/src/middleware/ @YazzBongoy @ASCATSARL
+/backend/src/config/ @YazzBongoy @ASCATSARL
+/backend/src/routes/authRoutes.ts @YazzBongoy @ASCATSARL
 
 # DB migrations
-/backend/prisma/ @YazzBongoy
-/backend/prisma/migrations/ @YazzBongoy
-scripts/db-migrate.js @YazzBongoy
+/backend/prisma/ @YazzBongoy @ASCATSARL
+/backend/prisma/migrations/ @YazzBongoy @ASCATSARL
+scripts/db-migrate.js @YazzBongoy @ASCATSARL
 
 # CI / release paths
-/.github/ @YazzBongoy
-/backend/Dockerfile @YazzBongoy
-/backend/Dockerfile.dev @YazzBongoy
-/backend/docker-entrypoint.sh @YazzBongoy
-/infrastructure/ @YazzBongoy
-/aws-deployment/ @YazzBongoy
+/.github/ @YazzBongoy @ASCATSARL
+/backend/Dockerfile @YazzBongoy @ASCATSARL
+/backend/Dockerfile.dev @YazzBongoy @ASCATSARL
+/backend/docker-entrypoint.sh @YazzBongoy @ASCATSARL
+/infrastructure/ @YazzBongoy @ASCATSARL
+/aws-deployment/ @YazzBongoy @ASCATSARL
