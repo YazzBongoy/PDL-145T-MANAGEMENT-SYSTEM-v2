@@ -66,8 +66,10 @@ app.use(cors({
 app.use(express.json());
 
 // Serve uploaded files as static
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+// Avoid shadowing CommonJS __dirname when this module is imported by Jest
+// (SWC compiles the TS to CJS, where __dirname already exists).
+const moduleDir = path.dirname(fileURLToPath(import.meta.url));
+app.use('/uploads', express.static(path.join(moduleDir, '../uploads')));
 
 // Store prisma client in app locals for route access
 app.locals.prisma = prisma;
@@ -753,7 +755,11 @@ async function startServer(): Promise<void> {
   }
 }
 
-startServer();
+// Tests import { app, prisma } from this module; never open a listener or
+// call process.exit from an import. Jest sets JEST_WORKER_ID in every worker.
+if (!process.env.JEST_WORKER_ID) {
+  void startServer();
+}
 
 export { app, prisma };
 

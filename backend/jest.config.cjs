@@ -27,7 +27,11 @@ module.exports = {
   testMatch: ["**/__tests__/**/*.ts", "**/?(*.)+(spec|test).ts"],
   moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json"],
   setupFilesAfterEnv: [],
-  globalSetup: "<rootDir>/src/tests/global-setup.ts",
+  // The integration suites are destructive (they delete shared rows), so run
+  // them against a dedicated test database. globalSetup creates + migrates it;
+  // setupFiles points each worker's PrismaClient at it.
+  globalSetup: "<rootDir>/jest.global-setup.cjs",
+  setupFiles: ["<rootDir>/jest.setup-env.cjs"],
   globalTeardown: "<rootDir>/src/tests/global-teardown.ts",
   collectCoverageFrom: [
     "src/**/*.ts",
@@ -45,8 +49,12 @@ module.exports = {
     },
   },
   testTimeout: 30000,
+  // Integration suites truncate shared tables; serialize them so one worker
+  // cannot delete another worker's fixtures.
+  maxWorkers: 1,
   extensionsToTreatAsEsm: [".ts"],
   moduleNameMapper: {
-    "^(\.{1,2}/.*)\.js$": "$1",
+    // Double-escaped so the regex matches only `.js`, not `.cjs` setup files.
+    "^(\\.{1,2}/.*)\\.js$": "$1",
   },
 };
